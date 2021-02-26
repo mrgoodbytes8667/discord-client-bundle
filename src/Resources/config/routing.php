@@ -13,11 +13,13 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 return function (RoutingConfigurator $routes) {
     //@Route("/bot/redirect/{guildId}", name="bytesdiscordbundle_oauth_bot_redirect")
     $routes->add('bytesdiscordbundle_oauth_bot_redirect', '/bot/redirect/{guildId}')
-        ->controller([OAuthController::class, 'botRedirect']);
-    
+        ->controller([OAuthController::class, 'botRedirect'])
+        ->defaults(['guildId' => null]);
+
     //@Route("/slash/redirect/{guildId}", name="bytesdiscordbundle_oauth_slash_redirect")
     $routes->add('bytesdiscordbundle_oauth_slash_redirect', '/slash/redirect/{guildId}')
-        ->controller([OAuthController::class, 'slashRedirect']);
+        ->controller([OAuthController::class, 'slashRedirect'])
+        ->defaults(['guildId' => null]);
 
     //@Route("/user/redirect", name="bytesdiscordbundle_oauth_user_redirect")
     $routes->add('bytesdiscordbundle_oauth_user_redirect', '/user/redirect')

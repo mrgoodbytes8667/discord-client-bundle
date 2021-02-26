@@ -120,7 +120,7 @@ class OAuth
             case 'getBotOAuthRedirect':
             case 'getLoginOAuthRedirect':
             case 'getSlashOAuthRedirect':
-                $arg = u($name)->before('OAuthRedirect')->after('get')->snake()->camel()->toString();
+                $arg = u($name)->after('get')->snake()->camel()->toString();
                 return $this->urlGenerator->generate($this->$arg, [], UrlGeneratorInterface::ABSOLUTE_URL);
                 break;
         }
