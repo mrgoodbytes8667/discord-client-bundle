@@ -11,7 +11,19 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
  * @param RoutingConfigurator $routes
  */
 return function (RoutingConfigurator $routes) {
-    //@Route("/bot/redirect/{guildId}", name="bytes_discordbundle_oauth_bot_redirect")
-    $routes->add('bytes_discordbundle_oauth_bot_redirect', '/bot/redirect/{guildId}')
+    //@Route("/bot/redirect/{guildId}", name="bytesdiscordbundle_oauth_bot_redirect")
+    $routes->add('bytesdiscordbundle_oauth_bot_redirect', '/bot/redirect/{guildId}')
         ->controller([OAuthController::class, 'botRedirect']);
+    
+    //@Route("/slash/redirect/{guildId}", name="bytesdiscordbundle_oauth_slash_redirect")
+    $routes->add('bytesdiscordbundle_oauth_slash_redirect', '/slash/redirect/{guildId}')
+        ->controller([OAuthController::class, 'slashRedirect']);
+
+    //@Route("/user/redirect", name="bytesdiscordbundle_oauth_user_redirect")
+    $routes->add('bytesdiscordbundle_oauth_user_redirect', '/user/redirect')
+        ->controller([OAuthController::class, 'userRedirect']);
+
+    //@Route("/login", name="bytesdiscordbundle_oauth_login_redirect")
+    $routes->add('bytesdiscordbundle_oauth_login_redirect', '/login')
+        ->controller([OAuthController::class, 'routeOAuthLogin']);
 };

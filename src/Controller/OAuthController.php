@@ -5,6 +5,7 @@ namespace Bytes\DiscordBundle\Controller;
 
 
 use Bytes\DiscordBundle\Services\OAuth;
+use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Enums\Permissions;
 use LogicException;
@@ -41,7 +42,7 @@ class OAuthController
     }
 
     /**
-     * Route("/bot/redirect/{guildId}", name="bytes_discordbundle_oauth_bot_redirect")
+     * Route("/bot/redirect/{guildId}", name="bytesdiscordbundle_oauth_bot_redirect")
      *
      * @param string|null $guildId
      *
@@ -61,7 +62,7 @@ class OAuthController
                 Permissions::MANAGE_ROLES(),
             ],
             $this->oauth->getBotOAuthRedirect(),
-            OAuthScopes::getBotSlashScopes(),
+            OAuthScopes::getBotScopes(),
             $this->getUser()->getId(),
             'code',
             $guildId,
@@ -90,5 +91,57 @@ class OAuthController
         }
 
         return $user;
+    }
+
+    /**
+     * Route("/slash/redirect/{guildId}", name="bytesdiscordbundle_oauth_slash_redirect")
+     *
+     * @param string|null $guildId
+     *
+     * @return RedirectResponse
+     */
+    public function slashRedirect(string $guildId = null)
+    {
+        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
+            [],
+            $this->oauth->getSlashOAuthRedirect(),
+            OAuthScopes::getSlashScopes(),
+            $this->getUser()->getId(),
+            'code',
+            $guildId,
+            !empty($guildId)
+        ), Response::HTTP_FOUND);
+    }
+
+    /**
+     * Route("/user/redirect", name="bytesdiscordbundle_oauth_user_redirect")
+     *
+     * @return RedirectResponse
+     */
+    public function userRedirect()
+    {
+        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
+            [],
+            $this->oauth->getUserOAuthRedirect(),
+            OAuthScopes::getUserScopes(),
+            $this->getUser()->getId()));
+    }
+
+    /**
+     * Route("/login", name="bytesdiscordbundle_oauth_login_redirect")
+     *
+     * @return RedirectResponse
+     */
+    public function routeOAuthLogin()
+    {
+        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
+            [],
+            $this->oauth->getLoginOAuthRedirect(),
+            [
+                OAuthScopes::IDENTIFY(),
+                OAuthScopes::CONNECTIONS(),
+                OAuthScopes::GUILDS(),
+            ],
+            'state', 'code', null, null, OAuthPrompts::none()));
     }
 }
