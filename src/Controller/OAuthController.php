@@ -35,9 +35,11 @@ class OAuthController
      * @param Security $security
      * @param OAuth $oauth
      */
-    public function __construct(Security $security, OAuth $oauth)
+    public function __construct(Security $security, OAuth $oauth, bool $user)
     {
-        $this->security = $security;
+        if($user) {
+            $this->security = $security;
+        }
         $this->oauth = $oauth;
     }
 
@@ -63,7 +65,7 @@ class OAuthController
             ],
             $this->oauth->getBotOAuthRedirect(),
             OAuthScopes::getBotScopes(),
-            $this->getUser()->getId(),
+            $this->getState('botRedirect'),
             'code',
             $guildId,
             !empty($guildId)
@@ -73,7 +75,7 @@ class OAuthController
     /**
      * Get a user from the Security Token Storage.
      *
-     * @return UserInterface|object|null
+     * @return UserInterface|null
      *
      * @throws LogicException If SecurityBundle is not available
      *
@@ -81,6 +83,10 @@ class OAuthController
      */
     protected function getUser()
     {
+        if(empty($this->security)) {
+            return null;
+        }
+
         if (null === $token = $this->security->getToken()) {
             return null;
         }
@@ -91,6 +97,27 @@ class OAuthController
         }
 
         return $user;
+    }
+
+    /**
+     * @param string $route
+     * @return string
+     */
+    protected function getState(string $route)
+    {
+        switch ($route)
+        {
+            case 'routeOAuthLogin':
+                return 'state';
+                break;
+            default:
+                $user = '';
+                if(!empty($this->security)) {
+                    $user = $this->getUser()->getId();
+                }
+                return $user;
+                break;
+        }
     }
 
     /**
@@ -106,7 +133,7 @@ class OAuthController
             [],
             $this->oauth->getSlashOAuthRedirect(),
             OAuthScopes::getSlashScopes(),
-            $this->getUser()->getId(),
+            $this->getState('slashRedirect'),
             'code',
             $guildId,
             !empty($guildId)
@@ -124,7 +151,7 @@ class OAuthController
             [],
             $this->oauth->getUserOAuthRedirect(),
             OAuthScopes::getUserScopes(),
-            $this->getUser()->getId()));
+            $this->getState('userRedirect')));
     }
 
     /**
@@ -142,6 +169,6 @@ class OAuthController
                 OAuthScopes::CONNECTIONS(),
                 OAuthScopes::GUILDS(),
             ],
-            'state', 'code', null, null, OAuthPrompts::none()));
+            $this->getState('routeOAuthLogin'), 'code', null, null, OAuthPrompts::none()));
     }
 }

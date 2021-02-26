@@ -29,6 +29,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
             service('bytes_discord.oauth'), // Bytes\DiscordBundle\Services\OAuth
+            '', // $config['user']
         ])
         ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
         ->public();

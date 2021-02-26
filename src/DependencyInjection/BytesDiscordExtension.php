@@ -36,5 +36,8 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface
         $definition->replaceArgument(3, $config['redirects']['bot_route_name']);
         $definition->replaceArgument(4, $config['redirects']['login_route_name']);
         $definition->replaceArgument(5, $config['redirects']['slash_route_name']);
+
+        $definition = $container->getDefinition('bytes_discord.oauth_controller');
+        $definition->replaceArgument(2, $config['user']);
     }
 }

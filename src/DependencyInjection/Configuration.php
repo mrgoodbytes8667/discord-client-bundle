@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('client_secret')->defaultValue('')->end()
                 ->scalarNode('client_public_key')->defaultValue('')->end()
                 ->scalarNode('bot_token')->defaultValue('')->end()
+                ->booleanNode('user')->defaultValue(false)->end()
                 ->arrayNode('redirects')
                     ->children()
                         ->scalarNode('bot_route_name')->defaultValue('')->end()
