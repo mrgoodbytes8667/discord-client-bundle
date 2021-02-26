@@ -1,0 +1,87 @@
+name: tests
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  test:
+    # The type of runner that the job will run on
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        php: [ 7.4, 8.0 ]
+        dependency-version: [prefer-lowest, prefer-stable]
+        os: [ubuntu-latest]
+        phpuniturl: ["https://raw.githubusercontent.com/symfony/recipes/master/symfony/phpunit-bridge/4.3/bin/phpunit"]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Sha256 PHPUnit Recipe
+        id: phpunit-sha256
+        run: |
+          echo "::set-output name=sha::$(${{ matrix.phpuniturl }} | openssl dgst -binary -sha1 | openssl base64 | sed -e 's/[^a-zA-Z0-9]/_/g')"
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php${{ matrix.php }}-composer-
+
+      - name: Cache PHPUnit
+        uses: actions/cache@v2
+        with:
+          path: |
+            bin/phpunit
+            bin/.phpunit
+          key: ${{ runner.os }}-php${{ matrix.php }}-phpunit-${{ steps.phpunit-sha256.outputs.sha }}
+          restore-keys: |
+            ${{ runner.os }}-php${{ matrix.php }}-phpunit-${{ steps.phpunit-sha256.outputs.sha }}
+
+      - name: Setup PHP
+        if: success()
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: none
+
+      - name: Install dependencies
+        if: success()
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+
+      - name: Check file existence
+        if: success()
+        id: check-files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "bin/phpunit"
+
+      - name: Get PHPUnit-Bridge Recipe
+        if: success() && steps.check-files.outputs.files_exists == 'false'
+        run: |
+          mkdir -p bin
+          cd bin
+          rm -f phpunit
+          wget ${{ matrix.phpuniturl }}
+          cd ../
+
+      - name: Setup and Run PHPUnit
+        if: success()
+        run: php bin/phpunit
