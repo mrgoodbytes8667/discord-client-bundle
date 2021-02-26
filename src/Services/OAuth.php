@@ -8,16 +8,10 @@ use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Enums\Permissions;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use function Symfony\Component\String\u;
 
 /**
  * Class OAuth
  * @package Bytes\DiscordBundle\Services
- *
- * @method string getUserOAuthRedirect()
- * @method string getBotOAuthRedirect()
- * @method string getLoginOAuthRedirect()
- * @method string getSlashOAuthRedirect()
  */
 class OAuth
 {
@@ -25,11 +19,6 @@ class OAuth
      * @var string
      */
     private $discordClientId;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
 
     /**
      * @var string
@@ -53,21 +42,41 @@ class OAuth
 
     /**
      * OAuth constructor.
+     * @param UrlGeneratorInterface|null $urlGenerator
      * @param string $discordClientId
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param string $userOAuthRedirect
-     * @param string $botOAuthRedirect
-     * @param string $loginOAuthRedirect
-     * @param string $slashOAuthRedirect
+     * @param array $redirects = ['bot' => ['method' => '', 'route_name' => '', 'url' => ''], 'user' => ['method' => '', 'route_name' => '', 'url' => ''], 'slash' => ['method' => '', 'route_name' => '', 'url' => ''], 'login' => ['method' => '', 'route_name' => '', 'url' => '']]
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, string $discordClientId, string $userOAuthRedirect, string $botOAuthRedirect, string $loginOAuthRedirect, string $slashOAuthRedirect)
+    public function __construct(?UrlGeneratorInterface $urlGenerator, string $discordClientId, array $redirects)
     {
-        $this->urlGenerator = $urlGenerator;
         $this->discordClientId = $discordClientId;
-        $this->userOAuthRedirect = $userOAuthRedirect;
-        $this->botOAuthRedirect = $botOAuthRedirect;
-        $this->loginOAuthRedirect = $loginOAuthRedirect;
-        $this->slashOAuthRedirect = $slashOAuthRedirect;
+
+        $this->userOAuthRedirect = $this->setupRedirect($redirects['user'], $urlGenerator);
+        $this->botOAuthRedirect = $this->setupRedirect($redirects['bot'], $urlGenerator);
+        $this->loginOAuthRedirect = $this->setupRedirect($redirects['login'], $urlGenerator);
+        $this->slashOAuthRedirect = $this->setupRedirect($redirects['slash'], $urlGenerator);
+    }
+
+    /**
+     * @param array $redirect = ['method' => ['route_name','url'][$any], 'route_name' => '', 'url' => '']
+     * @param UrlGeneratorInterface|null $urlGenerator
+     * @return string
+     */
+    protected function setupRedirect(array $redirect, ?UrlGeneratorInterface $urlGenerator)
+    {
+        switch ($redirect['method']) {
+            case 'route_name':
+                if (empty($urlGenerator)) {
+                    throw new \InvalidArgumentException('URLGeneratorInterface cannot be null when a route name is passed');
+                }
+                return $urlGenerator->generate($redirect['route_name'], [], UrlGeneratorInterface::ABSOLUTE_URL);
+                break;
+            case 'url':
+                return $redirect['url'];
+                break;
+            default:
+                throw new \InvalidArgumentException("Param 'redirect' must be one of 'route_name' or 'url'");
+                break;
+        }
     }
 
     /**
@@ -109,21 +118,34 @@ class OAuth
     }
 
     /**
-     * @param $name
-     * @param $arguments
-     * @return string|void
+     * @return string
      */
-    public function __call($name, $arguments)
+    public function getUserOAuthRedirect(): string
     {
-        switch ($name) {
-            case 'getUserOAuthRedirect':
-            case 'getBotOAuthRedirect':
-            case 'getLoginOAuthRedirect':
-            case 'getSlashOAuthRedirect':
-                $arg = u($name)->after('get')->snake()->camel()->toString();
-                return $this->urlGenerator->generate($this->$arg, [], UrlGeneratorInterface::ABSOLUTE_URL);
-                break;
-        }
-        return;
+        return $this->userOAuthRedirect;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBotOAuthRedirect(): string
+    {
+        return $this->botOAuthRedirect;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoginOAuthRedirect(): string
+    {
+        return $this->loginOAuthRedirect;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlashOAuthRedirect(): string
+    {
+        return $this->slashOAuthRedirect;
     }
 }

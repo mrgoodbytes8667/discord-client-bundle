@@ -17,10 +17,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             '', // $config['client_id']
-            '', // $config['redirects']['user_route_name']
-            '', // $config['redirects']['bot_route_name']
-            '', // $config['redirects']['login_route_name']
-            '', // $config['redirects']['slash_route_name']
+            '', // $config['redirects']
         ])
         ->alias(OAuth::class, 'bytes_discord.oauth')
         ->public();
