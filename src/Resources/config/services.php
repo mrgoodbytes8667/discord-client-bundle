@@ -4,6 +4,8 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Bytes\DiscordBundle\Controller\OAuthController;
+use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Services\OAuth;
 
 /**
@@ -29,6 +31,22 @@ return static function (ContainerConfigurator $container) {
             '', // $config['user']
         ])
         ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
+        ->public();
+
+    $services->set('bytes_discord.httpclient.retry_strategy.discord', DiscordRetryStrategy::class)
+        ->alias(DiscordRetryStrategy::class, 'bytes_discord.httpclient.retry_strategy.discord')
+        ->public();
+
+    $services->set('bytes_discord.httpclient.discord', DiscordClient::class)
+        ->args([
+            service('.debug.http_client'), // HttpClientInterface
+            service('bytes_discord.httpclient.retry_strategy.discord'), // DiscordRetryStrategy
+            '', // $config['client_id']
+            '', // $config['client_secret']
+            '', // $config['bot_token']
+            '', // $config['user_agent']
+        ])
+        ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
         ->public();
 
 };
