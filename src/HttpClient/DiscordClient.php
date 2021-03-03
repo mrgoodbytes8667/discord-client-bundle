@@ -170,7 +170,7 @@ class DiscordClient
      */
     public function slashCreateCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
     {
-
+        $edit = false;
         $errors = $this->validator->validate($applicationCommand);
         if (count($errors) > 0) {
             throw new ValidatorException((string)$errors);
@@ -185,6 +185,12 @@ class DiscordClient
         }
         $urlParts[] = 'commands';
 
+        if(!empty($applicationCommand->getId()))
+        {
+            $edit = true;
+            $urlParts[] = $applicationCommand->getId();
+        }
+
         $body = $this->serializer->serialize($applicationCommand, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
 
         return $this->request($urlParts, [
@@ -192,6 +198,31 @@ class DiscordClient
                 'Content-Type' => 'application/json',
             ],
             'body' => $body,
-        ], HttpMethods::post());
+        ], $edit ? HttpMethods::patch() : HttpMethods::post());
+    }
+
+    /**
+     * @param ApplicationCommand $applicationCommand
+     * @param IdInterface|null $guild
+     * @return ResponseInterface
+     * @throws TransportExceptionInterface
+     */
+    public function slashDeleteCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
+    {
+        if(empty($applicationCommand->getId()))
+        {
+            throw new \InvalidArgumentException('Application Command class must have an ID');
+        }
+        $urlParts = ['applications', $this->clientId];
+
+        if(!empty($guild))
+        {
+            $urlParts[] = 'guilds';
+            $urlParts[] = $guild->getId();
+        }
+        $urlParts[] = 'commands';
+        $urlParts[] = $applicationCommand->getId();
+
+        return $this->request($urlParts, [], HttpMethods::delete());
     }
 }
