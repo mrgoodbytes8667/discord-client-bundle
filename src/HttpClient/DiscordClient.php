@@ -218,7 +218,7 @@ class DiscordClient
 
     /**
      * @param IdInterface|null $guild
-     * @return mixed|string
+     * @return ApplicationCommand[]|null
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
@@ -244,7 +244,7 @@ class DiscordClient
     /**
      * @param ApplicationCommand|null $applicationCommand
      * @param IdInterface|null $guild
-     * @return mixed|string
+     * @return ApplicationCommand|null
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
