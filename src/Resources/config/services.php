@@ -39,9 +39,9 @@ return static function (ContainerConfigurator $container) {
 
     $services->set('bytes_discord.httpclient.discord', DiscordClient::class)
         ->args([
-            service('.debug.http_client'), // HttpClientInterface
+            service('http_client'), // HttpClientInterface
             service('bytes_discord.httpclient.retry_strategy.discord'), // DiscordRetryStrategy
-            service('debug.validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
+            service('validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             '', // $config['client_id']
             '', // $config['client_secret']
