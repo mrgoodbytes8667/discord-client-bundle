@@ -5,19 +5,14 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\HttpClient\Common\HttpClient\QueryScopingHttpClient;
 use Bytes\ResponseBundle\Enums\HttpMethods;
-use Illuminate\Support\Arr;
+use InvalidArgumentException;
 use Symfony\Component\HttpClient\RetryableHttpClient;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -61,6 +56,8 @@ class DiscordClient
      * DiscordClient constructor.
      * @param HttpClientInterface $httpClient
      * @param DiscordRetryStrategy $strategy
+     * @param ValidatorInterface $validator
+     * @param SerializerInterface $serializer
      * @param string $clientId
      * @param string $clientSecret
      * @param string $botToken
@@ -71,8 +68,7 @@ class DiscordClient
     public function __construct(HttpClientInterface $httpClient, DiscordRetryStrategy $strategy, ValidatorInterface $validator, SerializerInterface $serializer, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $headers = [];
-        if(!empty($userAgent))
-        {
+        if (!empty($userAgent)) {
             $headers['User-Agent'] = $userAgent;
         }
         $this->httpClient = new RetryableHttpClient(new QueryScopingHttpClient($httpClient, array_merge([
@@ -116,6 +112,42 @@ class DiscordClient
         $this->serializer = $serializer;
     }
 
+    /**
+     * @param ApplicationCommand $applicationCommand
+     * @param IdInterface|null $guild
+     * @return ResponseInterface
+     * @throws TransportExceptionInterface
+     */
+    public function slashCreateCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
+    {
+        $edit = false;
+        $errors = $this->validator->validate($applicationCommand);
+        if (count($errors) > 0) {
+            throw new ValidatorException((string)$errors);
+        }
+
+        $urlParts = ['applications', $this->clientId];
+
+        if (!empty($guild)) {
+            $urlParts[] = 'guilds';
+            $urlParts[] = $guild->getId();
+        }
+        $urlParts[] = 'commands';
+
+        if (!empty($applicationCommand->getId())) {
+            $edit = true;
+            $urlParts[] = $applicationCommand->getId();
+        }
+
+        $body = $this->serializer->serialize($applicationCommand, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
+
+        return $this->request($urlParts, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'body' => $body,
+        ], $edit ? HttpMethods::patch() : HttpMethods::post());
+    }
 
     /**
      * @param string|string[] $url
@@ -130,7 +162,7 @@ class DiscordClient
             $url = implode('/', $url);
         }
         if (empty($url) || !is_string($url)) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
         $auth = $this->getAuthenticationOption();
         if (!empty($auth) && is_array($auth)) {
@@ -155,8 +187,7 @@ class DiscordClient
     protected function buildURL(string $path, string $version = 'v8')
     {
         $url = u($path);
-        if(!empty($version))
-        {
+        if (!empty($version)) {
             $url = $url->ensureStart($version . '/');
         }
         return $url->ensureStart('https://discord.com/api/')->toString();
@@ -168,55 +199,14 @@ class DiscordClient
      * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
-    public function slashCreateCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
-    {
-        $edit = false;
-        $errors = $this->validator->validate($applicationCommand);
-        if (count($errors) > 0) {
-            throw new ValidatorException((string)$errors);
-        }
-
-        $urlParts = ['applications', $this->clientId];
-
-        if(!empty($guild))
-        {
-            $urlParts[] = 'guilds';
-            $urlParts[] = $guild->getId();
-        }
-        $urlParts[] = 'commands';
-
-        if(!empty($applicationCommand->getId()))
-        {
-            $edit = true;
-            $urlParts[] = $applicationCommand->getId();
-        }
-
-        $body = $this->serializer->serialize($applicationCommand, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
-
-        return $this->request($urlParts, [
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-            'body' => $body,
-        ], $edit ? HttpMethods::patch() : HttpMethods::post());
-    }
-
-    /**
-     * @param ApplicationCommand $applicationCommand
-     * @param IdInterface|null $guild
-     * @return ResponseInterface
-     * @throws TransportExceptionInterface
-     */
     public function slashDeleteCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
     {
-        if(empty($applicationCommand->getId()))
-        {
-            throw new \InvalidArgumentException('Application Command class must have an ID');
+        if (empty($applicationCommand->getId())) {
+            throw new InvalidArgumentException('Application Command class must have an ID');
         }
         $urlParts = ['applications', $this->clientId];
 
-        if(!empty($guild))
-        {
+        if (!empty($guild)) {
             $urlParts[] = 'guilds';
             $urlParts[] = $guild->getId();
         }
@@ -224,5 +214,59 @@ class DiscordClient
         $urlParts[] = $applicationCommand->getId();
 
         return $this->request($urlParts, [], HttpMethods::delete());
+    }
+
+    /**
+     * @param IdInterface|null $guild
+     * @return mixed|string
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function slashGetCommands(?IdInterface $guild = null)
+    {
+        $urlParts = ['applications', $this->clientId];
+
+        if (!empty($guild)) {
+            $urlParts[] = 'guilds';
+            $urlParts[] = $guild->getId();
+        }
+        $urlParts[] = 'commands';
+
+        $response = $this->request($urlParts);
+
+        $content = $response->getContent();
+
+        return $this->serializer->deserialize($content, 'Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', 'json');
+    }
+
+    /**
+     * @param ApplicationCommand|null $applicationCommand
+     * @param IdInterface|null $guild
+     * @return mixed|string
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function slashGetCommand(?ApplicationCommand $applicationCommand = null, ?IdInterface $guild = null)
+    {
+        $urlParts = ['applications', $this->clientId];
+
+        if (!empty($guild)) {
+            $urlParts[] = 'guilds';
+            $urlParts[] = $guild->getId();
+        }
+        $urlParts[] = 'commands';
+        if (!is_null($applicationCommand) && !empty($applicationCommand->getId())) {
+            $urlParts[] = $applicationCommand->getId();
+        }
+
+        $response = $this->request($urlParts);
+
+        $content = $response->getContent();
+
+        return $this->serializer->deserialize($content, ApplicationCommand::class, 'json');
     }
 }
