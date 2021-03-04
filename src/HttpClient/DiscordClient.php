@@ -151,7 +151,7 @@ class DiscordClient
      */
     public function getGuilds()
     {
-        $response = $this->request(['users', '@me', 'guilds']);
+        $response = $this->request($this->buildURL('users/@me/guilds', 'v6'));
 
         $content = $response->getContent();
 
@@ -196,6 +196,9 @@ class DiscordClient
     protected function buildURL(string $path, string $version = 'v8')
     {
         $url = u($path);
+        if($url->startsWith('https://discord.com/api/')) {
+            return $path;
+        }
         if (!empty($version)) {
             $url = $url->ensureStart($version . '/');
         }
