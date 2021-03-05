@@ -13,10 +13,16 @@ use LogicException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
+use function Symfony\Component\String\u;
 
 /**
  * Class OAuth
  * @package Bytes\DiscordBundle\Services
+ *
+ * @method array getScopesBot()
+ * @method array getScopesLogin()
+ * @method array getScopesSlash()
+ * @method array getScopesUser()
  */
 class OAuth
 {
@@ -66,6 +72,7 @@ class OAuth
      * @var array
      */
     private $scopes = [];
+    private array $defaultScopes;
 
     /**
      * OAuth constructor.
@@ -88,6 +95,16 @@ class OAuth
             $this->security = $security;
         }
         $this->config = $config;
+        $this->defaultScopes = [
+            'bot' => OAuthScopes::getBotScopes(),
+            'login' => [
+                OAuthScopes::IDENTIFY(),
+                OAuthScopes::CONNECTIONS(),
+                OAuthScopes::GUILDS(),
+            ],
+            'slash' => OAuthScopes::getSlashScopes(),
+            'user' => OAuthScopes::getUserScopes()
+        ];
     }
 
     /**
@@ -132,7 +149,7 @@ class OAuth
                 Permissions::MANAGE_ROLES(),
             ],
             $this->getBotOAuthRedirect(),
-            OAuthScopes::getBotScopes(),
+            $this->defaultScopes['bot'],
             $state,
             'bot',
             'code',
@@ -262,7 +279,7 @@ class OAuth
         return $this->getAuthorizationCodeGrantURL(
             [],
             $this->getSlashOAuthRedirect(),
-            OAuthScopes::getSlashScopes(),
+            $this->defaultScopes['slash'],
             $state,
             'slash',
             'code',
@@ -288,7 +305,7 @@ class OAuth
         return $this->getAuthorizationCodeGrantURL(
             [],
             $this->getUserOAuthRedirect(),
-            OAuthScopes::getUserScopes(),
+            $this->defaultScopes['user'],
             $state,
             'user');
     }
@@ -310,11 +327,7 @@ class OAuth
         return $this->getAuthorizationCodeGrantURL(
             [],
             $this->getLoginOAuthRedirect(),
-            [
-                OAuthScopes::IDENTIFY(),
-                OAuthScopes::CONNECTIONS(),
-                OAuthScopes::GUILDS(),
-            ],
+            $this->defaultScopes['login'],
             $state,
             'login',
             'code', null, null, OAuthPrompts::none());
@@ -392,4 +405,25 @@ class OAuth
 
         return $user;
     }
+
+    public function __call($name, $arguments)
+    {
+        $scopesArg = u($name)->after('getScopes')->snake()->toString();
+        switch ($scopesArg)
+        {
+            case 'bot':
+            case 'login':
+            case 'slash':
+            case 'user':
+            if (array_key_exists($scopesArg, $this->scopes)) {
+                return $this->scopes[$scopesArg];
+            } else {
+                $scopes = $this->normalizeScopes($this->defaultScopes[$scopesArg], $scopesArg);
+                $this->scopes[$scopesArg] = $scopes;
+                return $scopes;
+            }
+        }
+    }
+
+
 }

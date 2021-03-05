@@ -4,8 +4,6 @@ name: release
 # events but only for the main branch
 on:
   push:
-    branches:
-      - main
     tags:
       - v*
   workflow_dispatch:

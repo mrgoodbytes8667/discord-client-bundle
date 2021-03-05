@@ -4,8 +4,12 @@
 namespace Bytes\DiscordBundle\HttpClient;
 
 
+use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\HttpClient\Common\HttpClient\QueryScopingHttpClient;
+use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
+use Bytes\ResponseBundle\Enums\HttpMethods;
+use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -94,7 +98,7 @@ class DiscordClient
         if (!empty($userAgent)) {
             $headers['User-Agent'] = $userAgent;
         }
-        $this->httpClient = new RetryableHttpClient(new QueryScopingHttpClient($httpClient, array_merge_recursive([
+        $this->httpClient = new RetryableHttpClient(new ConfigurableScopingHttpClient($httpClient, array_merge_recursive([
             // the options defined as values apply only to the URLs matching
             // the regular expressions defined as keys
 
@@ -115,7 +119,7 @@ class DiscordClient
             // Matches OAuth token API routes
             self::SCOPE_OAUTH_TOKEN => [
                 'headers' => $headers,
-                'query' => [
+                'body' => [
                     'client_id' => $clientId,
                     'client_secret' => $clientSecret,
                 ]
@@ -129,7 +133,7 @@ class DiscordClient
             self::SCOPE_API => [
                 'headers' => $headers,
             ],
-        ], $defaultOptionsByRegexp), $defaultRegexp), $strategy);
+        ], $defaultOptionsByRegexp), ['query', 'body'], $defaultRegexp), $strategy);
         $this->clientId = $clientId;
         $this->validator = $validator;
         $this->serializer = $serializer;
@@ -203,6 +207,54 @@ class DiscordClient
             $url = $url->ensureStart($version . '/');
         }
         return $url->ensureStart('https://discord.com/api/')->toString();
+    }
+
+    /**
+     * @param string $code
+     * @param string $redirect
+     * @param array $scopes
+     * @param OAuthGrantTypes|null $grantType
+     * @return Token|null
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function tokenExchange(string $code, string $redirect, array $scopes = [], OAuthGrantTypes $grantType = null)
+    {
+        if (empty($scopes)) {
+            $scopes = OAuthScopes::getBotScopes();
+        }
+        if(empty($grantType))
+        {
+            $grantType = OAuthGrantTypes::authorizationCode();
+        }
+        $body = [
+            'grant_type' => $grantType->value,
+            'redirect_uri' => $redirect,
+            'scope' => OAuthScopes::buildOAuthString($scopes),
+        ];
+        switch ($grantType) {
+            case OAuthGrantTypes::authorizationCode():
+                $body['code'] = $code;
+                break;
+            case OAuthGrantTypes::refreshToken():
+                $body['refresh_token'] = $code;
+                break;
+        }
+        $response = $this->request('oauth2/token',
+            [
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                ],
+            ], HttpMethods::post());
+
+        $json = $response->getContent();
+
+        $return = $this->serializer->deserialize($json, Token::class, 'json');
+
+        return $return;
     }
 
 }
