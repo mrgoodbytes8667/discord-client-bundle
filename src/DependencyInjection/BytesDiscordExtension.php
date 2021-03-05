@@ -32,11 +32,9 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface
         $config = $this->processConfiguration($configuration, $configs);
 
         $definition = $container->getDefinition('bytes_discord.oauth');
-        $definition->replaceArgument(1, $config['client_id']);
-        $definition->replaceArgument(2, $config['redirects']);
-
-        $definition = $container->getDefinition('bytes_discord.oauth_controller');
-        $definition->replaceArgument(2, $config['user']);
+        $definition->replaceArgument(2, $config['client_id']);
+        $definition->replaceArgument(3, $config['redirects']);
+        $definition->replaceArgument(4, $config['user']);
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord');
         $definition->replaceArgument(4, $config['client_id']);

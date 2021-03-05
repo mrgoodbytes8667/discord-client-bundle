@@ -5,14 +5,8 @@ namespace Bytes\DiscordBundle\Controller;
 
 
 use Bytes\DiscordBundle\Services\OAuth;
-use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
-use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
-use Bytes\DiscordResponseBundle\Enums\Permissions;
-use LogicException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Class OAuthController
@@ -26,20 +20,11 @@ class OAuthController
     private $oauth;
 
     /**
-     * @var Security
-     */
-    private $security;
-
-    /**
      * OAuthController constructor.
-     * @param Security $security
      * @param OAuth $oauth
      */
-    public function __construct(Security $security, OAuth $oauth, bool $user)
+    public function __construct(OAuth $oauth)
     {
-        if($user) {
-            $this->security = $security;
-        }
         $this->oauth = $oauth;
     }
 
@@ -52,72 +37,7 @@ class OAuthController
      */
     public function botRedirect(string $guildId = null)
     {
-        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
-            [
-                Permissions::ADD_REACTIONS(),
-                Permissions::VIEW_CHANNEL(),
-                Permissions::SEND_MESSAGES(),
-                Permissions::MANAGE_MESSAGES(),
-                Permissions::READ_MESSAGE_HISTORY(),
-                Permissions::EMBED_LINKS(),
-                Permissions::USE_EXTERNAL_EMOJIS(),
-                Permissions::MANAGE_ROLES(),
-            ],
-            $this->oauth->getBotOAuthRedirect(),
-            OAuthScopes::getBotScopes(),
-            $this->getState('botRedirect'),
-            'code',
-            $guildId,
-            !empty($guildId)
-        ), Response::HTTP_FOUND);
-    }
-
-    /**
-     * Get a user from the Security Token Storage.
-     *
-     * @return UserInterface|null
-     *
-     * @throws LogicException If SecurityBundle is not available
-     *
-     * @see TokenInterface::getUser()
-     */
-    protected function getUser()
-    {
-        if(empty($this->security)) {
-            return null;
-        }
-
-        if (null === $token = $this->security->getToken()) {
-            return null;
-        }
-
-        if (!is_object($user = $token->getUser())) {
-            // e.g. anonymous authentication
-            return null;
-        }
-
-        return $user;
-    }
-
-    /**
-     * @param string $route
-     * @return string
-     */
-    protected function getState(string $route)
-    {
-        switch ($route)
-        {
-            case 'routeOAuthLogin':
-                return 'state';
-                break;
-            default:
-                $user = '';
-                if(!empty($this->security)) {
-                    $user = $this->getUser()->getId();
-                }
-                return $user;
-                break;
-        }
+        return new RedirectResponse($this->oauth->getBotAuthorizationUrl($guildId), Response::HTTP_FOUND);
     }
 
     /**
@@ -129,15 +49,7 @@ class OAuthController
      */
     public function slashRedirect(string $guildId = null)
     {
-        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
-            [],
-            $this->oauth->getSlashOAuthRedirect(),
-            OAuthScopes::getSlashScopes(),
-            $this->getState('slashRedirect'),
-            'code',
-            $guildId,
-            !empty($guildId)
-        ), Response::HTTP_FOUND);
+        return new RedirectResponse($this->oauth->getSlashAuthorizationUrl($guildId), Response::HTTP_FOUND);
     }
 
     /**
@@ -147,11 +59,7 @@ class OAuthController
      */
     public function userRedirect()
     {
-        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
-            [],
-            $this->oauth->getUserOAuthRedirect(),
-            OAuthScopes::getUserScopes(),
-            $this->getState('userRedirect')));
+        return new RedirectResponse($this->oauth->getUserAuthorizationUrl(), Response::HTTP_FOUND);
     }
 
     /**
@@ -161,14 +69,6 @@ class OAuthController
      */
     public function routeOAuthLogin()
     {
-        return new RedirectResponse($this->oauth->getAuthorizationCodeGrantURL(
-            [],
-            $this->oauth->getLoginOAuthRedirect(),
-            [
-                OAuthScopes::IDENTIFY(),
-                OAuthScopes::CONNECTIONS(),
-                OAuthScopes::GUILDS(),
-            ],
-            $this->getState('routeOAuthLogin'), 'code', null, null, OAuthPrompts::none()));
+        return new RedirectResponse($this->oauth->getOAuthLoginUrl(), Response::HTTP_FOUND);
     }
 }

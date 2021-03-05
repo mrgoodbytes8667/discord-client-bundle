@@ -19,18 +19,18 @@ return static function (ContainerConfigurator $container) {
 
     $services->set('bytes_discord.oauth', OAuth::class)
         ->args([
+            service('security.helper'), // Symfony\Component\Security\Core\Security
             service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             '', // $config['client_id']
             '', // $config['redirects']
+            '', // $config['user']
         ])
         ->alias(OAuth::class, 'bytes_discord.oauth')
         ->public();
 
     $services->set('bytes_discord.oauth_controller', OAuthController::class)
         ->args([
-            service('security.helper'), // Symfony\Component\Security\Core\Security
             service('bytes_discord.oauth'), // Bytes\DiscordBundle\Services\OAuth
-            '', // $config['user']
         ])
         ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
         ->public();
