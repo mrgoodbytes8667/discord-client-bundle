@@ -62,6 +62,12 @@ class OAuth
     private $permissions = [];
 
     /**
+     * Cached normalized scopes list
+     * @var array
+     */
+    private $scopes = [];
+
+    /**
      * OAuth constructor.
      * @param Security $security
      * @param UrlGeneratorInterface|null $urlGenerator
@@ -140,6 +146,7 @@ class OAuth
      * @param string $redirect
      * @param array $scopes = OAuthScopes::all()
      * @param string|null $state
+     * @param string $endpoint
      * @param string $responseType = ['code']
      * @param string|null $guildId
      * @param bool|null $disableGuildSelect
@@ -161,13 +168,19 @@ class OAuth
             $permissions = $this->normalizePermissions($permissions, $endpoint);
             $this->permissions[$endpoint] = $permissions;
         }
+        if (array_key_exists($endpoint, $this->scopes)) {
+            $scopes = $this->scopes[$endpoint];
+        } else {
+            $scopes = $this->normalizeScopes($scopes, $endpoint);
+            $this->scopes[$endpoint] = $scopes;
+        }
         $query = [
             'client_id' => $this->discordClientId,
             'permissions' => Permissions::getFlags($permissions),
             'redirect_uri' => $redirect,
             'response_type' => $responseType,
             'scope' => OAuthScopes::buildOAuthString($scopes),
-            'state' => $state,
+            'state' => $state ?? $this->getState($endpoint),
             'prompt' => $prompt->value,
         ];
         if (!empty($guildId)) {
@@ -203,6 +216,32 @@ class OAuth
         }
 
         return $permissions;
+    }
+
+    /**
+     * Takes the default scopes list and adds/removes any scopes coming from the config
+     * @param array $scopes
+     * @param string $endpoint
+     * @return array
+     */
+    protected function normalizeScopes(array $scopes, string $endpoint)
+    {
+        if (array_key_exists('add', $this->config[$endpoint]['scopes'])) {
+            $add = $this->config[$endpoint]['scopes']['add'];
+            array_walk($add, array($this, 'hydrateScopes'));
+            $scopes = array_merge($scopes, $add);
+        }
+
+        if (array_key_exists('remove', $this->config[$endpoint]['scopes'])) {
+            $remove = $this->config[$endpoint]['scopes']['remove'];
+            array_walk($remove, array($this, 'hydrateScopes'));
+
+            $scopes = Arr::where($scopes, function ($value, $key) use ($remove) {
+                return !in_array($value, $remove);
+            });
+        }
+
+        return $scopes;
     }
 
     /**
@@ -289,9 +328,22 @@ class OAuth
         return $this->loginOAuthRedirect;
     }
 
-    protected function hydratePermissions(&$item1, $key)
+    /**
+     * @param $value
+     * @param $key
+     */
+    protected function hydratePermissions(&$value, $key)
     {
-        $item1 = new Permissions($item1);
+        $value = new Permissions($value);
+    }
+
+    /**
+     * @param $value
+     * @param $key
+     */
+    protected function hydrateScopes(&$value, $key)
+    {
+        $value = (new OAuthScopes($value))->value;
     }
 
     /**
