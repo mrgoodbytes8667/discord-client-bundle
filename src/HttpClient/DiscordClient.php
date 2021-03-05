@@ -200,7 +200,7 @@ class DiscordClient
     protected function buildURL(string $path, string $version = 'v8')
     {
         $url = u($path);
-        if($url->startsWith('https://discord.com/api/')) {
+        if ($url->startsWith('https://discord.com/api/')) {
             return $path;
         }
         if (!empty($version)) {
@@ -226,8 +226,7 @@ class DiscordClient
         if (empty($scopes)) {
             $scopes = OAuthScopes::getBotScopes();
         }
-        if(empty($grantType))
-        {
+        if (empty($grantType)) {
             $grantType = OAuthGrantTypes::authorizationCode();
         }
         $body = [
@@ -243,18 +242,17 @@ class DiscordClient
                 $body['refresh_token'] = $code;
                 break;
         }
-        $response = $this->request('oauth2/token',
+        $response = $this->request($this->buildURL('oauth2/token', ''),
             [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
                 ],
+                'body' => $body,
             ], HttpMethods::post());
 
         $json = $response->getContent();
 
-        $return = $this->serializer->deserialize($json, Token::class, 'json');
-
-        return $return;
+        return $this->serializer->deserialize($json, Token::class, 'json');
     }
 
 }
