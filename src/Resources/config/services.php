@@ -6,6 +6,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Bytes\DiscordBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Services\OAuth;
@@ -50,6 +51,7 @@ return static function (ContainerConfigurator $container) {
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
+        ->lazy()
         ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
         ->public();
 
@@ -80,4 +82,18 @@ return static function (ContainerConfigurator $container) {
         ->alias(DiscordUserClient::class, 'bytes_discord.httpclient.discord.user')
         ->public();
 
+    $services->set('bytes_discord.httpclient.discord.token', DiscordTokenClient::class)
+        ->args([
+            service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            null, // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
+            service('validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+            service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+            '', // $config['client_id']
+            '', // $config['client_secret']
+            '', // $config['user_agent']
+        ])
+        ->lazy()
+        ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
+        ->public();
 };
