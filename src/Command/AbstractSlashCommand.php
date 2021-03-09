@@ -7,6 +7,7 @@ namespace Bytes\DiscordBundle\Command;
 use Bytes\CommandBundle\Command\BaseCommand;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,6 +18,10 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
+/**
+ * Class AbstractSlashCommand
+ * @package Bytes\DiscordBundle\Command
+ */
 abstract class AbstractSlashCommand extends BaseCommand
 {
 
@@ -81,7 +86,6 @@ abstract class AbstractSlashCommand extends BaseCommand
      * Ask which guild should be affected.
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @param bool $setArgument Always assumes there is a guild argument, this only controls if it should be set at the end
      * @param QuestionHelper|null $helper
      *
      * @return PartialGuild|null
@@ -91,9 +95,9 @@ abstract class AbstractSlashCommand extends BaseCommand
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, bool $setArgument = true, ?QuestionHelper $helper = null): ?PartialGuild
+    protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null): ?PartialGuild
     {
-        if (!$input->getOption('global') && (!$setArgument || !$input->getArgument('guild'))) {
+        if (!$input->getOption('global') && !$input->getArgument('guild')) {
             if(is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
@@ -115,10 +119,35 @@ abstract class AbstractSlashCommand extends BaseCommand
             $answer = $input->getArgument('guild') ?: null;
         }
 
-        if($setArgument) {
-            $input->setArgument('guild', $answer);
-        }
+        $input->setArgument('guild', $answer);
 
         return $answer;
+    }
+
+
+    /**
+     * Initializes the command after the input has been bound and before the input
+     * is validated.
+     *
+     * This is mainly useful when a lot of commands extends one main command
+     * where some things need to be initialized based on the input arguments and options.
+     *
+     * @see InputInterface::validate()
+     * @see InputInterface::bind()
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        if(!$this->input->hasArgument('guild')) {
+            throw new LogicException('The guild argument must be added for commands inheriting from AbstractSlashCommand.');
+        }
+
+        if(!$this->input->hasOption('global')) {
+            throw new LogicException('The global option must be added for commands inheriting from AbstractSlashCommand.');
+        }
     }
 }

@@ -4,6 +4,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Bytes\DiscordBundle\Command\SlashAddCommand;
+use Bytes\DiscordBundle\Command\SlashDeleteCommand;
 use Bytes\DiscordBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
@@ -111,6 +112,11 @@ return static function (ContainerConfigurator $container) {
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
         ])
-        ->tag('console.command', ['command' => 'bytes_discord:slash:add'])
-    ;
+        ->tag('console.command', ['command' => 'bytes_discord:slash:add']);
+
+    $services->set(null, SlashDeleteCommand::class)
+        ->args([
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+        ])
+        ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
 };

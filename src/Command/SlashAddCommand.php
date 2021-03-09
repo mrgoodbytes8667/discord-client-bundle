@@ -33,7 +33,7 @@ class SlashAddCommand extends AbstractSlashCommand
     /**
      * @var string
      */
-    protected static $defaultDescription = 'Add a short description for your command';
+    protected static $defaultDescription = 'Add a slash command to a server or globally';
 
     /**
      * @var SerializerInterface
@@ -149,7 +149,7 @@ class SlashAddCommand extends AbstractSlashCommand
             $input->setArgument($name, $answer);
         }
 
-        $this->interactForGuildArgument($input, $output, true, $helper);
+        $this->interactForGuildArgument($input, $output, $helper);
     }
 
 }
