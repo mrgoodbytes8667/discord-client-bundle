@@ -3,6 +3,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Bytes\DiscordBundle\Command\SlashAddCommand;
 use Bytes\DiscordBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
@@ -103,4 +104,13 @@ return static function (ContainerConfigurator $container) {
         ->args([tagged_locator('bytes_discord.slashcommand', 'key', 'getDefaultIndexName')])
         ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord.slashcommands.handler')
         ->public();
+
+    $services->set(null, SlashAddCommand::class)
+        ->args([
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+            service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
+            '', // 'name'
+        ])
+        ->tag('console.command');
 };
