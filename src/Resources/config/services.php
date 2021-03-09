@@ -4,12 +4,14 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Bytes\DiscordBundle\Controller\OAuthController;
+use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\DiscordClient;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Services\OAuth;
+use Bytes\DiscordBundle\Slash\SlashCommandInterface;
 
 /**
  * @param ContainerConfigurator $container
@@ -95,5 +97,14 @@ return static function (ContainerConfigurator $container) {
         ])
         ->lazy()
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
+        ->public();
+
+    $services->instanceof(SlashCommandInterface::class)
+        // services whose classes are instances of CustomInterface will be tagged automatically
+        ->tag('bytes_discord.slashcommand');
+
+    $services->set('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
+        ->args([tagged_locator('bytes_discord.slashcommand', 'key', 'getDefaultIndexName')])
+        ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord.slashcommands.handler')
         ->public();
 };
