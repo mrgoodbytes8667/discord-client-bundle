@@ -110,7 +110,7 @@ return static function (ContainerConfigurator $container) {
             service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
-            '', // 'name'
         ])
-        ->tag('console.command');
+        ->tag('console.command', ['command' => 'bytes_discord:slash:add'])
+    ;
 };

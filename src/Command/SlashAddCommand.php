@@ -39,12 +39,12 @@ class SlashAddCommand extends BaseCommand
     /**
      * @var SerializerInterface
      */
-    private SerializerInterface $serializer;
+    private $serializer;
 
     /**
      * @var DiscordBotClient
      */
-    private DiscordBotClient $client;
+    private $client;
 
     /**
      * @var PartialGuild[]
@@ -61,11 +61,10 @@ class SlashAddCommand extends BaseCommand
      * @param DiscordBotClient $client
      * @param SerializerInterface $serializer
      * @param SlashCommandsHandlerCollection $commandsCollection
-     * @param string|null $name
      */
-    public function __construct(DiscordBotClient $client, SerializerInterface $serializer, SlashCommandsHandlerCollection $commandsCollection, string $name = null)
+    public function __construct(DiscordBotClient $client, SerializerInterface $serializer, SlashCommandsHandlerCollection $commandsCollection)
     {
-        parent::__construct($name);
+        parent::__construct(null);
 
         $this->client = $client;
         $this->serializer = $serializer;
@@ -86,6 +85,11 @@ class SlashAddCommand extends BaseCommand
 
     /**
      * @return int
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     protected function executeCommand(): int
     {
@@ -129,6 +133,11 @@ class SlashAddCommand extends BaseCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
@@ -177,21 +186,4 @@ class SlashAddCommand extends BaseCommand
         return $this->guilds;
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    private function printAvailableTypes()
-    {
-        $this->io->writeln('<info>Guilds</info>');
-        foreach ($this->client->getGuilds() as $guild) {
-            $line = sprintf('  * <comment>%s</comment>', $guild->getName());
-
-            $this->io->writeln($line);
-        }
-
-        $this->io->writeln('');
-    }
 }
