@@ -99,10 +99,6 @@ return static function (ContainerConfigurator $container) {
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
         ->public();
 
-    $services->instanceof(SlashCommandInterface::class)
-        // services whose classes are instances of CustomInterface will be tagged automatically
-        ->tag('bytes_discord.slashcommand');
-
     $services->set('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
         ->args([tagged_locator('bytes_discord.slashcommand', 'key', 'getDefaultIndexName')])
         ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord.slashcommands.handler')

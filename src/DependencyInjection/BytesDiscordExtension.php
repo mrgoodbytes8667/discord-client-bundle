@@ -4,6 +4,7 @@
 namespace Bytes\DiscordBundle\DependencyInjection;
 
 
+use Bytes\DiscordBundle\Slash\SlashCommandInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -30,6 +31,9 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface
 
         /** @var array $config = ['client_id' => '', 'client_secret' => '', 'client_public_key' => '', 'bot_token' => '', 'user' => false, 'redirects' => ['bot' => ['method' => '', 'route_name' => '', 'url' => '']], 'user' => ['method' => '', 'route_name' => '', 'url' => '']], 'slash' => ['method' => '', 'route_name' => '', 'url' => '']], 'login' => ['method' => '', 'route_name' => '', 'url' => '']]]*/
         $config = $this->processConfiguration($configuration, $configs);
+
+        $container->registerForAutoconfiguration(SlashCommandInterface::class)
+            ->addTag('bytes_discord.slashcommand');
 
         $definition = $container->getDefinition('bytes_discord.oauth');
         $definition->replaceArgument(2, $config['client_id']);

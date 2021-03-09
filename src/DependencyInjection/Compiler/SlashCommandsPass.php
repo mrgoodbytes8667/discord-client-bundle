@@ -58,7 +58,7 @@ class SlashCommandsPass implements CompilerPassInterface
             }
         }
 
-        $serializerDefinition = $container->getDefinition(SlashCommandsHandlerCollection::class);
-        $serializerDefinition->replaceArgument(0, $lazyCommandMap);
+        $container->register('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
+            ->setArguments([$lazyCommandMap]);
     }
 }
