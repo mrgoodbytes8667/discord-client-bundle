@@ -2,7 +2,6 @@
 
 namespace Bytes\DiscordBundle\Command;
 
-use Bytes\CommandBundle\Command\BaseCommand;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
@@ -24,7 +23,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  * Class SlashAddCommand
  * @package Bytes\DiscordBundle\Command
  */
-class SlashAddCommand extends BaseCommand
+class SlashAddCommand extends AbstractSlashCommand
 {
     /**
      * @var string
@@ -42,16 +41,6 @@ class SlashAddCommand extends BaseCommand
     private $serializer;
 
     /**
-     * @var DiscordBotClient
-     */
-    private $client;
-
-    /**
-     * @var PartialGuild[]
-     */
-    private $guilds;
-
-    /**
      * @var SlashCommandsHandlerCollection
      */
     private $commandsCollection;
@@ -64,9 +53,8 @@ class SlashAddCommand extends BaseCommand
      */
     public function __construct(DiscordBotClient $client, SerializerInterface $serializer, SlashCommandsHandlerCollection $commandsCollection)
     {
-        parent::__construct(null);
+        parent::__construct($client);
 
-        $this->client = $client;
         $this->serializer = $serializer;
         $this->commandsCollection = $commandsCollection;
     }
@@ -76,6 +64,7 @@ class SlashAddCommand extends BaseCommand
      */
     protected function configure()
     {
+        parent::configure();
         $this
             ->setDescription(self::$defaultDescription)
             ->addArgument('cmd', InputArgument::REQUIRED, 'Command name')
@@ -141,6 +130,7 @@ class SlashAddCommand extends BaseCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        parent::interact($input,$output);
         $questions = [];
 
         if (!$input->getArgument('cmd')) {
@@ -152,38 +142,14 @@ class SlashAddCommand extends BaseCommand
             $questions['cmd'] = $question;
         }
 
-        if (!$input->getArgument('guild')) {
-            $empty = new PartialGuild();
-            $empty->setName('None');
-            $empty->setId('-1');
-            $question = new ChoiceQuestion(
-                'Pick a guild',
-                // choices can also be PHP objects that implement __toString() method
-                array_merge([$empty], $this->getGuilds()),
-                0
-            );
-            $questions['guild'] = $question;
-        }
+        $helper = $this->getHelper('question');
 
         foreach ($questions as $name => $question) {
-            $answer = $this->getHelper('question')->ask($input, $output, $question);
+            $answer = $helper->ask($input, $output, $question);
             $input->setArgument($name, $answer);
         }
-    }
 
-    /**
-     * @return PartialGuild[]|null
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    protected function getGuilds()
-    {
-        if (empty($this->guilds)) {
-            $this->guilds = $this->client->getGuilds();
-        }
-        return $this->guilds;
+        $this->interactForGuildArgument($input, $output, true, $helper);
     }
 
 }
