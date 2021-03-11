@@ -28,6 +28,7 @@
     "require-dev": {
         "doctrine/common": "^3.0",
         "symfony/phpunit-bridge": "^5.2",
+        "symfony/security-bundle": "^5.2",
         "symfony/var-dumper": "^5.2"
     },
     "authors": [
@@ -39,6 +40,9 @@
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true
+    },
+    "suggest": {
+        "symfony/security-bundle": ""
     },
     "conflict": {
         "doctrine/annotations": "<1.11.1",

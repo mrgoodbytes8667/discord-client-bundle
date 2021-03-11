@@ -127,6 +127,7 @@ class SlashAddCommand extends AbstractSlashCommand
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws Exception
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
@@ -134,6 +135,10 @@ class SlashAddCommand extends AbstractSlashCommand
         $questions = [];
 
         if (!$input->getArgument('cmd')) {
+            $commands = array_values($this->commandsCollection->getCommands());
+            if(empty($commands)) {
+                throw new Exception('There are no registered commands.');
+            }
             $question = new ChoiceQuestion(
                 'Pick a command',
                 // choices can also be PHP objects that implement __toString() method

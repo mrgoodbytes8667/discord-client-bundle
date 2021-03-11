@@ -104,7 +104,7 @@ class SlashDeleteCommand extends AbstractSlashCommand
             $question = new ChoiceQuestion(
                 'Pick a command',
                 // choices can also be PHP objects that implement __toString() method
-                $this->client->getCommands($guild),
+                $commands,
             );
         }
 

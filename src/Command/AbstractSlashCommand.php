@@ -104,10 +104,16 @@ abstract class AbstractSlashCommand extends BaseCommand
             $empty = new PartialGuild();
             $empty->setName('None');
             $empty->setId('-1');
+            $guilds = [$empty];
+            $retrievedGuilds = $this->getGuilds();
+            if(!empty($retrievedGuilds))
+            {
+                $guilds = array_merge($guilds, $retrievedGuilds);
+            }
             $question = new ChoiceQuestion(
                 'Pick a guild',
                 // choices can also be PHP objects that implement __toString() method
-                array_merge([$empty], $this->getGuilds()),
+                $guilds,
                 0
             );
 
@@ -142,11 +148,11 @@ abstract class AbstractSlashCommand extends BaseCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        if(!$this->input->hasArgument('guild')) {
+        if(!$input->hasArgument('guild')) {
             throw new LogicException('The guild argument must be added for commands inheriting from AbstractSlashCommand.');
         }
 
-        if(!$this->input->hasOption('global')) {
+        if(!$input->hasOption('global')) {
             throw new LogicException('The global option must be added for commands inheriting from AbstractSlashCommand.');
         }
     }

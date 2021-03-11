@@ -83,7 +83,7 @@ class SlashCommandsHandlerCollection
         if (!empty($this->list) && empty($this->commands)) {
             $this->setCommands();
         }
-        return $this->commands;
+        return $this->commands ?? [];
     }
 
     /**
