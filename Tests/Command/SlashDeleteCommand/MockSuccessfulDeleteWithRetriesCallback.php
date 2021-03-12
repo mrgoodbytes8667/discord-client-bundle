@@ -29,13 +29,13 @@ class MockSuccessfulDeleteWithRetriesCallback extends MockClientCallbackIterator
                 new MockJsonTooManyRetriesResponse(0.123),
                 new MockJsonTooManyRetriesResponse(0.123),
                 new MockJsonTooManyRetriesResponse(0.123),
-                MockJsonResponse::make('SlashDeleteCommandTest/get-guilds.json'),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/get-guilds.json'),
 
                 new MockResponse('', ['http_code' => Response::HTTP_INTERNAL_SERVER_ERROR]),
-                MockJsonResponse::make('SlashDeleteCommandTest/get-commands.json'),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/get-commands.json'),
 
                 new MockResponse('', ['http_code' => Response::HTTP_INTERNAL_SERVER_ERROR]),
-                MockJsonResponse::make('SlashDeleteCommandTest/delete-command.json', Response::HTTP_NO_CONTENT),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/delete-command.json', Response::HTTP_NO_CONTENT),
             ]
         );
     }

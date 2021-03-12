@@ -41,7 +41,17 @@ class MockJsonResponse extends MockResponse
      * @param array $info
      * @return static
      */
-    public static function make(string $file, int $code = Response::HTTP_OK, array $info = []) {
+    public static function makeFixture(string $file, int $code = Response::HTTP_OK, array $info = []) {
         return new static(Fixture::getFixturesData($file), $code, $info);
+    }
+
+    /**
+     * @param string $data
+     * @param int $code
+     * @param array $info
+     * @return static
+     */
+    public static function make(string $data, int $code = Response::HTTP_OK, array $info = []) {
+        return new static(json_encode($data), $code, $info);
     }
 }

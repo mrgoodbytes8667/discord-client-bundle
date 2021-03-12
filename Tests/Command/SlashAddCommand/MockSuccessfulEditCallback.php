@@ -21,8 +21,8 @@ class MockSuccessfulEditCallback extends MockClientCallbackIterator
         parent::__construct();
         $this->setArray(
             [
-                MockJsonResponse::make('SlashDeleteCommandTest/get-guilds.json'),
-                MockJsonResponse::make('SlashAddCommandTest/edit-command-success.json'),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/get-guilds.json'),
+                MockJsonResponse::makeFixture('SlashAddCommandTest/edit-command-success.json'),
             ]
         );
     }

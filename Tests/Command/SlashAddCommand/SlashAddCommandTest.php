@@ -27,7 +27,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testSuccessfulAddInteractive()
     {
-        $commandTester = $this->setupApplication(MockSuccessfulAddCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockSuccessfulAddCallback::class, array('1', '1'));
 
         $commandTester->execute([]);
 
@@ -46,7 +46,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testSuccessfulEditInteractive()
     {
-        $commandTester = $this->setupApplication(MockSuccessfulEditCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockSuccessfulEditCallback::class, array('1', '1'));
 
         $commandTester->execute([
             '--commandId' => '846542216677566910'
@@ -67,7 +67,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testServerExceptionFailureInteractive()
     {
-        $commandTester = $this->setupApplication(MockServerExceptionCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockServerExceptionCallback::class, array('1', '1'));
 
         $this->expectException(ServerExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 500 returned for');
@@ -82,7 +82,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testUnauthorizedFailureInteractive()
     {
-        $commandTester = $this->setupApplication(MockUnauthorizedCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockUnauthorizedCallback::class, array('1', '1'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 401 returned for');
@@ -97,7 +97,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testGetCommandFailureInteractive()
     {
-        $commandTester = $this->setupApplication('', [], [], false);
+        $commandTester = $this->setupCommandTester('', [], [], false);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('There are no registered commands.');
@@ -110,7 +110,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testTooManyRequestsInteractive()
     {
-        $commandTester = $this->setupApplication(MockTooManyRequestsCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockTooManyRequestsCallback::class, array('1', '1'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 429 returned for');

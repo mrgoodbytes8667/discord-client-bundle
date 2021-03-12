@@ -2,27 +2,21 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
-use PHPUnit\Framework\TestCase;
+use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordClientTest
  * @package Bytes\DiscordBundle\Tests\HttpClient
  */
-class DiscordClientTest extends TestCase
+class DiscordClientTest extends TestHttpClientCase
 {
-    /**
-     *
-     */
-    public function testGetGuilds()
-    {
-        $this->markTestIncomplete('@todo');
-    }
+    use TestDiscordClientTrait;
 
-    /**
-     *
-     */
-    public function testTokenExchange()
+    protected function setupClient(HttpClientInterface $httpClient)
     {
-        $this->markTestIncomplete('@todo');
+        return new DiscordClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->serializer, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
     }
 }

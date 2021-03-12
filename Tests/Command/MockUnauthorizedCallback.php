@@ -20,6 +20,6 @@ class MockUnauthorizedCallback extends MockClientCallbackIterator
     public function __construct()
     {
         parent::__construct();
-        $this->add(MockJsonResponse::make('unauthorized-v6.json', Response::HTTP_UNAUTHORIZED));
+        $this->add(MockJsonResponse::makeFixture('unauthorized-v6.json', Response::HTTP_UNAUTHORIZED));
     }
 }

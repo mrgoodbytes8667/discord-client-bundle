@@ -26,7 +26,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testSuccessfulDeleteInteractive()
     {
-        $commandTester = $this->setupApplication(MockSuccessfulDeleteCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockSuccessfulDeleteCallback::class, array('1', '1'));
 
         $commandTester->execute([]);
 
@@ -45,7 +45,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testUnauthorizedFailureInteractive()
     {
-        $commandTester = $this->setupApplication(MockUnauthorizedCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockUnauthorizedCallback::class, array('1', '1'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 401 returned for');
@@ -60,7 +60,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testServerExceptionFailureInteractive()
     {
-        $commandTester = $this->setupApplication(MockServerExceptionCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockServerExceptionCallback::class, array('1', '1'));
 
         $this->expectException(ServerExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 500 returned for');
@@ -75,7 +75,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testGetCommandFailureInteractive()
     {
-        $commandTester = $this->setupApplication(MockGetCommandFailureCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockGetCommandFailureCallback::class, array('1', '1'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 401 returned for');
@@ -90,7 +90,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testDeleteCommandFailureInteractive()
     {
-        $commandTester = $this->setupApplication(MockDeleteCommandFailureCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockDeleteCommandFailureCallback::class, array('1', '1'));
 
         $commandTester->execute([]);
 
@@ -102,7 +102,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testSuccessfulDeleteWithRetriesInteractive()
     {
-        $commandTester = $this->setupApplication(MockSuccessfulDeleteWithRetriesCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockSuccessfulDeleteWithRetriesCallback::class, array('1', '1'));
 
         $commandTester->execute([]);
 
@@ -121,7 +121,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
      */
     public function testTooManyRequestsInteractive()
     {
-        $commandTester = $this->setupApplication(MockTooManyRequestsCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester(MockTooManyRequestsCallback::class, array('1', '1'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage('HTTP 429 returned for');

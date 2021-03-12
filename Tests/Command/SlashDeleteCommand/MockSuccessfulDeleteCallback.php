@@ -22,9 +22,9 @@ class MockSuccessfulDeleteCallback extends MockClientCallbackIterator
         parent::__construct();
         $this->setArray(
             [
-                MockJsonResponse::make('SlashDeleteCommandTest/get-guilds.json'),
-                MockJsonResponse::make('SlashDeleteCommandTest/get-commands.json'),
-                MockJsonResponse::make('SlashDeleteCommandTest/delete-command.json', Response::HTTP_NO_CONTENT),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/get-guilds.json'),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/get-commands.json'),
+                MockJsonResponse::makeFixture('SlashDeleteCommandTest/delete-command.json', Response::HTTP_NO_CONTENT),
             ]
         );
     }

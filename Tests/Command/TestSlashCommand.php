@@ -2,7 +2,6 @@
 
 namespace Bytes\DiscordBundle\Tests\Command;
 
-use Bytes\DiscordBundle\Tests\TestingKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -21,7 +20,7 @@ abstract class TestSlashCommand extends TestCase
     protected $command;
 
     /**
-     * @var TestingKernel|null
+     * @var SlashCommandKernel|null
      */
     protected $kernel;
 
@@ -38,7 +37,7 @@ abstract class TestSlashCommand extends TestCase
      *
      * @return CommandTester
      */
-    protected function setupApplication(string $callback, array $inputs = [], array $config = [], bool $registerSlashCommands = true)
+    protected function setupCommandTester(string $callback, array $inputs = [], array $config = [], bool $registerSlashCommands = true)
     {
         $kernel = $this->kernel;
         $kernel->setCallback($callback);
@@ -65,7 +64,7 @@ abstract class TestSlashCommand extends TestCase
      */
     protected function setUp(): void
     {
-        $this->kernel = new TestingKernel();
+        $this->kernel = new SlashCommandKernel();
     }
 
     /**

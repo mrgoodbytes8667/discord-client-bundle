@@ -22,8 +22,8 @@ class MockSuccessfulAddCallback extends MockClientCallbackIterator
         parent::__construct();
         $this->setArray(
             [
-                MockJsonResponse::make('SlashAddCommandTest/get-guilds.json'),
-                MockJsonResponse::make('SlashAddCommandTest/add-command-success.json', Response::HTTP_CREATED),
+                MockJsonResponse::makeFixture('SlashAddCommandTest/get-guilds.json'),
+                MockJsonResponse::makeFixture('SlashAddCommandTest/add-command-success.json', Response::HTTP_CREATED),
             ]
         );
     }
