@@ -32,7 +32,10 @@ class SlashDeleteCommandTest extends TestSlashCommand
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("[OK] The command 'sample2' (ID: 855523182027779516) for Sample Server Alpha has been deleted successfully.", $output);
+
+        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
+        $format = implode("%A", ['[OK]', "'sample2'", '855523182027779516', 'Sample Server Alpha', 'deleted', 'successfully']);
+        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
 
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
     }
@@ -105,7 +108,10 @@ class SlashDeleteCommandTest extends TestSlashCommand
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("[OK] The command 'sample2' (ID: 855523182027779516) for Sample Server Alpha has been deleted successfully.", $output);
+
+        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
+        $format = implode("%A", ['[OK]', "'sample2'", '855523182027779516', 'Sample Server Alpha', 'deleted', 'successfully']);
+        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
 
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
     }

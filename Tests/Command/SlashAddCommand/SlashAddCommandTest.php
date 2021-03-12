@@ -9,6 +9,7 @@ use Bytes\DiscordBundle\Tests\Command\TestSlashCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use function Symfony\Component\String\u;
 
 /**
  * Class SlashAddCommandTest
@@ -32,7 +33,10 @@ class SlashAddCommandTest extends TestSlashCommand
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("[OK] The command 'sample' for Sample Server Alpha has been created successfully with ID 846542216677566910!", $output);
+
+        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
+        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'created', 'successfully', '846542216677566910']);
+        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
 
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
     }
@@ -50,7 +54,10 @@ class SlashAddCommandTest extends TestSlashCommand
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("[OK] The command 'sample' for Sample Server Alpha has been edited successfully with ID 846542216677566910!", $output);
+
+        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
+        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'edited', 'successfully', '846542216677566910']);
+        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
 
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
     }

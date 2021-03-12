@@ -7,7 +7,12 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
+use function Symfony\Component\String\u;
 
+/**
+ * Class TestSlashCommand
+ * @package Bytes\DiscordBundle\Tests\Command
+ */
 abstract class TestSlashCommand extends TestCase
 {
     /**

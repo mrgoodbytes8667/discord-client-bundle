@@ -51,7 +51,9 @@
         "doctrine/event-manager": "<1.1.1",
         "doctrine/inflector": "<1.4.3",
         "doctrine/lexer": "<1.2.1",
-        "doctrine/persistence": "<2.1.0"
+        "doctrine/persistence": "<2.1.0",
+        "mrgoodbytes8667/response-bundle": "<1.0.1",
+        "symfony/framework-bundle": "<5.2.1"
     },
     "autoload": {
         "psr-4": {
