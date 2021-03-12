@@ -24,7 +24,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group success
      */
-    public function testSuccessfulDelete()
+    public function testSuccessfulDeleteInteractive()
     {
         $commandTester = $this->setupApplication(MockSuccessfulDeleteCallback::class, array('1', '1'));
 
@@ -43,7 +43,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testUnauthorizedFailure()
+    public function testUnauthorizedFailureInteractive()
     {
         $commandTester = $this->setupApplication(MockUnauthorizedCallback::class, array('1', '1'));
 
@@ -58,7 +58,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testServerExceptionFailure()
+    public function testServerExceptionFailureInteractive()
     {
         $commandTester = $this->setupApplication(MockServerExceptionCallback::class, array('1', '1'));
 
@@ -73,7 +73,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testGetCommandFailure()
+    public function testGetCommandFailureInteractive()
     {
         $commandTester = $this->setupApplication(MockGetCommandFailureCallback::class, array('1', '1'));
 
@@ -88,7 +88,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testDeleteCommandFailure()
+    public function testDeleteCommandFailureInteractive()
     {
         $commandTester = $this->setupApplication(MockDeleteCommandFailureCallback::class, array('1', '1'));
 
@@ -100,7 +100,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group success
      */
-    public function testSuccessfulDeleteWithRetries()
+    public function testSuccessfulDeleteWithRetriesInteractive()
     {
         $commandTester = $this->setupApplication(MockSuccessfulDeleteWithRetriesCallback::class, array('1', '1'));
 
@@ -119,7 +119,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testTooManyRequests()
+    public function testTooManyRequestsInteractive()
     {
         $commandTester = $this->setupApplication(MockTooManyRequestsCallback::class, array('1', '1'));
 
@@ -127,6 +127,62 @@ class SlashDeleteCommandTest extends TestSlashCommand
         $this->expectExceptionMessage('HTTP 429 returned for');
 
         $commandTester->execute([]);
+    }
+
+    /**
+     * @group success
+     */
+    public function testSuccessfulDeleteCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testUnauthorizedFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testServerExceptionFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testGetCommandFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testDeleteCommandFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group success
+     */
+    public function testSuccessfulDeleteWithRetriesCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testTooManyRequestsCli()
+    {
+        $this->markTestIncomplete('@todo');
     }
 }
 

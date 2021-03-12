@@ -25,7 +25,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group success
      */
-    public function testSuccessfulAdd()
+    public function testSuccessfulAddInteractive()
     {
         $commandTester = $this->setupApplication(MockSuccessfulAddCallback::class, array('1', '1'));
 
@@ -44,7 +44,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group success
      */
-    public function testSuccessfulEdit()
+    public function testSuccessfulEditInteractive()
     {
         $commandTester = $this->setupApplication(MockSuccessfulEditCallback::class, array('1', '1'));
 
@@ -65,7 +65,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testServerExceptionFailure()
+    public function testServerExceptionFailureInteractive()
     {
         $commandTester = $this->setupApplication(MockServerExceptionCallback::class, array('1', '1'));
 
@@ -80,7 +80,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testUnauthorizedFailure()
+    public function testUnauthorizedFailureInteractive()
     {
         $commandTester = $this->setupApplication(MockUnauthorizedCallback::class, array('1', '1'));
 
@@ -95,7 +95,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testGetCommandFailure()
+    public function testGetCommandFailureInteractive()
     {
         $commandTester = $this->setupApplication('', [], [], false);
 
@@ -108,7 +108,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testTooManyRequests()
+    public function testTooManyRequestsInteractive()
     {
         $commandTester = $this->setupApplication(MockTooManyRequestsCallback::class, array('1', '1'));
 
@@ -121,7 +121,63 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group failure
      */
-    public function testInvalidCommandSyntax()
+    public function testInvalidCommandSyntaxInteractive()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group success
+     */
+    public function testSuccessfulAddCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group success
+     */
+    public function testSuccessfulEditCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testServerExceptionFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testUnauthorizedFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testGetCommandFailureCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testTooManyRequestsCli()
+    {
+        $this->markTestIncomplete('@todo');
+    }
+
+    /**
+     * @group failure
+     */
+    public function testInvalidCommandSyntaxCli()
     {
         $this->markTestIncomplete('@todo');
     }
