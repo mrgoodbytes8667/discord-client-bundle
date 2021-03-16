@@ -12,6 +12,7 @@ use Bytes\DiscordBundle\HttpClient\DiscordClient;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordBundle\Request\IdInterfaceConverter;
 use Bytes\DiscordBundle\Services\OAuth;
 use Bytes\DiscordBundle\Slash\SlashCommandInterface;
 
@@ -119,4 +120,9 @@ return static function (ContainerConfigurator $container) {
             service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
         ])
         ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
+
+    $services->set('bytes_discord.id_interface_converter', IdInterfaceConverter::class)
+        ->tag('request.param_converter', [
+            'converter' => 'bytes_id_interface'
+        ]);
 };
