@@ -38,6 +38,12 @@ class SlashCommandsHandlerCollection
      */
     private static function hydrateCommand(&$commandClass, $key)
     {
+        if(!class_exists($commandClass)) {
+            throw new \Exception(sprintf("Cannot find class with name '%s'", $commandClass));
+        }
+        if(!method_exists($commandClass, 'createCommand')) {
+            throw new \Exception(sprintf("Class '%s' does not have a createCommand() method.", $commandClass));
+        }
         $commandClass = $commandClass::createCommand();
     }
 
@@ -106,8 +112,9 @@ class SlashCommandsHandlerCollection
      */
     public function getCommand(string $key)
     {
-        if (array_key_exists($key, $this->list)) {
-            return $this->commands[$key];
+        $commands = $this->getCommands();
+        if (array_key_exists($key, $commands)) {
+            return $commands[$key];
         }
         return null;
     }
