@@ -122,6 +122,20 @@ class DiscordBotClient extends DiscordClient
      */
     public function getCommands(?IdInterface $guild = null)
     {
+        $response = $this->getCommandsResponse($guild);
+
+        $content = $response->getContent();
+
+        return $this->serializer->deserialize($content, 'Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', 'json');
+    }
+
+    /**
+     * @param IdInterface|null $guild
+     * @return ResponseInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getCommandsResponse(?IdInterface $guild = null)
+    {
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -130,11 +144,7 @@ class DiscordBotClient extends DiscordClient
         }
         $urlParts[] = 'commands';
 
-        $response = $this->request($urlParts);
-
-        $content = $response->getContent();
-
-        return $this->serializer->deserialize($content, 'Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', 'json');
+        return $this->request($urlParts);
     }
 
     /**
@@ -147,6 +157,21 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      */
     public function getCommand($applicationCommand, ?IdInterface $guild = null)
+    {
+        $response = $this->getCommandResponse($applicationCommand, $guild);
+
+        $content = $response->getContent();
+
+        return $this->serializer->deserialize($content, ApplicationCommand::class, 'json');
+    }
+
+    /**
+     * @param $applicationCommand
+     * @param IdInterface|null $guild
+     * @return ResponseInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getCommandResponse($applicationCommand, ?IdInterface $guild = null)
     {
         $commandId = '';
         if (is_null($applicationCommand)) {
@@ -169,10 +194,6 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
 
-        $response = $this->request($urlParts);
-
-        $content = $response->getContent();
-
-        return $this->serializer->deserialize($content, ApplicationCommand::class, 'json');
+        return $this->request($urlParts);
     }
 }

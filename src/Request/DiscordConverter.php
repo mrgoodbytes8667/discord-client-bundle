@@ -14,7 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class DiscordConverter
  * Converts various discord response objects with a name, id, or guild_id that implements IdInterface, GuildIdInterface,
- * or NameInterface. Parameters must be named name, id, or guild_id.
+ * or NameInterface. Parameters must be named name or guild_id for NameInterface or GuildIdInterface, otherwise it will
+ * fall back to IdInterface.
  * @package Bytes\DiscordBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
@@ -48,12 +49,12 @@ class DiscordConverter implements ParamConverterInterface
         $class = $configuration->getClass();
 
         $instance = new $class();
-        if(is_subclass_of($class, IdInterface::class) && $param === 'id') {
-            $instance->setId($value);
-        } elseif (is_subclass_of($class, GuildIdInterface::class) && in_array($param, ['guild_id', 'guildId'])) {
+        if (is_subclass_of($class, GuildIdInterface::class) && in_array($param, ['guild_id', 'guildId'])) {
             $instance->setGuildId($value);
         } elseif (is_subclass_of($class, NameInterface::class) && $param === 'name') {
             $instance->setName($value);
+        } elseif (is_subclass_of($class, IdInterface::class)) {
+            $instance->setId($value);
         } else {
             return false;
         }
@@ -75,7 +76,7 @@ class DiscordConverter implements ParamConverterInterface
             return false;
         }
 
-        return (is_subclass_of($configuration->getClass(), IdInterface::class) && $configuration->getName() === 'id') ||
+        return is_subclass_of($configuration->getClass(), IdInterface::class) ||
             (is_subclass_of($configuration->getClass(), GuildIdInterface::class) && in_array($configuration->getName(), ['guild_id', 'guildId'])) ||
             (is_subclass_of($configuration->getClass(), NameInterface::class) && $configuration->getName() === 'name');
     }
