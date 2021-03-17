@@ -4,18 +4,22 @@
 namespace Bytes\DiscordBundle\Request;
 
 
+use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\NameInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class IdInterfaceConverter
+ * Class DiscordConverter
+ * Converts various discord response objects with a name, id, or guild_id that implements IdInterface, GuildIdInterface,
+ * or NameInterface. Parameters must be named name, id, or guild_id.
  * @package Bytes\DiscordBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
  */
-class IdInterfaceConverter implements ParamConverterInterface
+class DiscordConverter implements ParamConverterInterface
 {
     /**
      * Stores the object in the request.
@@ -44,7 +48,15 @@ class IdInterfaceConverter implements ParamConverterInterface
         $class = $configuration->getClass();
 
         $instance = new $class();
-        $instance->setId($value);
+        if(is_subclass_of($class, IdInterface::class) && $param === 'id') {
+            $instance->setId($value);
+        } elseif (is_subclass_of($class, GuildIdInterface::class) && in_array($param, ['guild_id', 'guildId'])) {
+            $instance->setGuildId($value);
+        } elseif (is_subclass_of($class, NameInterface::class) && $param === 'name') {
+            $instance->setName($value);
+        } else {
+            return false;
+        }
 
         $request->attributes->set($param, $instance);
 
@@ -63,6 +75,8 @@ class IdInterfaceConverter implements ParamConverterInterface
             return false;
         }
 
-        return is_subclass_of($configuration->getClass(), IdInterface::class);
+        return (is_subclass_of($configuration->getClass(), IdInterface::class) && $configuration->getName() === 'id') ||
+            (is_subclass_of($configuration->getClass(), GuildIdInterface::class) && in_array($configuration->getName(), ['guild_id', 'guildId'])) ||
+            (is_subclass_of($configuration->getClass(), NameInterface::class) && $configuration->getName() === 'name');
     }
 }
