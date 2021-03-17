@@ -5,6 +5,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Bytes\DiscordBundle\Command\SlashAddCommand;
 use Bytes\DiscordBundle\Command\SlashDeleteCommand;
+use Bytes\DiscordBundle\Controller\CommandController;
 use Bytes\DiscordBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
@@ -125,4 +126,12 @@ return static function (ContainerConfigurator $container) {
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord'
         ]);
+
+    $services->set('bytes_discord.command_controller', CommandController::class)
+        ->args([
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+        ])
+        ->alias(CommandController::class, 'bytes_discord.command_controller')
+        ->public();
 };
