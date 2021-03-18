@@ -20,6 +20,8 @@ jobs:
         dependency-version: [ prefer-stable, prefer-lowest ]
         os: [ubuntu-latest]
         phpuniturl: ["https://raw.githubusercontent.com/symfony/recipes/master/symfony/phpunit-bridge/4.3/bin/phpunit"]
+    env:
+      SYMFONY_PHPUNIT_VERSION: 9.5
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
