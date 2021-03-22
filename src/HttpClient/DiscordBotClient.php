@@ -4,10 +4,11 @@
 namespace Bytes\DiscordBundle\HttpClient;
 
 
+use Bytes\DiscordBundle\Services\Client\DiscordBot;
+use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\ResponseBundle\Enums\HttpMethods;
-use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -19,10 +20,14 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class DiscordBotClient
+ * HttpClient portion of the Discord Bot API classes.
  * @package Bytes\DiscordBundle\HttpClient
+ *
+ * @see DiscordBot
  */
 class DiscordBotClient extends DiscordClient
 {
@@ -98,7 +103,7 @@ class DiscordBotClient extends DiscordClient
     public function deleteCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
     {
         if (empty($applicationCommand->getId())) {
-            throw new InvalidArgumentException('Application Command class must have an ID');
+            throw new BadRequestHttpException('Application Command class must have an ID');
         }
         $urlParts = ['applications', $this->clientId];
 
@@ -114,27 +119,10 @@ class DiscordBotClient extends DiscordClient
 
     /**
      * @param IdInterface|null $guild
-     * @return ApplicationCommand[]|null
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    public function getCommands(?IdInterface $guild = null)
-    {
-        $response = $this->getCommandsResponse($guild);
-
-        $content = $response->getContent();
-
-        return $this->serializer->deserialize($content, 'Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', 'json');
-    }
-
-    /**
-     * @param IdInterface|null $guild
      * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
-    public function getCommandsResponse(?IdInterface $guild = null)
+    public function getCommands(?IdInterface $guild = null)
     {
         $urlParts = ['applications', $this->clientId];
 
@@ -147,23 +135,7 @@ class DiscordBotClient extends DiscordClient
         return $this->request($urlParts);
     }
 
-    /**
-     * @param ApplicationCommand|string $applicationCommand
-     * @param IdInterface|null $guild
-     * @return ApplicationCommand|null
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    public function getCommand($applicationCommand, ?IdInterface $guild = null)
-    {
-        $response = $this->getCommandResponse($applicationCommand, $guild);
 
-        $content = $response->getContent();
-
-        return $this->serializer->deserialize($content, ApplicationCommand::class, 'json');
-    }
 
     /**
      * @param $applicationCommand
@@ -171,11 +143,11 @@ class DiscordBotClient extends DiscordClient
      * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
-    public function getCommandResponse($applicationCommand, ?IdInterface $guild = null)
+    public function getCommand($applicationCommand, ?IdInterface $guild = null)
     {
         $commandId = '';
         if (is_null($applicationCommand)) {
-            throw new InvalidArgumentException('The applicationCommand argument is required.');
+            throw new BadRequestHttpException('The applicationCommand argument is required.');
         }
         if ($applicationCommand instanceof IdInterface) {
             $commandId = $applicationCommand->getId();
@@ -183,7 +155,7 @@ class DiscordBotClient extends DiscordClient
             $commandId = $applicationCommand;
         }
         if (empty($commandId)) {
-            throw new InvalidArgumentException('The applicationCommand argument is required.');
+            throw new BadRequestHttpException('The applicationCommand argument is required.');
         }
         $urlParts = ['applications', $this->clientId];
 
@@ -195,5 +167,34 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = $commandId;
 
         return $this->request($urlParts);
+    }
+
+    /**
+     * Get Guild
+     * Returns the guild object for the given id. If with_counts is set to true, this endpoint will also return approximate_member_count and approximate_presence_count for the guild.
+     * @param $guild
+     * @param bool $withCounts
+     *
+     * @return ResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/guild#get-guild
+     */
+    public function getGuild($guild, bool $withCounts = false)
+    {
+        $id = '';
+        if(empty($guild))
+        {
+            throw new BadRequestHttpException('Guild cannot be blank.');
+        } elseif ($guild instanceof IdInterface) {
+            $id = $guild->getId();
+        } elseif (is_string($guild)) {
+            $id = $guild;
+        } else {
+            throw new BadRequestHttpException('Guild cannot be blank.');
+        }
+        $url = $this->buildURL(implode('/', ['guilds', $id]), 'v8');
+        return $this->request($url);
     }
 }

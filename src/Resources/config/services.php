@@ -14,8 +14,8 @@ use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Request\DiscordConverter;
+use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordBundle\Services\OAuth;
-use Bytes\DiscordBundle\Slash\SlashCommandInterface;
 
 /**
  * @param ContainerConfigurator $container
@@ -24,28 +24,7 @@ return static function (ContainerConfigurator $container) {
 
     $services = $container->services();
 
-    $services->set('bytes_discord.oauth', OAuth::class)
-        ->args([
-            service('security.helper'), // Symfony\Component\Security\Core\Security
-            service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-            '', // $config['client_id']
-            '', // $config['redirects']
-            '', // $config['user']
-        ])
-        ->alias(OAuth::class, 'bytes_discord.oauth')
-        ->public();
-
-    $services->set('bytes_discord.oauth_controller', OAuthController::class)
-        ->args([
-            service('bytes_discord.oauth'), // Bytes\DiscordBundle\Services\OAuth
-        ])
-        ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
-        ->public();
-
-    $services->set('bytes_discord.httpclient.retry_strategy.discord', DiscordRetryStrategy::class)
-        ->alias(DiscordRetryStrategy::class, 'bytes_discord.httpclient.retry_strategy.discord')
-        ->public();
-
+    //region Clients
     $services->set('bytes_discord.httpclient.discord', DiscordClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
@@ -102,30 +81,42 @@ return static function (ContainerConfigurator $container) {
         ->lazy()
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
         ->public();
+    //endregion
 
-    $services->set('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
-        ->args([tagged_locator('bytes_discord.slashcommand', 'key', 'getDefaultIndexName')])
-        ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord.slashcommands.handler')
+    //region HttpClient Retry Strategies
+    $services->set('bytes_discord.httpclient.retry_strategy.discord', DiscordRetryStrategy::class)
+        ->alias(DiscordRetryStrategy::class, 'bytes_discord.httpclient.retry_strategy.discord')
+        ->public();
+    //endregion
+
+    //region Services
+    $services->set('bytes_discord.oauth', OAuth::class)
+        ->args([
+            service('security.helper'), // Symfony\Component\Security\Core\Security
+            service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+            '', // $config['client_id']
+            '', // $config['redirects']
+            '', // $config['user']
+        ])
+        ->alias(OAuth::class, 'bytes_discord.oauth')
         ->public();
 
-    $services->set(null, SlashAddCommand::class)
+    $services->set('bytes_discord.services.client.discord.bot', DiscordBot::class)
         ->args([
             service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
-            service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
         ])
-        ->tag('console.command', ['command' => 'bytes_discord:slash:add']);
+        ->alias(DiscordBot::class, 'bytes_discord.services.client.discord.bot')
+        ->public();
+    //endregion
 
-    $services->set(null, SlashDeleteCommand::class)
+    //region Controllers
+    $services->set('bytes_discord.oauth_controller', OAuthController::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('bytes_discord.oauth'), // Bytes\DiscordBundle\Services\OAuth
         ])
-        ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
-
-    $services->set('bytes_discord.discord_converter', DiscordConverter::class)
-        ->tag('request.param_converter', [
-            'converter' => 'bytes_discord'
-        ]);
+        ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
+        ->public();
 
     $services->set('bytes_discord.command_controller', CommandController::class)
         ->args([
@@ -134,4 +125,35 @@ return static function (ContainerConfigurator $container) {
         ])
         ->alias(CommandController::class, 'bytes_discord.command_controller')
         ->public();
+    //endregion
+
+    //region Handlers
+    $services->set('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
+        ->args([tagged_locator('bytes_discord.slashcommand', 'key', 'getDefaultIndexName')])
+        ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord.slashcommands.handler')
+        ->public();
+    //endregion
+
+    //region Commands
+    $services->set(null, SlashAddCommand::class)
+        ->args([
+            service('bytes_discord.services.client.discord.bot'), // Bytes\DiscordBundle\Services\Client\DiscordBot
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+            service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
+        ])
+        ->tag('console.command', ['command' => 'bytes_discord:slash:add']);
+
+    $services->set(null, SlashDeleteCommand::class)
+        ->args([
+            service('bytes_discord.services.client.discord.bot'), // Bytes\DiscordBundle\Services\Client\DiscordBot
+        ])
+        ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
+    //endregion
+
+    //region Converters
+    $services->set('bytes_discord.discord_converter', DiscordConverter::class)
+        ->tag('request.param_converter', [
+            'converter' => 'bytes_discord'
+        ]);
+    //endregion
 };

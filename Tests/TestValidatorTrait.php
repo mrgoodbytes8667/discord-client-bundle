@@ -11,6 +11,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Trait TestValidatorTrait
  * @package Bytes\DiscordBundle\Tests
+ *
+ * @deprecated
  */
 trait TestValidatorTrait
 {

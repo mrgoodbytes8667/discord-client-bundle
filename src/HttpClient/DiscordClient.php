@@ -142,24 +142,18 @@ class DiscordClient
     /**
      * Get Current User Guilds
      * Returns a list of partial guild objects the current user is a member of. Requires the guilds OAuth2 scope.
-     * This endpoint returns 100 guilds by default, which is the maximum number of guilds a non-bot user can join. Therefore, pagination is not needed for integrations that need to get a list of the users' guilds.
+     * This endpoint returns 100 guilds by default, which is the maximum number of guilds a non-bot user can join.
+     * Therefore, pagination is not needed for integrations that need to get a list of the users' guilds.
      *
-     * @return PartialGuild[]|null
+     * @return ResponseInterface
      *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/user#get-current-user-guilds
      */
-    public function getGuilds()
+    public function getGuilds(): ResponseInterface
     {
-        $response = $this->request($this->buildURL('users/@me/guilds', 'v6'));
-
-        $content = $response->getContent();
-
-        return $this->serializer->deserialize($content, '\Bytes\DiscordResponseBundle\Objects\PartialGuild[]', 'json');
+        return $this->request($this->buildURL('users/@me/guilds', 'v6'));
     }
 
     /**
@@ -167,6 +161,9 @@ class DiscordClient
      * @param array $options = HttpClientInterface::OPTIONS_DEFAULTS
      * @param string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
      * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
     public function request($url, array $options = [], string $method = 'GET')

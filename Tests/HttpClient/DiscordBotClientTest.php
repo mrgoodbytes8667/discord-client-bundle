@@ -4,6 +4,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
@@ -14,8 +15,6 @@ use Generator;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -25,7 +24,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotClientTest extends TestHttpClientCase
 {
-    use TestDiscordClientTrait;
+    use TestDiscordClientTrait, CommandProviderTrait;
 
     /**
      * @requires PHPUnit >= 9
@@ -75,7 +74,7 @@ class DiscordBotClientTest extends TestHttpClientCase
     }
 
     /**
-     *
+     * @throws TransportExceptionInterface
      */
     public function testGetCommands()
     {
@@ -83,13 +82,12 @@ class DiscordBotClientTest extends TestHttpClientCase
             MockJsonResponse::makeFixture('HttpClient/get-commands-success.json'),
         ]));
 
-        $commands = $client->getCommands();
+        $response = $client->getCommands();
 
-        $this->assertIsArray($commands);
-        $this->assertCount(1, $commands);
-
-        $this->assertInstanceOf(ApplicationCommand::class, $commands[0]);
-        $this->assertEquals('sample', $commands[0]->getName());
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/get-commands-success.json'));
     }
 
     /**
@@ -98,19 +96,13 @@ class DiscordBotClientTest extends TestHttpClientCase
      * @param ApplicationCommand $cmd
      * @param IdInterface|null $guild
      * @param int $code
-     *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function testGetCommandsFailure(ApplicationCommand $cmd, ?IdInterface $guild, int $code)
     {
-        $this->expectException(ClientExceptionInterface::class);
-        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
-
         $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
-        $client->getCommands($guild);
+        $response = $client->getCommands($guild);
+
+        $this->assertResponseStatusCodeSame($response, $code);
     }
 
     /**
@@ -118,11 +110,6 @@ class DiscordBotClientTest extends TestHttpClientCase
      *
      * @param ApplicationCommand $cmd
      * @param IdInterface|null $guild
-     *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function testGetCommand(ApplicationCommand $cmd, ?IdInterface $guild)
     {
@@ -130,12 +117,12 @@ class DiscordBotClientTest extends TestHttpClientCase
             MockJsonResponse::makeFixture('HttpClient/get-command-success.json'),
         ]));
 
-        $command = $client->getCommand($cmd, $guild);
+        $response = $client->getCommand($cmd, $guild);
 
-        $this->assertInstanceOf(ApplicationCommand::class, $command);
-        $this->assertEquals('sample', $command->getName());
-
-        $this->assertEquals($cmd->getId(), $command->getId());
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/get-command-success.json'));
     }
 
     /**
@@ -144,52 +131,13 @@ class DiscordBotClientTest extends TestHttpClientCase
      * @param ApplicationCommand $cmd
      * @param IdInterface|null $guild
      * @param int $code
-     *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function testGetCommandFailure(ApplicationCommand $cmd, ?IdInterface $guild, int $code)
     {
-        $this->expectException(ClientExceptionInterface::class);
-        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
-
         $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
-        $client->getCommand($cmd, $guild);
-    }
+        $response = $client->getCommand($cmd, $guild);
 
-    /**
-     * @return Generator
-     */
-    public function provideCommandAndGuild()
-    {
-        $cmd = new ApplicationCommand();
-        $cmd->setId('846542216677566910');
-
-        $guild = new PartialGuild();
-        $guild->setId('737645596567095093');
-
-        yield ['command' => $cmd, 'guild' => $guild];
-        yield ['command' => $cmd, 'guild' => null];
-    }
-
-    /**
-     * @return Generator
-     */
-    public function provideCommandAndGuildClientExceptionResponses()
-    {
-        $cmd = new ApplicationCommand();
-        $cmd->setId('846542216677566910');
-
-        $guild = new PartialGuild();
-        $guild->setId('737645596567095093');
-
-        foreach (range(400, 422) as $code) {
-
-            yield ['command' => $cmd, 'guild' => $guild, 'code' => $code];
-            yield ['command' => $cmd, 'guild' => null, 'code' => $code];
-        }
+        $this->assertResponseStatusCodeSame($response, $code);
     }
 
     /**

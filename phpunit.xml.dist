@@ -12,9 +12,16 @@
             <directory>.</directory>
         </include>
         <exclude>
+            <directory>./.github</directory>
+            <directory>./bin</directory>
             <directory>./Resources</directory>
             <directory>./Tests</directory>
+            <directory>./var</directory>
             <directory>./vendor</directory>
         </exclude>
     </coverage>
+
+    <php>
+        <env name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
+    </php>
 </phpunit>

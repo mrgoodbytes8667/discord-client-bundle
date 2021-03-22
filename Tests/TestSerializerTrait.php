@@ -31,6 +31,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 /**
  * Trait TestSerializerTrait
  * @package Bytes\DiscordBundle\Tests
+ *
+ * @deprecated
  */
 trait TestSerializerTrait
 {

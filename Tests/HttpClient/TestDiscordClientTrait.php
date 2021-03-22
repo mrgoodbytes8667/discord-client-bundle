@@ -4,6 +4,9 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
+use Bytes\DiscordBundle\Tests\ClientExceptionResponseProviderTrait;
+use Bytes\DiscordBundle\Tests\CommandProviderTrait;
+use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
@@ -34,6 +37,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 trait TestDiscordClientTrait
 {
+    use CommandProviderTrait, ClientExceptionResponseProviderTrait;
+
     /**
      *
      */
@@ -46,7 +51,7 @@ trait TestDiscordClientTrait
         $code = ByteString::fromRandom(30);
         $redirect = 'https://www.example.com';
 
-        //dump($client->tokenExchange($code, 'discord_oauth_bot_setup', $oauth->getScopesBot()));
+
         $response = $client->tokenExchange($code, $redirect);
         $this->assertInstanceOf(Token::class, $response);
 
@@ -151,39 +156,25 @@ trait TestDiscordClientTrait
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/get-guilds.json'),
         ]));
-        $guilds = $client->getGuilds();
 
-        $this->assertCount(2, $guilds);
-        $this->assertInstanceOf(PartialGuild::class, $guilds[0]);
-        $this->assertInstanceOf(PartialGuild::class, $guilds[1]);
+        $response = $client->getGuilds();
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/get-guilds.json'));
     }
 
     /**
      * @dataProvider provideClientExceptionResponses
      *
      * @param int $code
-     *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function testGetGuildsFailure(int $code)
     {
-        $this->expectException(ClientExceptionInterface::class);
-        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
-
         $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
-        $client->getGuilds();
-    }
+        $response = $client->getGuilds();
 
-    /**
-     * @return Generator
-     */
-    public function provideClientExceptionResponses()
-    {
-        foreach (range(400, 422) as $code) {
-            yield ['code' => $code];
-        }
+        $this->assertResponseStatusCodeSame($response, $code);
     }
 }

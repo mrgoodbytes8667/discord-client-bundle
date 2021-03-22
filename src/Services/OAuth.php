@@ -72,7 +72,11 @@ class OAuth
      * @var array
      */
     private $scopes = [];
-    private array $defaultScopes;
+
+    /**
+     * @var array
+     */
+    private $defaultScopes;
 
     /**
      * OAuth constructor.
@@ -85,16 +89,16 @@ class OAuth
     public function __construct(Security $security, ?UrlGeneratorInterface $urlGenerator, string $discordClientId, array $config, bool $user)
     {
         $this->discordClientId = $discordClientId;
+        $this->config = $config;
 
-        $this->userOAuthRedirect = $this->setupRedirect($config['user']['redirects'], $urlGenerator);
-        $this->botOAuthRedirect = $this->setupRedirect($config['bot']['redirects'], $urlGenerator);
-        $this->loginOAuthRedirect = $this->setupRedirect($config['login']['redirects'], $urlGenerator);
-        $this->slashOAuthRedirect = $this->setupRedirect($config['slash']['redirects'], $urlGenerator);
+        $this->userOAuthRedirect = $this->setupRedirect('user', $urlGenerator);
+        $this->botOAuthRedirect = $this->setupRedirect('bot', $urlGenerator);
+        $this->loginOAuthRedirect = $this->setupRedirect('login', $urlGenerator);
+        $this->slashOAuthRedirect = $this->setupRedirect('slash', $urlGenerator);
 
         if ($user) {
             $this->security = $security;
         }
-        $this->config = $config;
         $this->defaultScopes = [
             'bot' => OAuthScopes::getBotScopes(),
             'login' => [
@@ -108,21 +112,30 @@ class OAuth
     }
 
     /**
-     * @param array $redirect = ['method' => ['route_name','url'][$any], 'route_name' => '', 'url' => '']
+     * @param mixed $key
      * @param UrlGeneratorInterface|null $urlGenerator
      * @return string
      */
-    protected function setupRedirect(array $redirect, ?UrlGeneratorInterface $urlGenerator)
+    protected function setupRedirect($key, ?UrlGeneratorInterface $urlGenerator)
     {
-        switch ($redirect['method']) {
+        if(!array_key_exists($key, $this->config))
+        {
+            throw new InvalidArgumentException(sprintf('The key "%s" was not present in the configuration', (string)$key));
+        }
+        if(!array_key_exists('redirects', $this->config[$key]))
+        {
+            throw new InvalidArgumentException(sprintf('The configuration for key "%s" was not valid', (string)$key));
+        }
+        
+        switch ($this->config[$key]['redirects']['method']) {
             case 'route_name':
                 if (empty($urlGenerator)) {
                     throw new InvalidArgumentException('URLGeneratorInterface cannot be null when a route name is passed');
                 }
-                return $urlGenerator->generate($redirect['route_name'], [], UrlGeneratorInterface::ABSOLUTE_URL);
+                return $urlGenerator->generate($this->config[$key]['redirects']['route_name'], [], UrlGeneratorInterface::ABSOLUTE_URL);
                 break;
             case 'url':
-                return $redirect['url'];
+                return $this->config[$key]['redirects']['url'];
                 break;
             default:
                 throw new InvalidArgumentException("Param 'redirect' must be one of 'route_name' or 'url'");
@@ -133,11 +146,13 @@ class OAuth
     /**
      * @param string|null $guildId
      * @param string|null $state
+     * @param array $permissions
      * @return string
      */
-    public function getBotAuthorizationUrl(string $guildId = null, ?string $state = null): string
+    public function getBotAuthorizationUrl(string $guildId = null, ?string $state = null, array $permissions = []): string
     {
         return $this->getAuthorizationCodeGrantURL(
+            $permissions ?:
             [
                 Permissions::ADD_REACTIONS(),
                 Permissions::VIEW_CHANNEL(),
@@ -219,13 +234,13 @@ class OAuth
     {
         if (array_key_exists('add', $this->config[$endpoint]['permissions'])) {
             $add = $this->config[$endpoint]['permissions']['add'];
-            array_walk($add, array($this, 'hydratePermissions'));
+            array_walk($add, array($this, 'walkHydratePermissions'));
             $permissions = array_merge($permissions, $add);
         }
 
         if (array_key_exists('remove', $this->config[$endpoint]['permissions'])) {
             $remove = $this->config[$endpoint]['permissions']['remove'];
-            array_walk($remove, array($this, 'hydratePermissions'));
+            array_walk($remove, array($this, 'walkHydratePermissions'));
 
             $permissions = Arr::where($permissions, function ($value, $key) use ($remove) {
                 return !in_array($value, $remove);
@@ -245,17 +260,21 @@ class OAuth
     {
         if (array_key_exists('add', $this->config[$endpoint]['scopes'])) {
             $add = $this->config[$endpoint]['scopes']['add'];
-            array_walk($add, array($this, 'hydrateScopes'));
-            $scopes = array_merge($scopes, $add);
+            if(count($add) > 0) {
+                array_walk($add, array('self', 'walkHydrateScopes'));
+                $scopes = array_unique(array_merge($scopes, $add));
+            }
         }
 
         if (array_key_exists('remove', $this->config[$endpoint]['scopes'])) {
             $remove = $this->config[$endpoint]['scopes']['remove'];
-            array_walk($remove, array($this, 'hydrateScopes'));
+            if(count($remove) > 0) {
+                array_walk($remove, array('self', 'walkHydrateScopes'));
 
-            $scopes = Arr::where($scopes, function ($value, $key) use ($remove) {
-                return !in_array($value, $remove);
-            });
+                $scopes = Arr::where($scopes, function ($value, $key) use ($remove) {
+                    return !in_array($value, $remove);
+                });
+            }
         }
 
         return $scopes;
@@ -272,12 +291,13 @@ class OAuth
     /**
      * @param string|null $guildId
      * @param string|null $state
+     * @param array $permissions
      * @return string
      */
-    public function getSlashAuthorizationUrl(string $guildId = null, ?string $state = null): string
+    public function getSlashAuthorizationUrl(string $guildId = null, ?string $state = null, array $permissions = []): string
     {
         return $this->getAuthorizationCodeGrantURL(
-            [],
+            $permissions ?: [],
             $this->getSlashOAuthRedirect(),
             $this->defaultScopes['slash'],
             $state,
@@ -298,12 +318,13 @@ class OAuth
 
     /**
      * @param string|null $state
+     * @param array $permissions
      * @return string
      */
-    public function getUserAuthorizationUrl(?string $state = null): string
+    public function getUserAuthorizationUrl(?string $state = null, array $permissions = []): string
     {
         return $this->getAuthorizationCodeGrantURL(
-            [],
+            $permissions ?: [],
             $this->getUserOAuthRedirect(),
             $this->defaultScopes['user'],
             $state,
@@ -345,18 +366,30 @@ class OAuth
      * @param $value
      * @param $key
      */
-    protected function hydratePermissions(&$value, $key)
+    protected static function walkHydratePermissions(&$value, $key)
     {
         $value = new Permissions($value);
+    }
+
+    public static function hydratePermissions(array $permissions)
+    {
+        array_walk($permissions, array('self', 'walkHydratePermissions'));
+        return $permissions;
     }
 
     /**
      * @param $value
      * @param $key
      */
-    protected function hydrateScopes(&$value, $key)
+    protected static function walkHydrateScopes(&$value, $key)
     {
         $value = (new OAuthScopes($value))->value;
+    }
+
+    public static function hydrateScopes(array $scopes)
+    {
+        array_walk($scopes, array('self', 'walkHydrateScopes'));
+        return $scopes;
     }
 
     /**

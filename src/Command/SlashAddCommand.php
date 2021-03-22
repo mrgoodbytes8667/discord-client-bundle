@@ -4,6 +4,7 @@ namespace Bytes\DiscordBundle\Command;
 
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Exception;
@@ -47,11 +48,11 @@ class SlashAddCommand extends AbstractSlashCommand
 
     /**
      * SlashAddCommand constructor.
-     * @param DiscordBotClient $client
+     * @param DiscordBot $client
      * @param SerializerInterface $serializer
      * @param SlashCommandsHandlerCollection $commandsCollection
      */
-    public function __construct(DiscordBotClient $client, SerializerInterface $serializer, SlashCommandsHandlerCollection $commandsCollection)
+    public function __construct(DiscordBot $client, SerializerInterface $serializer, SlashCommandsHandlerCollection $commandsCollection)
     {
         parent::__construct($client);
 
