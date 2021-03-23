@@ -59,7 +59,7 @@ class DiscordBotTest extends TestCase
     /**
      * @dataProvider provideCommandAndGuildClientExceptionResponses
      *
-     * @param ApplicationCommand $cmd
+     * @param mixed $cmd
      * @param IdInterface|null $guild
      * @param int $code
      *
@@ -68,7 +68,7 @@ class DiscordBotTest extends TestCase
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function testGetCommandsFailure(ApplicationCommand $cmd, ?IdInterface $guild, int $code)
+    public function testGetCommandsFailure($cmd, ?IdInterface $guild, int $code)
     {
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
@@ -80,7 +80,7 @@ class DiscordBotTest extends TestCase
     /**
      * @dataProvider provideCommandAndGuild
      *
-     * @param ApplicationCommand $cmd
+     * @param mixed $cmd
      * @param IdInterface|null $guild
      *
      * @throws ClientExceptionInterface
@@ -88,7 +88,7 @@ class DiscordBotTest extends TestCase
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function testGetCommand(ApplicationCommand $cmd, ?IdInterface $guild)
+    public function testGetCommand($cmd, ?IdInterface $guild)
     {
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/get-command-success.json'),
@@ -99,13 +99,15 @@ class DiscordBotTest extends TestCase
         $this->assertInstanceOf(ApplicationCommand::class, $command);
         $this->assertEquals('sample', $command->getName());
 
-        $this->assertEquals($cmd->getId(), $command->getId());
+        $commandId = $cmd instanceof IdInterface ? $cmd->getId() : $cmd;
+
+        $this->assertEquals($commandId, $command->getId());
     }
 
     /**
      * @dataProvider provideCommandAndGuildClientExceptionResponses
      *
-     * @param ApplicationCommand $cmd
+     * @param mixed $cmd
      * @param IdInterface|null $guild
      * @param int $code
      *
@@ -114,7 +116,7 @@ class DiscordBotTest extends TestCase
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function testGetCommandFailure(ApplicationCommand $cmd, ?IdInterface $guild, int $code)
+    public function testGetCommandFailure($cmd, ?IdInterface $guild, int $code)
     {
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));

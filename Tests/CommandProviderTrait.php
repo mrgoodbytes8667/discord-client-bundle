@@ -21,14 +21,32 @@ trait CommandProviderTrait
      */
     public function provideCommandAndGuild()
     {
-        $cmd = new ApplicationCommand();
-        $cmd->setId('846542216677566910');
+        $ac = new ApplicationCommand();
+        $ac->setId('846542216677566910');
 
+        $g = new PartialGuild();
+        $g->setId('737645596567095093');
+
+        foreach([$ac, '846542216677566910'] as $cmd)
+        {
+            foreach([$g, null] as $guild) {
+                yield ['command' => $cmd, 'guild' => $guild];
+            }
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideInvalidCommandAndValidGuild()
+    {
         $guild = new PartialGuild();
         $guild->setId('737645596567095093');
 
-        yield ['command' => $cmd, 'guild' => $guild];
-        yield ['command' => $cmd, 'guild' => null];
+        foreach([123, '', null, new \DateTime(), []] as $cmd) {
+            yield ['command' => $cmd, 'guild' => $guild];
+            yield ['command' => $cmd, 'guild' => null];
+        }
     }
 
     /**

@@ -11,6 +11,7 @@ use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use Generator;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,6 +54,41 @@ trait TestDiscordClientTrait
 
 
         $response = $client->tokenExchange($code, $redirect);
+        $this->assertInstanceOf(Token::class, $response);
+
+        $this->assertEquals('Bearer', $response->getTokenType());
+        $this->assertEquals('v6XtvrnWt1D3R6YFzSejQoBv6oVW5W', $response->getAccessToken());
+        $this->assertEquals(604800, $response->getExpiresIn());
+        $this->assertEquals('tDpAVPmhq4PZqeXiXCTV6mRGvhgDu9', $response->getRefreshToken());
+        $this->assertEquals('identify connections guilds bot applications.commands', $response->getScope());
+
+        $this->assertInstanceOf(PartialGuild::class, $response->getGuild());
+        $this->assertInstanceOf(Guild::class, $response->getGuild());
+
+        // Test some fields that will only be present for full guild objects
+        $this->assertCount(2, $response->getGuild()->getRoles());
+        $this->assertEquals('711392223308032631', $response->getGuild()->getSystemChannelId());
+
+        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getCode());
+        $this->assertNull($response->getRetryAfter());
+        $this->assertNull($response->getGlobal());
+    }
+
+    /**
+     *
+     */
+    public function testRefreshTokenExchange()
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/token-exchange-with-guild-success.json')
+        ]));
+
+        $code = ByteString::fromRandom(30);
+        $redirect = 'https://www.example.com';
+
+
+        $response = $client->tokenExchange($code, $redirect, [], OAuthGrantTypes::refreshToken());
         $this->assertInstanceOf(Token::class, $response);
 
         $this->assertEquals('Bearer', $response->getTokenType());

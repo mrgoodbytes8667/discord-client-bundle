@@ -14,6 +14,7 @@ use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Request\DiscordConverter;
+use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordBundle\Services\OAuth;
 
@@ -151,6 +152,15 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Converters
+    $services->set('bytes_discord.discord_guild_converter', DiscordGuildConverter::class)
+        ->args([
+            service('bytes_discord.services.client.discord.bot'), // Bytes\DiscordBundle\Services\Client\DiscordBot
+        ])
+        ->tag('request.param_converter', [
+            'converter' => 'bytes_discord_guild',
+            'priority' => false,
+        ]);
+
     $services->set('bytes_discord.discord_converter', DiscordConverter::class)
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord'

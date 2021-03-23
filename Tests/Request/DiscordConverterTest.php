@@ -3,35 +3,25 @@
 namespace Bytes\DiscordBundle\Tests\Request;
 
 use Bytes\DiscordBundle\Request\DiscordConverter;
-use Bytes\DiscordBundle\Tests\Fixtures\Providers\SymfonyStringWords;
 use Bytes\DiscordResponseBundle\Objects\ChannelMention;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\NameInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Faker\Factory;
-use Faker\Generator;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class DiscordConverterTest
  * @package Bytes\DiscordBundle\Tests\Request
  */
-class DiscordConverterTest extends TestCase
+class DiscordConverterTest extends TestParamConverterCase
 {
     /**
      * @var DiscordConverter
      */
     private $converter;
-
-    /**
-     * @var SymfonyStringWords|Generator
-     */
-    private $faker;
 
     /**
      * @dataProvider provideApplyConfigurations
@@ -94,35 +84,6 @@ class DiscordConverterTest extends TestCase
         $object = $request->attributes->get('guild_id');
 
         $this->assertNull($object);
-    }
-
-    /**
-     * @param null $class
-     * @param null $name
-     * @param bool $optional
-     * @return ParamConverter
-     */
-    public function createConfiguration($class = null, $name = null, bool $optional = false)
-    {
-        $config = $this
-            ->getMockBuilder(ParamConverter::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        if (null !== $name) {
-            $config->expects($this->any())
-                ->method('getName')
-                ->willReturn($name);
-        }
-        if (null !== $class) {
-            $config->expects($this->any())
-                ->method('getClass')
-                ->willReturn($class);
-        }
-        $config->method('isOptional')
-            ->willReturn($optional);
-
-        return $config;
     }
 
     /**
@@ -202,21 +163,6 @@ class DiscordConverterTest extends TestCase
 
     //region Setup/Teardown
     /**
-     * @return SymfonyStringWords|Generator
-     * @before
-     */
-    public function setupFaker()
-    {
-        if(is_null($this->faker))
-        {
-            $faker = Factory::create();
-            $faker->addProvider(new SymfonyStringWords($faker));
-            $this->faker = $faker;
-        }
-        return $this->faker;
-    }
-
-    /**
      *
      */
     protected function setUp(): void
@@ -230,7 +176,6 @@ class DiscordConverterTest extends TestCase
     protected function tearDown(): void
     {
         $this->converter = null;
-        $this->faker = null;
     }
     //endregion
 }

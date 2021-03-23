@@ -1,0 +1,60 @@
+{
+  "id": "737645596567095093",
+  "name": "Sample Server Alpha",
+  "icon": "38ee303112b61ab351dbafdc50e094d8",
+  "description": "Dolor unde odio ab hic quibusdam aut rerum.",
+  "splash": null,
+  "discovery_splash": null,
+  "features": [],
+  "approximate_member_count": 312,
+  "approximate_presence_count": 43,
+  "emojis": [],
+  "banner": null,
+  "owner_id": "282017982734073856",
+  "application_id": null,
+  "region": "us-central",
+  "afk_channel_id": null,
+  "afk_timeout": 300,
+  "system_channel_id": "837214295270214142",
+  "widget_enabled": false,
+  "widget_channel_id": null,
+  "verification_level": 0,
+  "roles": [
+    {
+      "id": "813805620475070320",
+      "name": "@everyone",
+      "permissions": "6546771529",
+      "position": 0,
+      "color": 0,
+      "hoist": false,
+      "managed": false,
+      "mentionable": false
+    },
+    {
+      "id": "823481840118684382",
+      "name": "Exercitationem et iusto",
+      "permissions": "11",
+      "position": 1,
+      "color": 0,
+      "hoist": false,
+      "managed": true,
+      "mentionable": false,
+      "tags": {
+        "bot_id": "892924730254546395"
+      }
+    }
+  ],
+  "default_message_notifications": 0,
+  "mfa_level": 0,
+  "explicit_content_filter": 0,
+  "max_presences": null,
+  "max_members": 100000,
+  "max_video_channel_users": 25,
+  "vanity_url_code": null,
+  "premium_tier": 0,
+  "premium_subscription_count": 0,
+  "system_channel_flags": 0,
+  "preferred_locale": "en-US",
+  "rules_channel_id": null,
+  "public_updates_channel_id": null
+}

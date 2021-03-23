@@ -100,11 +100,9 @@ class DiscordBotClient extends DiscordClient
      * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
-    public function deleteCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
+    public function deleteCommand($applicationCommand, ?IdInterface $guild = null)
     {
-        if (empty($applicationCommand->getId())) {
-            throw new BadRequestHttpException('Application Command class must have an ID');
-        }
+        $commandId = $this->normalizeApplicationCommand($applicationCommand);
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -112,7 +110,7 @@ class DiscordBotClient extends DiscordClient
             $urlParts[] = $guild->getId();
         }
         $urlParts[] = 'commands';
-        $urlParts[] = $applicationCommand->getId();
+        $urlParts[] = $commandId;
 
         return $this->request($urlParts, [], HttpMethods::delete());
     }
@@ -135,8 +133,6 @@ class DiscordBotClient extends DiscordClient
         return $this->request($urlParts);
     }
 
-
-
     /**
      * @param $applicationCommand
      * @param IdInterface|null $guild
@@ -144,6 +140,25 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      */
     public function getCommand($applicationCommand, ?IdInterface $guild = null)
+    {
+        $commandId = $this->normalizeApplicationCommand($applicationCommand);
+        $urlParts = ['applications', $this->clientId];
+
+        if (!empty($guild)) {
+            $urlParts[] = 'guilds';
+            $urlParts[] = $guild->getId();
+        }
+        $urlParts[] = 'commands';
+        $urlParts[] = $commandId;
+
+        return $this->request($urlParts);
+    }
+
+    /**
+     * @param ApplicationCommand|string $applicationCommand
+     * @return string
+     */
+    protected function normalizeApplicationCommand($applicationCommand)
     {
         $commandId = '';
         if (is_null($applicationCommand)) {
@@ -157,16 +172,7 @@ class DiscordBotClient extends DiscordClient
         if (empty($commandId)) {
             throw new BadRequestHttpException('The applicationCommand argument is required.');
         }
-        $urlParts = ['applications', $this->clientId];
-
-        if (!empty($guild)) {
-            $urlParts[] = 'guilds';
-            $urlParts[] = $guild->getId();
-        }
-        $urlParts[] = 'commands';
-        $urlParts[] = $commandId;
-
-        return $this->request($urlParts);
+        return $commandId;
     }
 
     /**
@@ -195,6 +201,10 @@ class DiscordBotClient extends DiscordClient
             throw new BadRequestHttpException('Guild cannot be blank.');
         }
         $url = $this->buildURL(implode('/', ['guilds', $id]), 'v8');
-        return $this->request($url);
+        return $this->request($url, [
+            'query' => [
+                'with_counts' => $withCounts
+            ]
+        ]);
     }
 }
