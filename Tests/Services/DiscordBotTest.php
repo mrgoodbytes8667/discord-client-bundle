@@ -8,7 +8,9 @@ use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordBundle\Tests\TestDiscordGuildTrait;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
@@ -26,7 +28,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotTest extends TestCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait;
 
     /**
      *
@@ -123,5 +125,40 @@ class DiscordBotTest extends TestCase
 
         $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
         $client->getCommand($cmd, $guild);
+    }
+
+    /**
+     * @dataProvider provideValidGetGuildFixtureFiles
+     */
+    public function testGetGuild(string $file, bool $withCounts)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture($file),
+        ]));
+
+        $guild = $client->getGuild('737645596567095093', $withCounts);
+        $this->validateClientGetGuildAsGuild($guild, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', '282017982734073856', 2, $withCounts);
+    }
+
+    /**
+     * @dataProvider provideValidGetGuildFixtureFiles
+     */
+    public function testGetGuildPartial(string $file, bool $withCounts)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture($file),
+        ]));
+
+        $guild = $client->getGuild('737645596567095093', $withCounts, [], PartialGuild::class);
+        $this->validateClientGetGuildAsPartialGuild($guild, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', $withCounts);
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideValidGetGuildFixtureFiles()
+    {
+        yield ['file' => 'HttpClient/get-guild-success.json', 'withCounts' => false];
+        yield ['file' => 'HttpClient/get-guild-with-counts-success.json', 'withCounts' => true];
     }
 }

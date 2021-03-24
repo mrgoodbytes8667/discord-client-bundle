@@ -6,6 +6,7 @@ namespace Bytes\DiscordBundle\Request;
 
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\Guild;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,18 +18,47 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class DiscordGuildConverter
- * Converts and hydrates a Discord Guild
- * Due to the time necessary to communicate with the Discord API, this converter is disabled by default
+ * Converts and hydrates a Discord GuildInterface (Guild by default, can also deserialize into PartialGuild)
  * @package Bytes\DiscordBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
+ *
+ * Due to the time necessary to communicate with the Discord API, this converter is disabled by default
+ * To use this converter, add the @ParamConverter() tag.
+ *
+ * <code>
+ * // Using a route with a guild param...
+ * @Route("/some/route/to/{guild}")
+ * // Use the DiscordGuildConverter
+ * @ParamConverter("guild", converter="bytes_discord_guild")
+ * // Use the DiscordGuildConverter and deserialize into Guild, same result as above
+ * @ParamConverter("guild", converter="bytes_discord_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\Guild"})
+ * // Use the DiscordGuildConverter and include counts
+ * @ParamConverter("guild", converter="bytes_discord_guild", options={"with_counts" = true})
+ * // Use the DiscordGuildConverter and deserialize into PartialGuild
+ * @ParamConverter("guild", converter="bytes_discord_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild"})
+ * // Use the DiscordGuildConverter and deserialize into PartialGuild and include counts
+ * @ParamConverter("guild", converter="bytes_discord_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild", "with_counts" = true})
+ * </code>
  */
 class DiscordGuildConverter implements ParamConverterInterface
 {
+    const OPTIONS_CLASS = 'class';
+    const OPTIONS_WITH_COUNTS = 'with_counts';
+
     /**
      * @var DiscordBot
      */
     private DiscordBot $client;
+
+    /**
+     * DiscordGuildConverter constructor.
+     * @param DiscordBot $client
+     */
+    public function __construct(DiscordBot $client)
+    {
+        $this->client = $client;
+    }
 
     /**
      * Stores the object in the request.
@@ -54,6 +84,18 @@ class DiscordGuildConverter implements ParamConverterInterface
             return true;
         }
 
+        $options = $configuration->getOptions();
+        $withCounts = false;
+        $deserializeInto = Guild::class;
+        if (isset($options[self::OPTIONS_WITH_COUNTS])) {
+            if ($options[self::OPTIONS_WITH_COUNTS] === true) {
+                $withCounts = true;
+            }
+        }
+        if (isset($options[self::OPTIONS_CLASS]) && is_subclass_of($options[self::OPTIONS_CLASS], GuildInterface::class)) {
+            $deserializeInto = $options[self::OPTIONS_CLASS];
+        }
+
         $class = $configuration->getClass();
 
         /** @var Guild $instance */
@@ -64,7 +106,7 @@ class DiscordGuildConverter implements ParamConverterInterface
         $instance->setId($value);
 
         try {
-            $guild = $this->client->getGuild($instance);
+            $guild = $this->client->getGuild($instance, $withCounts, [], $deserializeInto);
         } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface | BadRequestHttpException $exception) {
             return false;
         }
@@ -87,15 +129,6 @@ class DiscordGuildConverter implements ParamConverterInterface
         }
 
         return $configuration->getClass() === Guild::class;
-    }
-
-    /**
-     * DiscordGuildConverter constructor.
-     * @param DiscordBot $client
-     */
-    public function __construct(DiscordBot $client)
-    {
-        $this->client = $client;
     }
 
 

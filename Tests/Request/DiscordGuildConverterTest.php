@@ -8,7 +8,9 @@ use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordBundle\Tests\TestDiscordGuildTrait;
 use Bytes\DiscordResponseBundle\Objects\Guild;
+use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -22,7 +24,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordGuildConverterTest extends TestParamConverterCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, TestDiscordGuildTrait;
 
     /**
      *
@@ -40,10 +42,7 @@ class DiscordGuildConverterTest extends TestParamConverterCase
         $this->assertTrue($converter->apply($request, $config));
 
         $object = $request->attributes->get('guild');
-        $this->assertInstanceOf(Guild::class, $object);
-        $this->assertEquals('737645596567095093', $object->getId());
-        $this->assertEquals('Sample Server Alpha', $object->getName());
-        $this->assertCount(2, $object->getRoles());
+        $this->validateClientGetGuildAsGuild($object, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', '282017982734073856', 2, false);
     }
 
     /**
@@ -54,6 +53,63 @@ class DiscordGuildConverterTest extends TestParamConverterCase
     {
         $client = new DiscordBotClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->serializer, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
         return new DiscordBot($client, $this->serializer);
+    }
+
+    /**
+     *
+     */
+    public function testApplyOptionWithCounts()
+    {
+        $request = new Request([], [], ['guild' => 737645596567095093]);
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/get-guild-with-counts-success.json'),
+        ]));
+        $converter = new DiscordGuildConverter($client);
+
+        $config = $this->createConfiguration(Guild::class, 'guild', false, [DiscordGuildConverter::OPTIONS_WITH_COUNTS => true]);
+
+        $this->assertTrue($converter->apply($request, $config));
+
+        $object = $request->attributes->get('guild');
+        $this->validateClientGetGuildAsGuild($object, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', '282017982734073856', 2, true);
+    }
+
+    /**
+     *
+     */
+    public function testApplyOptionPartialGuild()
+    {
+        $request = new Request([], [], ['guild' => 737645596567095093]);
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/get-guild-success.json'),
+        ]));
+        $converter = new DiscordGuildConverter($client);
+
+        $config = $this->createConfiguration(Guild::class, 'guild', false, [DiscordGuildConverter::OPTIONS_CLASS => PartialGuild::class]);
+
+        $this->assertTrue($converter->apply($request, $config));
+
+        $object = $request->attributes->get('guild');
+        $this->validateClientGetGuildAsPartialGuild($object, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', false);
+    }
+
+    /**
+     *
+     */
+    public function testApplyOptionWithCountsPartialGuild()
+    {
+        $request = new Request([], [], ['guild' => 737645596567095093]);
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/get-guild-with-counts-success.json'),
+        ]));
+        $converter = new DiscordGuildConverter($client);
+
+        $config = $this->createConfiguration(Guild::class, 'guild', false, [DiscordGuildConverter::OPTIONS_CLASS => PartialGuild::class, DiscordGuildConverter::OPTIONS_WITH_COUNTS => true]);
+
+        $this->assertTrue($converter->apply($request, $config));
+
+        $object = $request->attributes->get('guild');
+        $this->validateClientGetGuildAsPartialGuild($object, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', true);
     }
 
     /**

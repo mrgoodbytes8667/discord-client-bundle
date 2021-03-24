@@ -112,21 +112,19 @@ class DiscordBot
      * @param IdInterface|string $guild
      * @param bool $withCounts
      * @param array $attributes
-     *
+     * @param string $class = [PartialGuild::class, Guild::class][$any]
      * @return Guild|null
      *
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws BadRequestHttpException
-     *
      * @link https://discord.com/developers/docs/resources/guild#get-guild
      */
-    public function getGuild($guild, bool $withCounts = false, array $attributes = [])
+    public function getGuild($guild, bool $withCounts = false, array $attributes = [], string $class = Guild::class)
     {
         $response = $this->client->getGuild($guild, $withCounts);
         $content = $response->getContent();
-        return $this->serializer->deserialize($content, Guild::class, 'json', $attributes);
+        return $this->serializer->deserialize($content, $class, 'json', $attributes);
     }
 }
