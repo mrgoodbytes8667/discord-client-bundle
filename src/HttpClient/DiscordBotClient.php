@@ -102,7 +102,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function deleteCommand($applicationCommand, ?IdInterface $guild = null)
     {
-        $commandId = $this->normalizeApplicationCommand($applicationCommand);
+        $commandId = $this->normalizeIdArgument($applicationCommand);
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -141,7 +141,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function getCommand($applicationCommand, ?IdInterface $guild = null)
     {
-        $commandId = $this->normalizeApplicationCommand($applicationCommand);
+        $commandId = $this->normalizeIdArgument($applicationCommand);
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -152,27 +152,6 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = $commandId;
 
         return $this->request($urlParts);
-    }
-
-    /**
-     * @param ApplicationCommand|string $applicationCommand
-     * @return string
-     */
-    protected function normalizeApplicationCommand($applicationCommand)
-    {
-        $commandId = '';
-        if (is_null($applicationCommand)) {
-            throw new BadRequestHttpException('The applicationCommand argument is required.');
-        }
-        if ($applicationCommand instanceof IdInterface) {
-            $commandId = $applicationCommand->getId();
-        } elseif (is_string($applicationCommand)) {
-            $commandId = $applicationCommand;
-        }
-        if (empty($commandId)) {
-            throw new BadRequestHttpException('The applicationCommand argument is required.');
-        }
-        return $commandId;
     }
 
     /**
@@ -206,5 +185,17 @@ class DiscordBotClient extends DiscordClient
                 'with_counts' => $withCounts
             ]
         ]);
+    }
+
+    /**
+     * @param IdInterface|string $userId
+     *
+     * @return ResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     */
+    public function getUser($userId)
+    {
+        return parent::getUser($userId);
     }
 }

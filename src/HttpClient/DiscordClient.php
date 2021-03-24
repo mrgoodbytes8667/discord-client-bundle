@@ -5,7 +5,9 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
 use Bytes\ResponseBundle\Enums\HttpMethods;
@@ -13,6 +15,7 @@ use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -157,13 +160,36 @@ class DiscordClient
     }
 
     /**
+     * @return ResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     */
+    public function getMe()
+    {
+        return $this->request(['users', '@me']);
+    }
+
+    /**
+     * @param IdInterface|string $userId
+     *
+     * @return ResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     *
+     * @internal
+     */
+    public function getUser($userId)
+    {
+        $userId = $this->normalizeIdArgument($userId, 'The "userId" argument is required.');
+        $urlParts = ['users', $userId];
+        return $this->request($urlParts);
+    }
+
+    /**
      * @param string|string[] $url
      * @param array $options = HttpClientInterface::OPTIONS_DEFAULTS
      * @param string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
      * @return ResponseInterface
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
     public function request($url, array $options = [], string $method = 'GET')
@@ -250,6 +276,38 @@ class DiscordClient
         $json = $response->getContent();
 
         return $this->serializer->deserialize($json, Token::class, 'json');
+    }
+
+    /**
+     * @param IdInterface|string $object
+     * @param string $message
+     * @return string
+     * @internal
+     */
+    protected function normalizeIdArgument($object, string $message = '')
+    {
+        if(empty($message))
+        {
+            if(is_object($object))
+            {
+                $message = sprintf('The "%s" argument is required.', get_class($object));
+            } else {
+                $message = 'The argument is required.';
+            }
+        }
+        $id = '';
+        if (is_null($object)) {
+            throw new BadRequestHttpException($message);
+        }
+        if ($object instanceof IdInterface) {
+            $id = $object->getId();
+        } elseif (is_string($object)) {
+            $id = $object;
+        }
+        if (empty($id)) {
+            throw new BadRequestHttpException($message);
+        }
+        return $id;
     }
 
 }

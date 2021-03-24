@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class DiscordUser
 {
-    use GetGuildsTrait;
+    use SharedGetMethodsTrait;
 
     /**
      * @var DiscordUserClient

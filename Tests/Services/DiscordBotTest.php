@@ -12,6 +12,7 @@ use Bytes\DiscordBundle\Tests\TestDiscordGuildTrait;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +29,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotTest extends TestCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait, TestDiscordTrait;
 
     /**
      *
@@ -160,5 +161,88 @@ class DiscordBotTest extends TestCase
     {
         yield ['file' => 'HttpClient/get-guild-success.json', 'withCounts' => false];
         yield ['file' => 'HttpClient/get-guild-with-counts-success.json', 'withCounts' => true];
+    }
+
+    /**
+     * @dataProvider provideInvalidGetGuildFixtureFiles
+     */
+    public function testGetGuildFailure(string $file, bool $withCounts, int $code)
+    {
+        $this->expectException(ClientExceptionInterface::class);
+        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
+
+        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
+        $client->getGuild($file, $withCounts);
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideInvalidGetGuildFixtureFiles()
+    {
+        foreach ($this->provideClientExceptionResponses() as $clientExceptionResponse) {
+            foreach($this->provideValidGetGuildFixtureFiles() as $index => $value) {
+                yield ['file' => $value['file'], 'withCounts' => $value['withCounts'], 'code' => $clientExceptionResponse['code']];
+            }
+        }
+    }
+
+    /**
+     * @dataProvider provideValidUsers
+     * @param string $file
+     * @param $userId
+     */
+    public function testGetUser(string $file, $userId)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture($file),
+        ]));
+
+        $user = $client->getUser($userId);
+        $this->validateUser($user, '272930239796055326', 'elvie70', 'cba426068ee1c51edab2f0c38549f4bc', '6793', 0, true);
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideValidUsers()
+    {
+        $user = $this
+            ->getMockBuilder(IdInterface::class)
+            ->getMock();
+        $user->method('getId')
+            ->willReturn('230858112993375816');
+
+        yield ['file' => 'HttpClient/get-user.json', 'userId' => '230858112993375816'];
+        yield ['file' => 'HttpClient/get-user.json', 'userId' => $user];
+
+        yield ['file' => 'HttpClient/get-me.json', 'userId' => '@me'];
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideInvalidUsers()
+    {
+        foreach ($this->provideClientExceptionResponses() as $clientExceptionResponse) {
+            foreach($this->provideValidUsers() as $index => $value) {
+                yield ['file' => $value['file'], 'userId' => $value['userId'], 'code' => $clientExceptionResponse['code']];
+            }
+        }
+    }
+
+    /**
+     * @dataProvider provideInvalidUsers
+     * @param string $file
+     * @param $userId
+     * @param int $code
+     */
+    public function testGetUserFailure(string $file, $userId, int $code)
+    {
+        $this->expectException(ClientExceptionInterface::class);
+        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
+
+        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
+        $client->getUser($userId);
     }
 }

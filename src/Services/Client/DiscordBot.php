@@ -8,6 +8,7 @@ use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Bytes\DiscordResponseBundle\Objects\User;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -25,7 +26,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 class DiscordBot
 {
-    use GetGuildsTrait;
+    use SharedGetMethodsTrait;
 
     /**
      * @var DiscordBotClient
@@ -126,5 +127,23 @@ class DiscordBot
         $response = $this->client->getGuild($guild, $withCounts);
         $content = $response->getContent();
         return $this->serializer->deserialize($content, $class, 'json', $attributes);
+    }
+
+    /**
+     * @param IdInterface|string $userId
+     * @param array $attributes
+     *
+     * @return User|null
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getUser($userId, array $attributes = [])
+    {
+        $response = $this->client->getUser($userId);
+        $content = $response->getContent();
+        return $this->serializer->deserialize($content, User::class, 'json', $attributes);
     }
 }

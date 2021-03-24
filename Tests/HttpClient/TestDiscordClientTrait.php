@@ -9,6 +9,7 @@ use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\Guild;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
@@ -210,6 +211,86 @@ trait TestDiscordClientTrait
     {
         $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
         $response = $client->getGuilds();
+
+        $this->assertResponseStatusCodeSame($response, $code);
+    }
+
+    /**
+     * @dataProvider provideValidUsers
+     * @param string $file
+     * @param $userId
+     * @throws TransportExceptionInterface
+     */
+    public function testGetUser(string $file, $userId)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture($file),
+        ]));
+
+        $response = $client->getUser($userId);
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData($file));
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideValidUsers()
+    {
+        $user = $this
+            ->getMockBuilder(IdInterface::class)
+            ->getMock();
+        $user->method('getId')
+            ->willReturn('230858112993375816');
+
+        yield ['file' => 'HttpClient/get-user.json', 'userId' => '230858112993375816'];
+        yield ['file' => 'HttpClient/get-user.json', 'userId' => $user];
+
+        yield ['file' => 'HttpClient/get-me.json', 'userId' => '@me'];
+    }
+
+    /**
+     * @dataProvider provideClientExceptionResponses
+     *
+     * @param int $code
+     */
+    public function testGetUserFailure(int $code)
+    {
+        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
+        $response = $client->getUser('230858112993375816');
+
+        $this->assertResponseStatusCodeSame($response, $code);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testGetMe()
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/get-me.json'),
+        ]));
+
+        $response = $client->getMe();
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/get-me.json'));
+    }
+
+    /**
+     * @dataProvider provideClientExceptionResponses
+     *
+     * @param int $code
+     */
+    public function testGetMeFailure(int $code)
+    {
+        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
+        $response = $client->getMe();
 
         $this->assertResponseStatusCodeSame($response, $code);
     }

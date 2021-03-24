@@ -5,19 +5,20 @@ namespace Bytes\DiscordBundle\Services\Client;
 
 
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Bytes\DiscordResponseBundle\Objects\User;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * Trait GetGuildsTrait
+ * Trait SharedGetMethodsTrait
  * @package Bytes\DiscordBundle\Services\Client
  *
  * @property $client
  * @property $serializer
  */
-trait GetGuildsTrait
+trait SharedGetMethodsTrait
 {
     /**
      * Get Current User Guilds
@@ -38,5 +39,22 @@ trait GetGuildsTrait
         $response = $this->client->getGuilds();
         $content = $response->getContent();
         return $this->serializer->deserialize($content, '\Bytes\DiscordResponseBundle\Objects\PartialGuild[]', 'json');
+    }
+
+    /**
+     * @param array $attributes
+     *
+     * @return User|null
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getMe(array $attributes = [])
+    {
+        $response = $this->client->getUser('@me');
+        $content = $response->getContent();
+        return $this->serializer->deserialize($content, User::class, 'json', $attributes);
     }
 }
