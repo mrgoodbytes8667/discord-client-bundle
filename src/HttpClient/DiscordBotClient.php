@@ -188,11 +188,15 @@ class DiscordBotClient extends DiscordClient
     }
 
     /**
+     * Get User
+     * Returns a user object for a given user ID.
      * @param IdInterface|string $userId
      *
      * @return ResponseInterface
      *
      * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/user#get-user
      */
     public function getUser($userId)
     {

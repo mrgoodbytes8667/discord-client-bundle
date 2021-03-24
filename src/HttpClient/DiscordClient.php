@@ -160,9 +160,15 @@ class DiscordClient
     }
 
     /**
+     * Get Current User
+     * Returns the user object of the requester's account. For OAuth2, this requires the identify scope, which will
+     * return the object without an email, and optionally the email scope, which returns the object with an email.
+     *
      * @return ResponseInterface
      *
      * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/user#get-current-user
      */
     public function getMe()
     {
@@ -170,13 +176,17 @@ class DiscordClient
     }
 
     /**
+     * Get User
+     * Returns a user object for a given user ID.
      * @param IdInterface|string $userId
      *
      * @return ResponseInterface
      *
      * @throws TransportExceptionInterface
      *
-     * @internal
+     * @link https://discord.com/developers/docs/resources/user#get-user
+     *
+     * @internal getUser is not available in DiscordUserClient
      */
     public function getUser($userId)
     {

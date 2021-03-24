@@ -130,6 +130,8 @@ class DiscordBot
     }
 
     /**
+     * Get User
+     * Returns a user object for a given user ID.
      * @param IdInterface|string $userId
      * @param array $attributes
      *
@@ -139,6 +141,8 @@ class DiscordBot
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/user#get-user
      */
     public function getUser($userId, array $attributes = [])
     {

@@ -42,6 +42,9 @@ trait SharedGetMethodsTrait
     }
 
     /**
+     * Get Current User
+     * Returns the user object of the requester's account. For OAuth2, this requires the identify scope, which will
+     * return the object without an email, and optionally the email scope, which returns the object with an email.
      * @param array $attributes
      *
      * @return User|null
@@ -50,6 +53,8 @@ trait SharedGetMethodsTrait
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/user#get-current-user
      */
     public function getMe(array $attributes = [])
     {
