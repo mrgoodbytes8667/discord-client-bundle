@@ -1,0 +1,82 @@
+[
+    {
+        "id": "267214096315439358",
+        "username": "kraig31",
+        "avatar": "a_172328c4e888a2ef87f87f10181cbefd",
+        "discriminator": "7945",
+        "public_flags": 5,
+        "bot": true
+    },
+    {
+        "id": "215879580410922626",
+        "username": "madelynn21",
+        "avatar": "7a96688978191be1ac01d2d3ceebdd76",
+        "discriminator": "7669",
+        "public_flags": 9,
+        "bot": false
+    },
+    {
+        "id": "283286467684169899",
+        "username": "renner.onie",
+        "avatar": "3dc833a5309150b290da0ca8f16f6a70",
+        "discriminator": "7299",
+        "public_flags": 3,
+        "bot": false
+    },
+    {
+        "id": "251827868756756876",
+        "username": "amari.morar",
+        "avatar": null,
+        "discriminator": "9915",
+        "public_flags": 7,
+        "bot": true
+    },
+    {
+        "id": "222748564945326598",
+        "username": "damion.blanda",
+        "avatar": "a_6df321d96f96b558944f878feb5bbae5",
+        "discriminator": "8463",
+        "public_flags": 1,
+        "bot": false
+    },
+    {
+        "id": "256608243907843676",
+        "username": "meta81",
+        "avatar": null,
+        "discriminator": "9887",
+        "public_flags": 5,
+        "bot": true
+    },
+    {
+        "id": "254106240423112649",
+        "username": "tcruickshank",
+        "avatar": "a_ee763912f56a89ec31eb640825b98828",
+        "discriminator": "7461",
+        "public_flags": 0,
+        "bot": false
+    },
+    {
+        "id": "215052384783128171",
+        "username": "kelsie35",
+        "avatar": "a_5b124e6a26ae9810ee85058735a0c4e3",
+        "discriminator": "0425",
+        "public_flags": 7,
+        "bot": true
+    },
+    {
+        "id": "229766673889780171",
+        "username": "mschamberger",
+        "avatar": "716344f2ffb3079b0ec491eb99d93d82",
+        "discriminator": "4501",
+        "public_flags": 4,
+        "bot": false
+    },
+    {
+        "id": "234635368258536079",
+        "username": "arjun03",
+        "avatar": "40aac4371a4d11d391ce187301c27a1d",
+        "discriminator": "7820",
+        "public_flags": 3,
+        "bot": false
+    }
+]

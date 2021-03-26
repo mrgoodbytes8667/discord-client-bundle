@@ -4,6 +4,7 @@
 namespace Bytes\DiscordBundle\Tests\Fixtures\Providers;
 
 
+use Bytes\Common\Faker\Providers\MiscProvider;
 use Bytes\DiscordBundle\Services\OAuth;
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
@@ -17,7 +18,7 @@ use Illuminate\Support\Arr;
  * Class AuthorizationCodeGrants
  * @package Bytes\DiscordBundle\Tests\Fixtures\Providers
  *
- * @property Generator|Internet|SymfonyStringWords $generator
+ * @property Generator|Internet|MiscProvider $generator
  */
 class AuthorizationCodeGrants extends Base
 {
@@ -27,10 +28,10 @@ class AuthorizationCodeGrants extends Base
     public function __construct(Generator $generator)
     {
         $find = Arr::first($generator->getProviders(), function ($value, $key) {
-            return get_class($value) === SymfonyStringWords::class;
+            return get_class($value) === MiscProvider::class;
         });
         if (is_null($find)) {
-            $generator->addProvider(new SymfonyStringWords($generator));
+            $generator->addProvider(new MiscProvider($generator));
         }
         parent::__construct($generator);
     }

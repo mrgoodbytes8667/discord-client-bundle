@@ -4,31 +4,34 @@
 namespace Bytes\DiscordBundle\Tests\Request;
 
 
-use Bytes\DiscordBundle\Tests\Fixtures\Providers\SymfonyStringWords;
+use Bytes\Common\Faker\Providers\MiscProvider;
 use Bytes\Tests\Common\TestParamConverterTrait;
 use Faker\Factory;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class TestParamConverterCase
+ * @package Bytes\DiscordBundle\Tests\Request
+ */
 class TestParamConverterCase extends TestCase
 {
     use TestParamConverterTrait;
 
     /**
-     * @var SymfonyStringWords|Generator
+     * @var MiscProvider|Generator
      */
     protected $faker;
 
     /**
-     * @return SymfonyStringWords|Generator
+     * @return MiscProvider|Generator
      * @before
      */
     public function setupFaker()
     {
-        if(is_null($this->faker))
-        {
+        if (is_null($this->faker)) {
             $faker = Factory::create();
-            $faker->addProvider(new SymfonyStringWords($faker));
+            $faker->addProvider(new MiscProvider($faker));
             $this->faker = $faker;
         }
         return $this->faker;

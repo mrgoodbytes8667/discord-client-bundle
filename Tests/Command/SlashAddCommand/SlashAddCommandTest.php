@@ -14,6 +14,8 @@ use function Symfony\Component\String\u;
 /**
  * Class SlashAddCommandTest
  * @package Bytes\DiscordBundle\Tests\Command\SlashAddCommand
+ *
+ * @todo Add missing tests last present in #fba4167e71255eb871c015754d5fb09969c7ceee
  */
 class SlashAddCommandTest extends TestSlashCommand
 {
@@ -116,70 +118,6 @@ class SlashAddCommandTest extends TestSlashCommand
         $this->expectExceptionMessage('HTTP 429 returned for');
 
         $commandTester->execute([]);
-    }
-
-    /**
-     * @group failure
-     */
-    public function testInvalidCommandSyntaxInteractive()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group success
-     */
-    public function testSuccessfulAddCli()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group success
-     */
-    public function testSuccessfulEditCli()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group failure
-     */
-    public function testServerExceptionFailureCli()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group failure
-     */
-    public function testUnauthorizedFailureCli()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group failure
-     */
-    public function testGetCommandFailureCli()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group failure
-     */
-    public function testTooManyRequestsCli()
-    {
-        $this->markTestIncomplete('@todo');
-    }
-
-    /**
-     * @group failure
-     */
-    public function testInvalidCommandSyntaxCli()
-    {
-        $this->markTestIncomplete('@todo');
     }
 }
 

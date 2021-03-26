@@ -67,6 +67,11 @@ abstract class TestHttpClientCase extends TestCase
         static::assertThat($response->getContent(false), static::logicalNot(static::isEmpty()), $message);
     }
 
+    public static function assertResponseHasNoContent(ResponseInterface $response, string $message = ''): void
+    {
+        static::assertThat($response->getContent(false), static::logicalAnd(static::isEmpty()), $message);
+    }
+
     public static function assertResponseContentSame(ResponseInterface $response, string $content, string $message = ''): void
     {
         self::assertThatForResponse($response, new ResponseContentSame($content), $message);

@@ -21,13 +21,15 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordClientTest extends TestHttpClientCase
 {
-    use TestDiscordClientTrait;
+    use TestDiscordClientTrait, \Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 
     /**
-     *
+     * @group legacy
      */
     public function testRequest()
     {
+        $this->expectDeprecation('Since fakerphp/faker 1.14: Accessing property "word" is deprecated, use "word()" instead.');
+        $this->expectDeprecation('Since fakerphp/faker 1.14: Accessing property "safeEmailDomain" is deprecated, use "safeEmailDomain()" instead.');
         /** @var Generator|Internet $faker */
         $faker = Factory::create();
         $content = $faker->randomHtml();

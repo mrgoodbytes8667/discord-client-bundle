@@ -5,10 +5,13 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
@@ -61,6 +64,13 @@ class DiscordClient
      * Matches non-oauth API routes
      */
     const SCOPE_API = 'https://discord\.com/api(|/v6|/v8)/((?!oauth2).)';
+
+    const ENDPOINT_CHANNEL = 'channels';
+    const ENDPOINT_GUILD = 'guilds';
+    const ENDPOINT_MESSAGE = 'messages';
+    const ENDPOINT_MEMBER = 'members';
+    const ENDPOINT_USER = 'users';
+    const USER_ME = '@me';
 
     /**
      * @var string
@@ -172,7 +182,7 @@ class DiscordClient
      */
     public function getMe()
     {
-        return $this->request(['users', '@me']);
+        return $this->request([self::ENDPOINT_USER, self::USER_ME]);
     }
 
     /**
@@ -190,19 +200,19 @@ class DiscordClient
      */
     public function getUser($userId)
     {
-        $userId = $this->normalizeIdArgument($userId, 'The "userId" argument is required.');
-        $urlParts = ['users', $userId];
+        $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
+        $urlParts = [self::ENDPOINT_USER, $userId];
         return $this->request($urlParts);
     }
 
     /**
      * @param string|string[] $url
      * @param array $options = HttpClientInterface::OPTIONS_DEFAULTS
-     * @param string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
+     * @param HttpMethods|string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
      * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
-    public function request($url, array $options = [], string $method = 'GET')
+    public function request($url, array $options = [], $method = 'GET')
     {
         if (is_array($url)) {
             $url = implode('/', $url);
@@ -287,37 +297,4 @@ class DiscordClient
 
         return $this->serializer->deserialize($json, Token::class, 'json');
     }
-
-    /**
-     * @param IdInterface|string $object
-     * @param string $message
-     * @return string
-     * @internal
-     */
-    protected function normalizeIdArgument($object, string $message = '')
-    {
-        if(empty($message))
-        {
-            if(is_object($object))
-            {
-                $message = sprintf('The "%s" argument is required.', get_class($object));
-            } else {
-                $message = 'The argument is required.';
-            }
-        }
-        $id = '';
-        if (is_null($object)) {
-            throw new BadRequestHttpException($message);
-        }
-        if ($object instanceof IdInterface) {
-            $id = $object->getId();
-        } elseif (is_string($object)) {
-            $id = $object;
-        }
-        if (empty($id)) {
-            throw new BadRequestHttpException($message);
-        }
-        return $id;
-    }
-
 }

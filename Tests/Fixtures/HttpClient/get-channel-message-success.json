@@ -1,0 +1,23 @@
+{
+    "id": "234627215184254300",
+    "type": 19,
+    "content": "Repudiandae voluptas et eveniet hic omnis omnis.",
+    "channel_id": "239800192314657438",
+    "author": {
+        "id": "247310322447430678",
+        "username": "rhea17",
+        "avatar": "a_24f13635d91a054a52938745fc037761",
+        "discriminator": "7461",
+        "public_flags": 1
+    },
+    "attachments": [],
+    "embeds": [],
+    "mentions": [],
+    "mention_roles": [],
+    "pinned": true,
+    "mention_everyone": true,
+    "tts": true,
+    "timestamp": "2021-03-23T11:41:54+01:00",
+    "edited_timestamp": null,
+    "flags": 9
+}

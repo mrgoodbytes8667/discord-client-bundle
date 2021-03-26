@@ -4,6 +4,8 @@
 namespace Bytes\DiscordBundle\Tests\Fixtures;
 
 
+use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
+
 /**
  * Class Fixture
  * @package Bytes\DiscordBundle\Tests\Fixtures
@@ -51,5 +53,23 @@ class Fixture
     public static function getFixturesData(string $file): string
     {
         return file_get_contents(self::getFixturesFile($file));
+    }
+
+    /**
+     * @param JsonErrorCodes|int $jsonCode
+     * @param string $message
+     * @param bool $encoded
+     * @return array|string
+     */
+    public static function getJsonErrorCodeData($jsonCode, string $message, bool $encoded = true) {
+        if($jsonCode instanceof JsonErrorCodes)
+        {
+            $jsonCode = $jsonCode->value;
+        }
+        if($encoded) {
+            return json_encode(['message' => $message, 'code' => $jsonCode]);
+        } else {
+            return ['message' => $message, 'code' => $jsonCode];
+        }
     }
 }

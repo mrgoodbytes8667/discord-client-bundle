@@ -5,14 +5,14 @@ namespace Bytes\DiscordBundle\Tests\MockHttpClient;
 
 
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Symfony\Component\HttpClient\Response\MockResponse;
+use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockJsonResponse
  * @package Bytes\DiscordBundle\Tests\MockHttpClient
  */
-class MockJsonResponse extends MockResponse
+class MockJsonResponse extends MockDiscordResponse
 {
     /**
      * MockJsonResponse constructor.
@@ -27,12 +27,7 @@ class MockJsonResponse extends MockResponse
     public function __construct($body = '', int $code = Response::HTTP_OK, array $info = [])
     {
         $info['response_headers']['Content-Type'] = 'application/json';
-        $info['response_headers']['X-RateLimit-Bucket'] = 'abcd1234';
-        $info['response_headers']['X-RateLimit-Limit'] = 5;
-        $info['response_headers']['X-RateLimit-Remaining'] = 4;
-        $info['response_headers']['X-RateLimit-Reset-After'] = 20.000;
-        $info['http_code'] = $code;
-        parent::__construct($body, $info);
+        parent::__construct($body, $code, $info);
     }
 
     /**
@@ -46,12 +41,27 @@ class MockJsonResponse extends MockResponse
     }
 
     /**
-     * @param string $data
+     * @param string|array $data
      * @param int $code
      * @param array $info
      * @return static
      */
-    public static function make(string $data, int $code = Response::HTTP_OK, array $info = []) {
+    public static function make($data, int $code = Response::HTTP_OK, array $info = []) {
         return new static(json_encode($data), $code, $info);
+    }
+
+    /**
+     * @param JsonErrorCodes|int $jsonCode
+     * @param string $message
+     * @param int $code
+     * @return static
+     */
+    public static function makeJsonErrorCode($jsonCode, string $message, int $code = Response::HTTP_BAD_REQUEST) {
+        if($jsonCode instanceof JsonErrorCodes)
+        {
+            $jsonCode = $jsonCode->value;
+        }
+        $body = Fixture::getJsonErrorCodeData($jsonCode, $message, false);
+        return MockJsonResponse::make($body, $code);
     }
 }

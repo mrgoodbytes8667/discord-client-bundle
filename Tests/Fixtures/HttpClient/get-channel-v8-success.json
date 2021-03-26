@@ -1,0 +1,37 @@
+{
+    "id": "283321764683376549",
+    "type": 3,
+    "guild_id": "745960888346529633",
+    "position": 1,
+    "permission_overwrites": [
+        {
+            "id": "348807741285566729",
+            "type": "member",
+            "allow": "0",
+            "deny": "1678753900"
+        },
+        {
+            "id": "685210116900135308",
+            "type": "role",
+            "allow": "6546771529",
+            "deny": "536870912"
+        },
+        {
+            "id": "192008270593664571",
+            "type": "role",
+            "allow": "6546771529",
+            "deny": "6546771529"
+        }
+    ],
+    "name": "Dolorem consequatur nulla non et reprehenderit quia. Repellat accusamus voluptatibus sed doloribus.",
+    "topic": "Commodi libero a doloremque facere molestiae possimus. Dolorem repellendus doloribus est optio. Et explicabo quis quo eaque unde et. Suscipit tempora sed nam qui sunt eligendi sed libero. Qui dignissimos dolorum quam ea et impedit. Vero necessitatibus fugiat culpa minima minima fuga eligendi. Voluptatem sed quasi autem quas porro nam. Ut ad veniam nobis minima labore quia. Placeat excepturi ducimus dicta est omnis molestias qui. Omnis deserunt sunt nobis quas. Eos totam culpa saepe vero voluptatibus inventore. Modi consequatur sit rerum voluptas et ut repellendus. In dicta aut sunt ducimus sunt soluta. Voluptatem qui ipsam ut voluptatibus aspernatur quae. Dolores corrupti ipsam consequatur reprehenderit aspernatur. Tenetur enim hic nam beatae quia vel recusandae. Numquam natus vel est assumenda mollitia repellendus odit. Repellat placeat quam ipsum quas est velit. Est est rerum excepturi facilis minima.",
+    "nsfw": true,
+    "last_message_id": "726916236731740145",
+    "bitrate": 152783,
+    "user_limit": 9,
+    "rate_limit_per_user": 9051,
+    "icon": null,
+    "parent_id": null,
+    "last_pin_timestamp": "2021-03-22T23:22:04+01:00",
+    "rtc_region": "south-africa"
+}

@@ -1,0 +1,96 @@
+[
+    {
+        "id": "745194851759249951",
+        "name": "@everyone",
+        "permissions": "650473406",
+        "position": 0,
+        "color": 0,
+        "hoist": false,
+        "managed": false,
+        "mentionable": true,
+        "tags": []
+    },
+    {
+        "id": "814148963126475922",
+        "name": "doloribus odio velit",
+        "permissions": "134219776",
+        "position": 1,
+        "color": 0,
+        "hoist": true,
+        "managed": false,
+        "mentionable": true,
+        "tags": {
+            "premium_subscriber": true
+        }
+    },
+    {
+        "id": "860960595732413599",
+        "name": "aut sunt numquam",
+        "permissions": "276951096",
+        "position": 3,
+        "color": 0,
+        "hoist": false,
+        "managed": false,
+        "mentionable": false,
+        "tags": []
+    },
+    {
+        "id": "873752412699894467",
+        "name": "quae dolor quae",
+        "permissions": "2080338937",
+        "position": 8,
+        "color": 0,
+        "hoist": false,
+        "managed": false,
+        "mentionable": true,
+        "tags": []
+    },
+    {
+        "id": "849907276187156624",
+        "name": "aut laudantium inventore",
+        "permissions": "1095372248",
+        "position": 6,
+        "color": 0,
+        "hoist": true,
+        "managed": false,
+        "mentionable": true,
+        "tags": {
+            "integration_id": "438402119681846056"
+        }
+    },
+    {
+        "id": "883656625662995190",
+        "name": "error eos atque",
+        "permissions": "1658279063",
+        "position": 7,
+        "color": 15467660,
+        "hoist": true,
+        "managed": false,
+        "mentionable": true,
+        "tags": {
+            "premium_subscriber": true
+        }
+    },
+    {
+        "id": "888323623921264093",
+        "name": "ipsa ratione unde",
+        "permissions": "75497632",
+        "position": 3,
+        "color": 6579456,
+        "hoist": false,
+        "managed": false,
+        "mentionable": false,
+        "tags": []
+    },
+    {
+        "id": "858168616538734565",
+        "name": "qui pariatur perferendis",
+        "permissions": "835723786",
+        "position": 6,
+        "color": 0,
+        "hoist": true,
+        "managed": false,
+        "mentionable": true,
+        "tags": []
+    }
+]

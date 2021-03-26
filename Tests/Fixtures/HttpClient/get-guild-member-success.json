@@ -1,0 +1,17 @@
+{
+    "roles": [],
+    "nick": "candice91",
+    "premium_since": "2019-03-30T18:10:16.000000+01:00",
+    "joined_at": "2019-03-30T18:10:16.000000+01:00",
+    "is_pending": true,
+    "pending": true,
+    "user": {
+        "id": "253231274338545171",
+        "username": "beryl.hermann",
+        "avatar": "95a2fbdbcc4a8f073393ee99fe6205d0",
+        "discriminator": "2803",
+        "public_flags": 3
+    },
+    "mute": true,
+    "deaf": true
+}

@@ -1,0 +1,38 @@
+{
+    "id": "276731437426895526",
+    "type": 6,
+    "name": "Est a ad et dolore. Exercitationem eum inventore et atque aspernatur. Eveniet et fugiat voluptas.",
+    "position": 9,
+    "parent_id": null,
+    "bitrate": 209267,
+    "user_limit": 6,
+    "rtc_region": null,
+    "guild_id": "768770995907941821",
+    "permission_overwrites": [
+        {
+            "id": "768165263601970457",
+            "type": "role",
+            "allow": 0,
+            "deny": 168299016,
+            "allowNew": "0",
+            "denyNew": "6546771529"
+        },
+        {
+            "id": "346277868078180934",
+            "type": "member",
+            "allow": 1304494597,
+            "deny": 1284084126,
+            "allowNew": "6546771529",
+            "denyNew": "6546771529"
+        },
+        {
+            "id": "656049374309134501",
+            "type": "role",
+            "allow": 2008661887,
+            "deny": 2123317230,
+            "allowNew": "6546771529",
+            "denyNew": "2123317230"
+        }
+    ],
+    "nsfw": true
+}
