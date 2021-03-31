@@ -13,9 +13,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * Class SlashCommandsPassTest
  * @package Bytes\DiscordBundle\Tests\DependencyInjection\Compiler
- *
- * @covers SlashCommandsPass
- * @covers SlashCommandsHandlerCollection
  */
 class SlashCommandsPassTest extends TestCase
 {

@@ -33,13 +33,9 @@ class MockJsonTooManyRetriesResponse extends MockJsonResponse
         $reset->add(new DateInterval(sprintf('PT%dS', ceil($retryAfter))));
 
         $body = json_encode(["message" => "You are being rate limited.", "retry_after" => $retryAfter, "global" => false]);
-//        $info['response_headers']['Content-Type'] = 'application/json';
-//        $info['response_headers']['X-RateLimit-Limit'] = 5;
         $info['response_headers']['X-RateLimit-Remaining'] = 0;
         $info['response_headers']['X-RateLimit-Reset'] = $reset->getTimestamp();
         $info['response_headers']['X-RateLimit-Reset-After'] = $retryAfter;
-//        $info['response_headers']['X-RateLimit-Bucket'] = 'abcd1234';
-//        $info['http_code'] = Response::HTTP_TOO_MANY_REQUESTS;
         parent::__construct($body, Response::HTTP_TOO_MANY_REQUESTS, $info);
     }
 }
