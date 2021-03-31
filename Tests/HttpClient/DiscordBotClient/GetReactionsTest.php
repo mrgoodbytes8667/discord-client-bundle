@@ -2,35 +2,16 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
-use Bytes\Common\Faker\Providers\Discord;
-use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\HttpClient\TestHttpClientCase;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordResponseBundle\Enums\Emojis;
-use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
-use Bytes\DiscordResponseBundle\Enums\Permissions;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\Message;
-use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
-use DateTime;
-use Faker\Factory;
-use Faker\Generator;
-use Symfony\Component\HttpClient\MockHttpClient;
+use Generator;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use function Symfony\Component\String\u;
 
 /**
  * Class GetReactionsTest
@@ -62,15 +43,15 @@ class GetReactionsTest extends TestDiscordBotClientCase
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     public function provideValidGetReaction()
     {
         $this->setupFaker();
 
-        foreach($this->provideValidCreateReaction() as $message) {
-            foreach([$this->faker->userId(), null] as $before) {
-                foreach([$this->faker->userId(), null] as $after) {
+        foreach ($this->provideValidCreateReaction() as $message) {
+            foreach ([$this->faker->userId(), null] as $before) {
+                foreach ([$this->faker->userId(), null] as $after) {
                     foreach ([-1, 0, 1, 10, 50, 90, 99, 100, 101, null] as $limit) {
                         yield ['message' => $message['message'], 'channel' => $message['channel'], 'emoji' => $message['emoji'], 'before' => $before, 'after' => $after, 'limit' => $limit];
                     }
@@ -88,7 +69,7 @@ class GetReactionsTest extends TestDiscordBotClientCase
      */
     public function testGetReactionsBadGuildArgument($message, $channel)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
@@ -99,8 +80,8 @@ class GetReactionsTest extends TestDiscordBotClientCase
      * @dataProvider provideJsonErrorCodes
      * @throws ClientExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
      */
     public function testGetReactionsJsonErrorCode($jsonCode, string $message, int $httpCode)
     {

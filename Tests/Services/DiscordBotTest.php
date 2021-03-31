@@ -7,9 +7,12 @@ use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\JsonErrorCodesProviderTrait;
+use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordBundle\Tests\TestDiscordGuildTrait;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\DiscordResponseBundle\Objects\Overwrite;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\User;
@@ -29,7 +32,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotTest extends TestCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait, TestDiscordTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait, TestDiscordTrait, JsonErrorCodesProviderTrait;
 
     /**
      *
@@ -244,5 +247,71 @@ class DiscordBotTest extends TestCase
 
         $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
         $client->getUser($userId);
+    }
+
+    /**
+     * @dataProvider provideValidGuild
+     * @param string $file
+     * @param $userId
+     */
+    public function testGetChannels(string $file, $guildId)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture($file),
+        ]));
+
+        $channels = $client->getChannels($guildId);
+        $this->assertCount(12, $channels);
+
+        $channel = $channels[0];
+        $this->assertEquals('276921226399262614', $channel->getId());
+        $this->assertEquals(6, $channel->getType());
+        $this->assertEquals('721716783525430558', $channel->getGuildId());
+        $this->assertEquals(5, $channel->getPosition());
+        $this->assertEquals('Ad sed blanditiis incidunt quae. Et unde optio corporis. Nihil eum ad odio ab.', $channel->getName());
+
+        $this->assertCount(3, $channel->getPermissionOverwrites());
+        $overwrite = $channel->getPermissionOverwrites()[0];
+
+        $this->assertInstanceOf(Overwrite::class, $overwrite);
+        $this->assertEquals("263397620755496871", $overwrite->getId());
+        $this->assertEquals('role', $overwrite->getType());
+        $this->assertEquals('6546771529', $overwrite->getAllow());
+        $this->assertEquals('6546771529', $overwrite->getDeny());
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideValidGuild()
+    {
+        $user = $this
+            ->getMockBuilder(IdInterface::class)
+            ->getMock();
+        $user->method('getId')
+            ->willReturn('230858112993375816');
+
+        yield ['file' => 'HttpClient/get-channels-v8-success.json', 'guildId' => '230858112993375816'];
+        yield ['file' => 'HttpClient/get-channels-v8-success.json', 'guildId' => $user];
+    }
+
+    /**
+     * @dataProvider provideJsonErrorCodes
+     * @throws ClientExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     */
+    public function testGetChannelsJsonErrorCode($jsonCode, string $message, int $httpCode)
+    {
+        $this->expectException(ClientExceptionInterface::class);
+        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $httpCode));
+
+        $client = $this->setupClient(MockClient::jsonErrorCode($jsonCode, $message, $httpCode));
+
+        $channels = $client->getChannels('123');
+
+
+        $this->assertCount(12, $channels);
     }
 }

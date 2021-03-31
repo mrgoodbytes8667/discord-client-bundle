@@ -5,10 +5,13 @@ namespace Bytes\DiscordBundle\Services\Client;
 
 
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Guild;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\User;
+use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -112,7 +115,7 @@ class DiscordBot
      *
      * @param IdInterface|string $guild
      * @param bool $withCounts
-     * @param array $attributes
+     * @param array $context
      * @param string $class = [PartialGuild::class, Guild::class][$any]
      * @return Guild|null
      *
@@ -122,18 +125,18 @@ class DiscordBot
      * @throws TransportExceptionInterface
      * @link https://discord.com/developers/docs/resources/guild#get-guild
      */
-    public function getGuild($guild, bool $withCounts = false, array $attributes = [], string $class = Guild::class)
+    public function getGuild($guild, bool $withCounts = false, array $context = [], string $class = Guild::class)
     {
         $response = $this->client->getGuild($guild, $withCounts);
         $content = $response->getContent();
-        return $this->serializer->deserialize($content, $class, 'json', $attributes);
+        return $this->serializer->deserialize($content, $class, 'json', $context);
     }
 
     /**
      * Get User
      * Returns a user object for a given user ID.
      * @param IdInterface|string $userId
-     * @param array $attributes
+     * @param array $context
      *
      * @return User|null
      *
@@ -144,10 +147,52 @@ class DiscordBot
      *
      * @link https://discord.com/developers/docs/resources/user#get-user
      */
-    public function getUser($userId, array $attributes = [])
+    public function getUser($userId, array $context = [])
     {
         $response = $this->client->getUser($userId);
         $content = $response->getContent();
-        return $this->serializer->deserialize($content, User::class, 'json', $attributes);
+        return $this->serializer->deserialize($content, User::class, 'json', $context);
+    }
+
+    /**
+     * Get Guild Channels
+     * Returns a list of guild channel objects.
+     * @param GuildIdInterface|IdInterface|string $guildId
+     * @param array $context
+     *
+     * @return Channel[]|null
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/guild#get-guild-channels
+     */
+    public function getChannels($guildId, array $context = [])
+    {
+        $response = $this->client->getChannels($guildId);
+        $content = $response->getContent();
+        return $this->serializer->deserialize($content, '\Bytes\DiscordResponseBundle\Objects\Channel[]', 'json', $context);
+    }
+
+    /**
+     * Get Channel
+     * Get a channel by ID. Returns a channel object.
+     * @param IdInterface|string $channelId
+     * @param array $context
+     *
+     * @return Channel|null
+     *
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getChannel($channelId, array $context = [])
+    {
+        $response = $this->client->getChannel($channelId);
+        $content = $response->getContent();
+        return $this->serializer->deserialize($content, Channel::class, 'json', $context);
     }
 }
