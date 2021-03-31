@@ -2,11 +2,9 @@
 
 namespace Bytes\DiscordBundle\Tests\Services;
 
-use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Services\Client\DiscordUser;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordUserTest extends TestCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait, TestDiscordTrait, CommandProviderTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, TestDiscordTrait, CommandProviderTrait, DiscordClientSetupTrait;
 
     /**
      * @param HttpClientInterface $httpClient
@@ -26,7 +24,7 @@ class DiscordUserTest extends TestCase
      */
     protected function setupClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordUserClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->serializer, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT);
+        $client = $this->setupUserClient($httpClient);
         return new DiscordUser($client, $this->serializer);
     }
 }

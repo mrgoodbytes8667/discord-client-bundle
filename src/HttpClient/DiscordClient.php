@@ -19,6 +19,8 @@ use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\SerializerAwareInterface;
+use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -33,8 +35,10 @@ use function Symfony\Component\String\u;
  * Class DiscordClient
  * @package Bytes\DiscordBundle\HttpClient
  */
-class DiscordClient
+class DiscordClient implements SerializerAwareInterface
 {
+    use SerializerAwareTrait;
+
     /**
      *
      */
@@ -97,7 +101,6 @@ class DiscordClient
      * @param HttpClientInterface $httpClient
      * @param RetryStrategyInterface|null $strategy
      * @param ValidatorInterface $validator
-     * @param SerializerInterface $serializer
      * @param string $clientId
      * @param string $clientSecret
      * @param string $botToken
@@ -105,7 +108,7 @@ class DiscordClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, SerializerInterface $serializer, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $headers = [];
         if (!empty($userAgent)) {
@@ -149,7 +152,6 @@ class DiscordClient
         ], $defaultOptionsByRegexp), ['query', 'body'], $defaultRegexp), $strategy);
         $this->clientId = $clientId;
         $this->validator = $validator;
-        $this->serializer = $serializer;
     }
 
     /**

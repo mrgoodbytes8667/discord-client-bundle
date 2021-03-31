@@ -41,25 +41,25 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface
         $definition->replaceArgument(4, $config['user']);
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord');
-        $definition->replaceArgument(4, $config['client_id']);
-        $definition->replaceArgument(5, $config['client_secret']);
-        $definition->replaceArgument(6, $config['bot_token']);
-        $definition->replaceArgument(7, $config['user_agent']);
+        $definition->replaceArgument(3, $config['client_id']);
+        $definition->replaceArgument(4, $config['client_secret']);
+        $definition->replaceArgument(5, $config['bot_token']);
+        $definition->replaceArgument(6, $config['user_agent']);
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord.bot');
-        $definition->replaceArgument(4, $config['client_id']);
-        $definition->replaceArgument(5, $config['client_secret']);
-        $definition->replaceArgument(6, $config['bot_token']);
-        $definition->replaceArgument(7, $config['user_agent']);
+        $definition->replaceArgument(3, $config['client_id']);
+        $definition->replaceArgument(4, $config['client_secret']);
+        $definition->replaceArgument(5, $config['bot_token']);
+        $definition->replaceArgument(6, $config['user_agent']);
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord.user');
+        $definition->replaceArgument(3, $config['client_id']);
+        $definition->replaceArgument(4, $config['client_secret']);
+        $definition->replaceArgument(5, $config['user_agent']);
+
+        $definition = $container->getDefinition('bytes_discord.httpclient.discord.token');
         $definition->replaceArgument(4, $config['client_id']);
         $definition->replaceArgument(5, $config['client_secret']);
         $definition->replaceArgument(6, $config['user_agent']);
-
-        $definition = $container->getDefinition('bytes_discord.httpclient.discord.token');
-        $definition->replaceArgument(5, $config['client_id']);
-        $definition->replaceArgument(6, $config['client_secret']);
-        $definition->replaceArgument(7, $config['user_agent']);
     }
 }

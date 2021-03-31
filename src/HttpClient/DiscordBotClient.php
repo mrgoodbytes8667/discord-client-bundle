@@ -48,7 +48,6 @@ class DiscordBotClient extends DiscordClient
      * @param HttpClientInterface $httpClient
      * @param RetryStrategyInterface|null $strategy
      * @param ValidatorInterface $validator
-     * @param SerializerInterface $serializer
      * @param string $clientId
      * @param string $clientSecret
      * @param string $botToken
@@ -56,7 +55,7 @@ class DiscordBotClient extends DiscordClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, SerializerInterface $serializer, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $defaultOptionsByRegexp = array_merge_recursive([
             // Matches non-oauth API routes
@@ -66,7 +65,7 @@ class DiscordBotClient extends DiscordClient
                 ],
             ],
         ], $defaultOptionsByRegexp);
-        parent::__construct($httpClient, $strategy, $validator, $serializer, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        parent::__construct($httpClient, $strategy, $validator, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
     }
 
     /**

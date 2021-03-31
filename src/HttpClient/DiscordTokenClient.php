@@ -27,10 +27,22 @@ class DiscordTokenClient extends DiscordClient
      */
     private $urlGenerator;
 
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    /**
+     * DiscordTokenClient constructor.
+     * @param HttpClientInterface $httpClient
+     * @param RetryStrategyInterface|null $strategy
+     * @param ValidatorInterface $validator
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param string $clientId
+     * @param string $clientSecret
+     * @param string|null $userAgent
+     * @param array $defaultOptionsByRegexp
+     * @param string|null $defaultRegexp
+     */
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, UrlGeneratorInterface $urlGenerator, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $this->urlGenerator = $urlGenerator;
-        parent::__construct($httpClient, $strategy, $validator, $serializer, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        parent::__construct($httpClient, $strategy, $validator, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
     }
 
     /**

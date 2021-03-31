@@ -2,18 +2,16 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use DateTime;
 use Faker\Factory;
 use Faker\Generator;
 use Faker\Provider\Internet;
 use InvalidArgumentException;
+use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordClientTest
@@ -21,7 +19,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordClientTest extends TestHttpClientCase
 {
-    use TestDiscordClientTrait, \Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
+    use TestDiscordClientTrait, ExpectDeprecationTrait, DiscordClientSetupTrait {
+        DiscordClientSetupTrait::setupBaseClient as setupClient;
+    }
 
     /**
      * @group legacy
@@ -44,15 +44,6 @@ class DiscordClientTest extends TestHttpClientCase
         $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
         $this->assertResponseHasContent($response);
         $this->assertResponseContentSame($response, $content);
-    }
-
-    /**
-     * @param HttpClientInterface $httpClient
-     * @return DiscordClient
-     */
-    protected function setupClient(HttpClientInterface $httpClient)
-    {
-        return new DiscordClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->serializer, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
     }
 
     /**

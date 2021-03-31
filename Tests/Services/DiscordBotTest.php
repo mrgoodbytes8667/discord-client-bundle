@@ -2,11 +2,9 @@
 
 namespace Bytes\DiscordBundle\Tests\Services;
 
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\DiscordBundle\Tests\JsonErrorCodesProviderTrait;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
@@ -15,9 +13,9 @@ use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Overwrite;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
-use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -32,7 +30,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotTest extends TestCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait, TestDiscordTrait, JsonErrorCodesProviderTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, CommandProviderTrait, TestDiscordGuildTrait, TestDiscordTrait, JsonErrorCodesProviderTrait, DiscordClientSetupTrait;
 
     /**
      *
@@ -58,7 +56,7 @@ class DiscordBotTest extends TestCase
      */
     protected function setupClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordBotClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->serializer, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
+        $client = $this->setupBotClient($httpClient);
         return new DiscordBot($client, $this->serializer);
     }
 
@@ -158,7 +156,7 @@ class DiscordBotTest extends TestCase
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     public function provideValidGetGuildFixtureFiles()
     {
@@ -179,12 +177,12 @@ class DiscordBotTest extends TestCase
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     public function provideInvalidGetGuildFixtureFiles()
     {
         foreach ($this->provideClientExceptionResponses() as $clientExceptionResponse) {
-            foreach($this->provideValidGetGuildFixtureFiles() as $index => $value) {
+            foreach ($this->provideValidGetGuildFixtureFiles() as $index => $value) {
                 yield ['file' => $value['file'], 'withCounts' => $value['withCounts'], 'code' => $clientExceptionResponse['code']];
             }
         }
@@ -206,7 +204,7 @@ class DiscordBotTest extends TestCase
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     public function provideValidUsers()
     {
@@ -223,12 +221,12 @@ class DiscordBotTest extends TestCase
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     public function provideInvalidUsers()
     {
         foreach ($this->provideClientExceptionResponses() as $clientExceptionResponse) {
-            foreach($this->provideValidUsers() as $index => $value) {
+            foreach ($this->provideValidUsers() as $index => $value) {
                 yield ['file' => $value['file'], 'userId' => $value['userId'], 'code' => $clientExceptionResponse['code']];
             }
         }
@@ -281,7 +279,7 @@ class DiscordBotTest extends TestCase
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     public function provideValidGuild()
     {

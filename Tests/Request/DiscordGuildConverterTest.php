@@ -2,17 +2,13 @@
 
 namespace Bytes\DiscordBundle\Tests\Request;
 
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordBundle\Tests\TestDiscordGuildTrait;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\Tests\Common\TestFullSerializerTrait;
-use Bytes\Tests\Common\TestFullValidatorTrait;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +20,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordGuildConverterTest extends TestParamConverterCase
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait, TestDiscordGuildTrait;
+    use TestDiscordGuildTrait, DiscordClientSetupTrait;
 
     /**
      *
@@ -51,7 +47,7 @@ class DiscordGuildConverterTest extends TestParamConverterCase
      */
     protected function setupClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordBotClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->serializer, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
+        $client = $this->setupBotClient($httpClient);
         return new DiscordBot($client, $this->serializer);
     }
 
