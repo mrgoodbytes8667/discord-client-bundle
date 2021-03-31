@@ -10,6 +10,7 @@ use Bytes\DiscordBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
@@ -37,6 +38,7 @@ return static function (ContainerConfigurator $container) {
         ])
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
+        ->call('setResponse', [service('bytes_discord.httpclient.discord.response')])
         ->lazy()
         ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
         ->public();
@@ -52,6 +54,7 @@ return static function (ContainerConfigurator $container) {
         ])
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
+        ->call('setResponse', [service('bytes_discord.httpclient.discord.response')])
         ->alias(DiscordBotClient::class, 'bytes_discord.httpclient.discord.bot')
         ->public();
 
@@ -65,6 +68,7 @@ return static function (ContainerConfigurator $container) {
         ])
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
+        ->call('setResponse', [service('bytes_discord.httpclient.discord.response')])
         ->alias(DiscordUserClient::class, 'bytes_discord.httpclient.discord.user')
         ->public();
 
@@ -79,8 +83,18 @@ return static function (ContainerConfigurator $container) {
         ])
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
+        ->call('setResponse', [service('bytes_discord.httpclient.discord.response')])
         ->lazy()
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
+        ->public();
+    //endregion
+
+    //region Response
+    $services->set('bytes_discord.httpclient.discord.response', DiscordResponse::class)
+        ->args([
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+        ])
+        ->alias(DiscordResponse::class, 'bytes_discord.httpclient.discord.response')
         ->public();
     //endregion
 

@@ -3,6 +3,7 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
+use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\Tests\Common\Constraint\ResponseContentSame;
 use Bytes\Tests\Common\Constraint\ResponseStatusCodeSame;
 use Bytes\Tests\Common\TestFullSerializerTrait;
@@ -22,8 +23,14 @@ abstract class TestHttpClientCase extends TestCase
 {
     use TestFullSerializerTrait, TestFullValidatorTrait;
 
-    public static function assertResponseIsSuccessful(ResponseInterface $response, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param string $message
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public static function assertResponseIsSuccessful(ResponseInterface|DiscordResponse $response, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         self::assertThat(
             $response->getStatusCode(),
             self::logicalAnd(
@@ -34,13 +41,29 @@ abstract class TestHttpClientCase extends TestCase
         );
     }
 
-    public static function assertResponseStatusCodeSame(ResponseInterface $response, int $expectedCode, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param int $expectedCode
+     * @param string $message
+     */
+    public static function assertResponseStatusCodeSame(ResponseInterface|DiscordResponse $response, int $expectedCode, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         self::assertThatForResponse($response, new ResponseStatusCodeSame($expectedCode), $message);
     }
 
-    public static function assertThatForResponse(ResponseInterface $response, Constraint $constraint, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param Constraint $constraint
+     * @param string $message
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public static function assertThatForResponse(ResponseInterface|DiscordResponse $response, Constraint $constraint, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         try {
             self::assertThat($response, $constraint, $message);
         } catch (ExpectationFailedException $exception) {
@@ -57,23 +80,61 @@ abstract class TestHttpClientCase extends TestCase
         }
     }
 
-    public static function assertResponseHasHeader(ResponseInterface $response, string $headerName, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param string $headerName
+     * @param string $message
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public static function assertResponseHasHeader(ResponseInterface|DiscordResponse $response, string $headerName, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         self::assertThatForResponse($response, new ResponseConstraint\ResponseHasHeader($headerName), $message);
     }
 
-    public static function assertResponseHasContent(ResponseInterface $response, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param string $message
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public static function assertResponseHasContent(ResponseInterface|DiscordResponse $response, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         static::assertThat($response->getContent(false), static::logicalNot(static::isEmpty()), $message);
     }
 
-    public static function assertResponseHasNoContent(ResponseInterface $response, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param string $message
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public static function assertResponseHasNoContent(ResponseInterface|DiscordResponse $response, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         static::assertThat($response->getContent(false), static::logicalAnd(static::isEmpty()), $message);
     }
 
-    public static function assertResponseContentSame(ResponseInterface $response, string $content, string $message = ''): void
+    /**
+     * @param ResponseInterface|DiscordResponse $response
+     * @param string $content
+     * @param string $message
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public static function assertResponseContentSame(ResponseInterface|DiscordResponse $response, string $content, string $message = ''): void
     {
+        if($response instanceof DiscordResponse) { $response = $response->getResponse(); }
         self::assertThatForResponse($response, new ResponseContentSame($content), $message);
     }
 

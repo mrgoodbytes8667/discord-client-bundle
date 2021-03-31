@@ -6,6 +6,7 @@ namespace Bytes\DiscordBundle\Tests;
 
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
@@ -77,6 +78,7 @@ trait DiscordClientSetupTrait
     {
         $client->setSerializer($this->serializer);
         $client->setValidator($this->validator);
+        $client->setResponse(DiscordResponse::make($this->serializer));
         return $client;
     }
 }
