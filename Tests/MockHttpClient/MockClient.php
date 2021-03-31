@@ -4,6 +4,7 @@
 namespace Bytes\DiscordBundle\Tests\MockHttpClient;
 
 
+use Bytes\DiscordBundle\Tests\Command\MockTooManyRequestsCallback;
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -74,5 +75,14 @@ class MockClient
     public static function requests(...$requests)
     {
         return static::client($requests);
+    }
+
+    /**
+     * @return MockHttpClient
+     * @throws \Exception
+     */
+    public static function rateLimit(float $retryAfter = 0.123)
+    {
+        return static::client(MockTooManyRequestsCallback::getResponses($retryAfter));
     }
 }
