@@ -31,9 +31,9 @@ trait DiscordClientSetupTrait
      */
     protected function setupBaseClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordClient($httpClient, new DiscordRetryStrategy(), $this->validator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
+        $client = new DiscordClient($httpClient, new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
         $client->setSerializer($this->serializer);
-        return $client;
+        return $this->postClientSetup($client);
     }
 
     /**
@@ -42,9 +42,9 @@ trait DiscordClientSetupTrait
      */
     protected function setupBotClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordBotClient($httpClient, new DiscordRetryStrategy(), $this->validator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
+        $client = new DiscordBotClient($httpClient, new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT);
         $client->setSerializer($this->serializer);
-        return $client;
+        return $this->postClientSetup($client);
     }
 
     /**
@@ -53,9 +53,9 @@ trait DiscordClientSetupTrait
      */
     protected function setupUserClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordUserClient($httpClient, new DiscordRetryStrategy(), $this->validator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT);
+        $client = new DiscordUserClient($httpClient, new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT);
         $client->setSerializer($this->serializer);
-        return $client;
+        return $this->postClientSetup($client);
     }
 
     /**
@@ -64,8 +64,19 @@ trait DiscordClientSetupTrait
      */
     protected function setupTokenClient(HttpClientInterface $httpClient)
     {
-        $client = new DiscordTokenClient($httpClient, new DiscordRetryStrategy(), $this->validator, $this->urlGenerator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT);
+        $client = new DiscordTokenClient($httpClient, new DiscordRetryStrategy(), $this->urlGenerator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT);
         $client->setSerializer($this->serializer);
+        return $this->postClientSetup($client);
+    }
+
+    /**
+     * @param DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient $client
+     * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient
+     */
+    private function postClientSetup($client)
+    {
+        $client->setSerializer($this->serializer);
+        $client->setValidator($this->validator);
         return $client;
     }
 }

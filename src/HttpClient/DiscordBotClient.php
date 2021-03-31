@@ -6,33 +6,22 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
-use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
-use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\ErrorInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\Member;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\Content;
-use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
-use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
 
 /**
  * Class DiscordBotClient
@@ -47,7 +36,6 @@ class DiscordBotClient extends DiscordClient
      * DiscordBotClient constructor.
      * @param HttpClientInterface $httpClient
      * @param RetryStrategyInterface|null $strategy
-     * @param ValidatorInterface $validator
      * @param string $clientId
      * @param string $clientSecret
      * @param string $botToken
@@ -55,7 +43,7 @@ class DiscordBotClient extends DiscordClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $defaultOptionsByRegexp = array_merge_recursive([
             // Matches non-oauth API routes
@@ -65,7 +53,7 @@ class DiscordBotClient extends DiscordClient
                 ],
             ],
         ], $defaultOptionsByRegexp);
-        parent::__construct($httpClient, $strategy, $validator, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
     }
 
     /**
@@ -287,7 +275,7 @@ class DiscordBotClient extends DiscordClient
 
         if (!empty($filter)) {
             $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
-            if(!empty($messageId)) {
+            if (!empty($messageId)) {
                 switch (strtolower($filter)) {
                     case 'around':
                     case 'before':
@@ -359,7 +347,7 @@ class DiscordBotClient extends DiscordClient
         if (!($content instanceof Content)) {
             $data = new Content();
 
-            if(is_string($content) && !empty($content)) {
+            if (is_string($content) && !empty($content)) {
                 $data->setContent($content);
             }
 
@@ -420,7 +408,7 @@ class DiscordBotClient extends DiscordClient
     public function deleteMessage($messageId, $channelId = null)
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if($messageId instanceof Message) {
+        if ($messageId instanceof Message) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -460,14 +448,13 @@ class DiscordBotClient extends DiscordClient
      * @param IdInterface|string $userId
      *
      * @return ResponseInterface
-
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-member
      */
     public function getGuildMember($guildId, $userId)
     {
-        $guildId = IdNormalizer::normalizeGuildIdArgument($guildId , 'The "guildId" argument is required and cannot be blank.');
+        $guildId = IdNormalizer::normalizeGuildIdArgument($guildId, 'The "guildId" argument is required and cannot be blank.');
         $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required and cannot be blank.');
         return $this->request([
             static::ENDPOINT_GUILD,
@@ -483,14 +470,13 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string $guildId
      *
      * @return ResponseInterface
-
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-roles
      */
     public function getGuildRoles($guildId)
     {
-        $guildId = IdNormalizer::normalizeGuildIdArgument($guildId , 'The "guildId" argument is required and cannot be blank.');
+        $guildId = IdNormalizer::normalizeGuildIdArgument($guildId, 'The "guildId" argument is required and cannot be blank.');
         return $this->request([
             self::ENDPOINT_GUILD,
             $guildId,
@@ -516,7 +502,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function createGuildRole($guildId, ?string $name = null, ?int $permissions = null, ?int $color = null, ?bool $hoist = null, ?bool $mentionable = null)
     {
-        $guildId = IdNormalizer::normalizeGuildIdArgument($guildId , 'The "guildId" argument is required and cannot be blank.');
+        $guildId = IdNormalizer::normalizeGuildIdArgument($guildId, 'The "guildId" argument is required and cannot be blank.');
         $options = [];
         if (!empty($name)) {
             $options['name'] = $name;
@@ -561,7 +547,7 @@ class DiscordBotClient extends DiscordClient
     public function createReaction($messageId, string $emoji, $channelId = null)
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if($messageId instanceof Message) {
+        if ($messageId instanceof Message) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -602,7 +588,7 @@ class DiscordBotClient extends DiscordClient
     public function getReactions($messageId, string $emoji, $channelId = null, ?string $before = null, ?string $after = null, ?int $limit = 25)
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if($messageId instanceof Message) {
+        if ($messageId instanceof Message) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -613,12 +599,10 @@ class DiscordBotClient extends DiscordClient
         $query = [
             'limit' => self::normalizeLimit($limit, 25)
         ];
-        if(!empty($before))
-        {
+        if (!empty($before)) {
             $query['before'] = $before;
         }
-        if(!empty($after))
-        {
+        if (!empty($after)) {
             $query['after'] = $after;
         }
         return $this->request([

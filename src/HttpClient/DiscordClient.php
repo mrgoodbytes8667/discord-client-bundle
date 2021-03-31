@@ -5,11 +5,7 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
@@ -18,7 +14,6 @@ use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -100,7 +95,6 @@ class DiscordClient implements SerializerAwareInterface
      * DiscordClient constructor.
      * @param HttpClientInterface $httpClient
      * @param RetryStrategyInterface|null $strategy
-     * @param ValidatorInterface $validator
      * @param string $clientId
      * @param string $clientSecret
      * @param string $botToken
@@ -108,7 +102,7 @@ class DiscordClient implements SerializerAwareInterface
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $headers = [];
         if (!empty($userAgent)) {
@@ -151,7 +145,6 @@ class DiscordClient implements SerializerAwareInterface
             ],
         ], $defaultOptionsByRegexp), ['query', 'body'], $defaultRegexp), $strategy);
         $this->clientId = $clientId;
-        $this->validator = $validator;
     }
 
     /**
@@ -169,42 +162,6 @@ class DiscordClient implements SerializerAwareInterface
     public function getGuilds(): ResponseInterface
     {
         return $this->request($this->buildURL('users/@me/guilds', 'v6'));
-    }
-
-    /**
-     * Get Current User
-     * Returns the user object of the requester's account. For OAuth2, this requires the identify scope, which will
-     * return the object without an email, and optionally the email scope, which returns the object with an email.
-     *
-     * @return ResponseInterface
-     *
-     * @throws TransportExceptionInterface
-     *
-     * @link https://discord.com/developers/docs/resources/user#get-current-user
-     */
-    public function getMe()
-    {
-        return $this->request([self::ENDPOINT_USER, self::USER_ME]);
-    }
-
-    /**
-     * Get User
-     * Returns a user object for a given user ID.
-     * @param IdInterface|string $userId
-     *
-     * @return ResponseInterface
-     *
-     * @throws TransportExceptionInterface
-     *
-     * @link https://discord.com/developers/docs/resources/user#get-user
-     *
-     * @internal getUser is not available in DiscordUserClient
-     */
-    public function getUser($userId)
-    {
-        $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
-        $urlParts = [self::ENDPOINT_USER, $userId];
-        return $this->request($urlParts);
     }
 
     /**
@@ -255,6 +212,42 @@ class DiscordClient implements SerializerAwareInterface
     }
 
     /**
+     * Get Current User
+     * Returns the user object of the requester's account. For OAuth2, this requires the identify scope, which will
+     * return the object without an email, and optionally the email scope, which returns the object with an email.
+     *
+     * @return ResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/user#get-current-user
+     */
+    public function getMe()
+    {
+        return $this->request([self::ENDPOINT_USER, self::USER_ME]);
+    }
+
+    /**
+     * Get User
+     * Returns a user object for a given user ID.
+     * @param IdInterface|string $userId
+     *
+     * @return ResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/user#get-user
+     *
+     * @internal getUser is not available in DiscordUserClient
+     */
+    public function getUser($userId)
+    {
+        $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
+        $urlParts = [self::ENDPOINT_USER, $userId];
+        return $this->request($urlParts);
+    }
+
+    /**
      * @param string $code
      * @param string $redirect
      * @param array $scopes
@@ -298,5 +291,15 @@ class DiscordClient implements SerializerAwareInterface
         $json = $response->getContent();
 
         return $this->serializer->deserialize($json, Token::class, 'json');
+    }
+
+    /**
+     * @param ValidatorInterface $validator
+     * @return $this
+     */
+    public function setValidator(ValidatorInterface $validator): self
+    {
+        $this->validator = $validator;
+        return $this;
     }
 }

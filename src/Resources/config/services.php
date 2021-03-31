@@ -30,13 +30,13 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             null, // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
-            service('validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
         ->call('setSerializer', [service('serializer')])
+        ->call('setValidator', [service('validator')])
         ->lazy()
         ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
         ->public();
@@ -45,13 +45,13 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('bytes_discord.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
-            service('validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
         ->call('setSerializer', [service('serializer')])
+        ->call('setValidator', [service('validator')])
         ->alias(DiscordBotClient::class, 'bytes_discord.httpclient.discord.bot')
         ->public();
 
@@ -59,12 +59,12 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('bytes_discord.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
-            service('validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['user_agent']
         ])
         ->call('setSerializer', [service('serializer')])
+        ->call('setValidator', [service('validator')])
         ->alias(DiscordUserClient::class, 'bytes_discord.httpclient.discord.user')
         ->public();
 
@@ -72,13 +72,13 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             null, // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
-            service('validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
             service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['user_agent']
         ])
         ->call('setSerializer', [service('serializer')])
+        ->call('setValidator', [service('validator')])
         ->lazy()
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
         ->public();

@@ -8,8 +8,6 @@ use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -31,7 +29,6 @@ class DiscordTokenClient extends DiscordClient
      * DiscordTokenClient constructor.
      * @param HttpClientInterface $httpClient
      * @param RetryStrategyInterface|null $strategy
-     * @param ValidatorInterface $validator
      * @param UrlGeneratorInterface $urlGenerator
      * @param string $clientId
      * @param string $clientSecret
@@ -39,10 +36,10 @@ class DiscordTokenClient extends DiscordClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, ValidatorInterface $validator, UrlGeneratorInterface $urlGenerator, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, UrlGeneratorInterface $urlGenerator, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $this->urlGenerator = $urlGenerator;
-        parent::__construct($httpClient, $strategy, $validator, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
     }
 
     /**
