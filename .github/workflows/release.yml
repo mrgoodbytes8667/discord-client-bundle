@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        php: [ 7.4, 8.0 ]
+        php: [ 8.0 ]
         dependency-version: [ prefer-stable, prefer-lowest ]
         os: [ ubuntu-latest ]
         phpuniturl: ["https://raw.githubusercontent.com/symfony/recipes/master/symfony/phpunit-bridge/4.3/bin/phpunit"]
