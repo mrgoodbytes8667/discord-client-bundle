@@ -24,12 +24,21 @@ class MockTooManyRequestsCallback extends MockClientCallbackIterator
     {
         parent::__construct();
         $this->setArray(
-            [
-                new MockJsonTooManyRetriesResponse(0.123),
-                new MockJsonTooManyRetriesResponse(0.123),
-                new MockJsonTooManyRetriesResponse(0.123),
-                new MockJsonTooManyRetriesResponse(0.123),
-            ]
+            self::getResponses()
         );
+    }
+
+    /**
+     * @return MockJsonTooManyRetriesResponse[]
+     * @throws \Exception
+     */
+    public static function getResponses(float $retryAfter = 0.123)
+    {
+        return [
+            new MockJsonTooManyRetriesResponse($retryAfter),
+            new MockJsonTooManyRetriesResponse($retryAfter),
+            new MockJsonTooManyRetriesResponse($retryAfter),
+            new MockJsonTooManyRetriesResponse($retryAfter),
+        ];
     }
 }
