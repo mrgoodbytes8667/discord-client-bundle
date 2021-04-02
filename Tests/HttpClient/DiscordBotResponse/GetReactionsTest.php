@@ -2,56 +2,46 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\Common\Faker\Providers\Discord;
-use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordResponseBundle\Enums\Emojis;
-use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
-use Bytes\DiscordResponseBundle\Enums\Permissions;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\Message;
-use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
-use DateTime;
-use Faker\Factory;
-use Faker\Generator as FakerGenerator;
-use Generator;
-use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use function Symfony\Component\String\u;
 use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordBundle\Tests\HttpClient\ValidateUserTrait;
+use Bytes\DiscordResponseBundle\Objects\User;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class GetReactionsTest
  * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
- * @deprecated Not deprecated but this way I can see this easily in the IDE!
  */
 class GetReactionsTest extends TestDiscordBotClientCase
 {
+    use ValidateUserTrait;
+
     /**
-     * @doesNotPerformAssertions
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function testGetReactions()
     {
-        $guilds = $this
-            ->setupResponse('HttpClient/get.json', type: Message::class)
+        /** @var User[] $guilds */
+        $users = $this
+            ->setupResponse('HttpClient/get-reactions-success.json', type: '\Bytes\DiscordResponseBundle\Objects\User[]')
             ->deserialize();
 
-        //$this->assertCount(2, $guilds);
+        $this->assertCount(10, $users);
+
+        $this->validateUser(array_shift($users), "267214096315439358", "kraig31", "a_172328c4e888a2ef87f87f10181cbefd", "7945", 5, true);
+        $this->validateUser(array_shift($users), "215879580410922626", "madelynn21", "7a96688978191be1ac01d2d3ceebdd76", "7669", 9, false);
+        $this->validateUser(array_shift($users), "283286467684169899", "renner.onie", "3dc833a5309150b290da0ca8f16f6a70", "7299", 3, false);
+        $this->validateUser(array_shift($users), "251827868756756876", "amari.morar", null, "9915", 7, true);
+        $this->validateUser(array_shift($users), "222748564945326598", "damion.blanda", "a_6df321d96f96b558944f878feb5bbae5", "8463", 1, false);
+        $this->validateUser(array_shift($users), "256608243907843676", "meta81", null, "9887", 5, true);
+        $this->validateUser(array_shift($users), "254106240423112649", "tcruickshank", "a_ee763912f56a89ec31eb640825b98828", "7461", 0, false);
+        $this->validateUser(array_shift($users), "215052384783128171", "kelsie35", "a_5b124e6a26ae9810ee85058735a0c4e3", "0425", 7, true);
+        $this->validateUser(array_shift($users), "229766673889780171", "mschamberger", "716344f2ffb3079b0ec491eb99d93d82", "4501", 4, false);
+        $this->validateUser(array_shift($users), "234635368258536079", "arjun03", "40aac4371a4d11d391ce187301c27a1d", "7820", 3, false);
     }
 }
-

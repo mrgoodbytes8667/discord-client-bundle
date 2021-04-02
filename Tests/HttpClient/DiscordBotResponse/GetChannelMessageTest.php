@@ -2,56 +2,37 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\Common\Faker\Providers\Discord;
-use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordResponseBundle\Enums\Emojis;
-use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
-use Bytes\DiscordResponseBundle\Enums\Permissions;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\Message;
-use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
-use DateTime;
-use Faker\Factory;
-use Faker\Generator as FakerGenerator;
-use Generator;
-use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use function Symfony\Component\String\u;
 use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordResponseBundle\Objects\Message;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class GetChannelMessageTest
  * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
- * @deprecated Not deprecated but this way I can see this easily in the IDE!
  */
 class GetChannelMessageTest extends TestDiscordBotClientCase
 {
+    use TestValidateChannelMessageTrait;
+
     /**
-     * @doesNotPerformAssertions
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function testGetChannelMessage()
     {
-        $guilds = $this
-            ->setupResponse('HttpClient/get.json', type: Message::class)
+        $message = $this
+            ->setupResponse('HttpClient/get-channel-message-success.json', type: Message::class)
             ->deserialize();
 
-        //$this->assertCount(2, $guilds);
+        $this->validateChannelMessage($message, '234627215184254300', 19,
+            'Repudiandae voluptas et eveniet hic omnis omnis.', '239800192314657438',
+            '247310322447430678', 'rhea17', 'a_24f13635d91a054a52938745fc037761',
+            '7461', 1, null, 0, 0, true,
+            true, true, true);
     }
 }
-

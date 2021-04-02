@@ -3,25 +3,61 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
 use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
-use Bytes\DiscordResponseBundle\Objects\Message;
+use Generator;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class EditMessageTest
  * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
- * @deprecated Not deprecated but this way I can see this easily in the IDE!
  */
 class EditMessageTest extends TestDiscordBotClientCase
 {
-    /**
-     * @doesNotPerformAssertions
-     */
-    public function testEditMessage()
-    {
-        $guilds = $this
-            ->setupResponse('HttpClient/get.json', type: Message::class)
-            ->deserialize();
+    use TestCreateEditMessageTrait;
 
-        //$this->assertCount(2, $guilds);
+    /**
+     * @dataProvider provideFixtureFileWithoutReference
+     * @param $file
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testEditMessage($file)
+    {
+        $message = $this->getMessage($file);
+        $this->assertNotNull($message->getEditedTimestamp());
+    }
+
+    /**
+     * @dataProvider provideFixtureFileWithReference
+     * @param $file
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testEditMessageWithResponse($file)
+    {
+        $message = $this->getMessage($file);
+        $this->assertNotNull($message->getEditedTimestamp());
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideFixtureFileWithoutReference(): Generator
+    {
+        yield ['HttpClient/edit-message-success.json'];
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideFixtureFileWithReference(): Generator
+    {
+        yield ['HttpClient/edit-message-with-followup-success.json'];
     }
 }
-

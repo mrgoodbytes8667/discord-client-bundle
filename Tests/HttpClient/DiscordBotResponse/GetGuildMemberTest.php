@@ -2,56 +2,47 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\Common\Faker\Providers\Discord;
-use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordResponseBundle\Enums\Emojis;
-use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
-use Bytes\DiscordResponseBundle\Enums\Permissions;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
-use Bytes\DiscordResponseBundle\Objects\Message;
-use Bytes\DiscordResponseBundle\Objects\PartialGuild;
-use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
-use DateTime;
-use Faker\Factory;
-use Faker\Generator as FakerGenerator;
-use Generator;
-use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use function Symfony\Component\String\u;
 use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordBundle\Tests\HttpClient\ValidateUserTrait;
+use Bytes\DiscordResponseBundle\Objects\Member;
+use Bytes\DiscordResponseBundle\Objects\User;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class GetGuildMemberTest
  * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
- * @deprecated Not deprecated but this way I can see this easily in the IDE!
  */
 class GetGuildMemberTest extends TestDiscordBotClientCase
 {
+    use ValidateUserTrait;
+
     /**
-     * @doesNotPerformAssertions
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function testGetGuildMember()
     {
-        $guilds = $this
-            ->setupResponse('HttpClient/get.json', type: Message::class)
+        /** @var Member $member */
+        $member = $this
+            ->setupResponse('HttpClient/get-guild-member-success.json', type: Member::class)
             ->deserialize();
 
-        //$this->assertCount(2, $guilds);
+        $this->assertInstanceOf(Member::class, $member);
+        $this->assertIsArray($member->getRoles());
+        $this->assertCount(0, $member->getRoles());
+        $this->assertEquals('candice91', $member->getNick());
+        $this->assertNotNull($member->getPremiumSince());
+        $this->assertNotNull($member->getJoinedAt());
+        $this->assertTrue($member->getPending());
+        $this->assertTrue($member->getMute());
+        $this->assertTrue($member->getDeaf());
+
+        $this->assertInstanceOf(User::class, $member->getUser());
+        $this->validateUser($member->getUser(), '253231274338545171', 'beryl.hermann', '95a2fbdbcc4a8f073393ee99fe6205d0', '2803', 3, null);
     }
 }
-
