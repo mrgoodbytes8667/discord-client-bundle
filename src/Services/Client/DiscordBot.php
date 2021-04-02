@@ -20,12 +20,16 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+trigger_deprecation('mrgoodbytes8667/discord-bundle', 'dev-main', 'The "%s" class is deprecated, use "%s" instead.', DiscordBot::class, DiscordBotClient::class);
+
 /**
  * Class DiscordBot
  * @package Bytes\DiscordBundle\Services\Client
  *
  * @method ResponseInterface createCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
  * @method ResponseInterface deleteCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null)
+ *
+ * @deprecated
  */
 class DiscordBot
 {
