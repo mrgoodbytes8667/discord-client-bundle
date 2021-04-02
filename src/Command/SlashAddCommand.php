@@ -37,27 +37,14 @@ class SlashAddCommand extends AbstractSlashCommand
     protected static $defaultDescription = 'Add a slash command to a server or globally';
 
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var SlashCommandsHandlerCollection
-     */
-    private $commandsCollection;
-
-    /**
      * SlashAddCommand constructor.
-     * @param DiscordBot $client
+     * @param DiscordBotClient $client
      * @param SerializerInterface $serializer
      * @param SlashCommandsHandlerCollection $commandsCollection
      */
-    public function __construct(DiscordBot $client, SerializerInterface $serializer, SlashCommandsHandlerCollection $commandsCollection)
+    public function __construct(DiscordBotClient $client, private SerializerInterface $serializer, private SlashCommandsHandlerCollection $commandsCollection)
     {
         parent::__construct($client);
-
-        $this->serializer = $serializer;
-        $this->commandsCollection = $commandsCollection;
     }
 
     /**
@@ -99,9 +86,9 @@ class SlashAddCommand extends AbstractSlashCommand
         try {
             $response = $this->client->createCommand($command, $guild);
 
-            if ($response->getStatusCode() < 300) {
+            if ($response->isSuccess()) {
                 /** @var ApplicationCommand $cmd */
-                $cmd = $this->serializer->deserialize($response->getContent(), ApplicationCommand::class, 'json');
+                $cmd = $response->deserialize();
                 $this->io->success(sprintf("The command '%s' for %s has been %s successfully with ID %s!", $cmd->getName(), $guild ?? 'global', empty($commandId) ? 'created' : 'edited', $cmd->getId()));
             } else {
                 throw new Exception(sprintf("There was an error adding command '%s' for %s", $command->getName(), $guild ?? 'global'));

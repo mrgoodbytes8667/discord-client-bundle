@@ -24,6 +24,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -554,6 +555,20 @@ class DiscordBotClient extends DiscordClient
     public function createGuildRole($guildId, ?string $name = null, ?int $permissions = null, ?int $color = null, ?bool $hoist = null, ?bool $mentionable = null): DiscordResponse
     {
         $guildId = IdNormalizer::normalizeGuildIdArgument($guildId, 'The "guildId" argument is required and cannot be blank.');
+        $errors = $this->validator->validate($name, new Assert\AtLeastOneOf([
+            'constraints' => [
+                new Assert\Blank(),
+                new Assert\Length([
+                    'min' => 1,
+                    'max' => 100,
+                    'minMessage' => "Name must be at least {{ limit }} characters long",
+                    'maxMessage' => "Name cannot be longer than {{ limit }} characters",
+                ]),
+            ],
+        ]));
+        if (count($errors) > 0) {
+            throw new ValidatorException((string)$errors);
+        }
         $options = [];
         if (!empty($name)) {
             $options['name'] = $name;

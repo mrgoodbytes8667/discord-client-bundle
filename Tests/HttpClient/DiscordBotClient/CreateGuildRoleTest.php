@@ -10,6 +10,7 @@ use Bytes\DiscordResponseBundle\Enums\Permissions;
 use Generator;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -58,6 +59,20 @@ class CreateGuildRoleTest extends TestDiscordBotClientCase
                 }
             }
         }
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testCreateGuildNameValidationError()
+    {
+        $this->expectException(ValidatorException::class);
+
+        // This is what it would get if it made it past the validation...
+        $client = $this->setupClient(MockClient::requests(MockJsonResponse::make('{"code": 50035, "errors": {"name": {"_errors": [{"code": "BASE_TYPE_MAX_LENGTH", "message": "Must be 100 or fewer in length."}]}}, "message": "Invalid Form Body"}', Response::HTTP_BAD_REQUEST)));
+        $client->createGuildRole($this->faker->guildId(),
+            'Test Role Number 37 Ad sed blanditiis incidunt quae. Et unde optio corporis. Nihil eum ad odio ab Ad sed blanditiis incidunt quae. Et unde optio corporis. Nihil eum ad odio ab',
+            $this->faker->permissionInteger(), $this->faker->embedColor(), $this->faker->boolean(), $this->faker->boolean());
     }
 
     /**

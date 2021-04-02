@@ -56,19 +56,11 @@ class SlashDeleteCommand extends AbstractSlashCommand
 
 
         try {
-            $response = $this->client->deleteCommand($command, $guild);
-
-            if ($response->getStatusCode() < 300) {
+            if ($this->client->deleteCommand($command, $guild)->isSuccess()) {
                 $this->io->success(sprintf("The command '%s' (ID: %s) for %s has been deleted successfully.", $command->getName(), $command->getId(), $guild ?? 'global'));
             } else {
                 throw new Exception(sprintf("There was an error deleting command '%s' (ID: %s) for %s", $command->getName(), $command->getId(), $guild ?? 'global'));
             }
-
-            //dump($response->getStatusCode(), $response->getContent());
-        } catch (ClientException $exception) {
-            $this->io->error($exception->getMessage());
-            //dump($exception->getResponse()->getContent(false));
-            return self::FAILURE;
         } catch (Exception $exception) {
             $this->io->error($exception->getMessage());
             return self::FAILURE;
@@ -96,7 +88,7 @@ class SlashDeleteCommand extends AbstractSlashCommand
 
         if (!$input->getArgument('cmd')) {
 
-            $commands = $this->client->getCommands($guild);
+            $commands = $this->client->getCommands($guild)->deserialize();
 
             if (empty($commands)) {
                 throw new Exception("There are no " . (!is_null($guild) ? "" : "global ") . "commands" . (is_null($guild) ? "" : " for " . $guild->getName()));

@@ -152,7 +152,7 @@ return static function (ContainerConfigurator $container) {
     //region Commands
     $services->set(null, SlashAddCommand::class)
         ->args([
-            service('bytes_discord.services.client.discord.bot'), // Bytes\DiscordBundle\Services\Client\DiscordBot
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
         ])
@@ -160,7 +160,7 @@ return static function (ContainerConfigurator $container) {
 
     $services->set(null, SlashDeleteCommand::class)
         ->args([
-            service('bytes_discord.services.client.discord.bot'), // Bytes\DiscordBundle\Services\Client\DiscordBot
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
         ])
         ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
     //endregion

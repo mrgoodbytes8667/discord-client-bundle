@@ -1,0 +1,86 @@
+{
+  "id": "293324682303491310",
+  "type": 0,
+  "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam a justo id elit pharetra dapibus non eget massa. Suspendisse pretium enim ac malesuada iaculis. Donec in mattis erat, non molestie nisl. Suspendisse aliquet laoreet mauris, quis porta ipsum convallis et. Etiam porttitor fermentum velit, eu molestie tortor aliquam eu. Ut.",
+  "channel_id": "236148027649769274",
+  "author": {
+    "id": "270340838956422428",
+    "username": "cormier.macie",
+    "avatar": "084ef794162b84d342d76681ff679429",
+    "discriminator": "6669",
+    "public_flags": 8
+  },
+  "attachments": [],
+  "embeds": [
+    {
+      "type": "rich",
+      "title": "Sint aut adipisci tenetur veniam sit.",
+      "color": 5884644,
+      "fields": [
+        {
+          "name": "Sit porro nam tempora.",
+          "value": "Provident dolor debitis placeat.",
+          "inline": false
+        },
+        {
+          "name": "Sequi assumenda facere.",
+          "value": "Nihil ex fugiat.",
+          "inline": false
+        }
+      ],
+      "author": {
+        "name": "Quo neque nihil porro consequatur odio.",
+        "url": "http://www.streich.com/iste-delectus-accusamus-eligendi-enim-deserunt-consequatur-tenetur-quod",
+        "icon_url": "https://via.placeholder.com/640x480.png/00bb44?text=aut",
+        "proxy_icon_url": "https://images-ext-1.discordapp.net/external/QWFpS0xFBE9SJc3say-GQD_Q4ozWe5UMwT__A5ObYS0/%3Ftext%3Daut/https/via.placeholder.com/640x480.png/00bb44"
+      },
+      "thumbnail": {
+        "url": "https://via.placeholder.com/640x480.png/0088dd?text=nobis",
+        "proxy_url": "https://images-ext-1.discordapp.net/external/PpSThtuImRVxz7S-14ZQ1vPABBrbJjywqw1E6hxNTq8/%3Ftext%3Dnobis/https/via.placeholder.com/640x480.png/0088dd",
+        "width": 640,
+        "height": 480
+      },
+      "footer": {
+        "text": "Rerum officiis repellat est.",
+        "icon_url": "http://www.kulas.com/voluptas-voluptatem-molestiae-earum-atque.html",
+        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/Dt-oAgeNSpNqf9M6Iez3Pr6sZ_EQVntw01yMUmyXbMU/http/www.kulas.com/voluptas-voluptatem-molestiae-earum-atque.html"
+      }
+    }
+  ],
+  "mentions": [],
+  "mention_roles": [],
+  "pinned": false,
+  "mention_everyone": false,
+  "tts": false,
+  "timestamp": "2021-04-02T13:57:59.577000+00:00",
+  "edited_timestamp": null,
+  "flags": 0,
+  "message_reference": {
+    "channel_id": "211259717026917345",
+    "guild_id": "293324682303491310",
+    "message_id": "273168022004614346"
+  },
+  "referenced_message": {
+    "id": "273168022004614346",
+    "type": 0,
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vehicula auctor ipsum, ac gravida mi euismod in. Maecenas et consequat ante. Nunc varius, diam vitae blandit malesuada, ante leo pharetra erat, in varius justo nulla eget lectus. Proin ac augue quis justo iaculis efficitur sit amet at dolor. Nullam placerat.",
+    "channel_id": "822155430389612585",
+    "author": {
+      "id": "297773459887947789",
+      "username": "landen.wuckert",
+      "avatar": "a_8269209c66e5686f529a0b6ba304b574",
+      "discriminator": "2166",
+      "public_flags": 6
+    },
+    "attachments": [],
+    "embeds": [],
+    "mentions": [],
+    "mention_roles": [],
+    "pinned": false,
+    "mention_everyone": false,
+    "tts": false,
+    "timestamp": "2021-03-25T13:30:58.600000+00:00",
+    "edited_timestamp": null,
+    "flags": 0
+  }
+}

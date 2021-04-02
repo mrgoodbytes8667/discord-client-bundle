@@ -133,6 +133,19 @@ class DiscordResponse
         return $this->serializer->deserialize($content, $type ?? $this->type, 'json', $context);
     }
 
+    /**
+     * @return bool
+     */
+    public function isSuccess(): bool
+    {
+        try {
+            return $this->response->getStatusCode() >= 200 && $this->response->getStatusCode() < 300;
+        } catch (TransportExceptionInterface)
+        {
+            return false;
+        }
+    }
+
     //region Response Helpers
 
     /**
