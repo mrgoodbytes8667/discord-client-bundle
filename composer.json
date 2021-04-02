@@ -57,6 +57,7 @@
         "doctrine/lexer": "<1.2.1",
         "doctrine/persistence": "<2.1.0",
         "fakerphp/faker": "<1.14",
+        "mrgoodbytes8667/discord-response-bundle": "<0.8.0-BETA8",
         "mrgoodbytes8667/response-bundle": "<1.0.1",
         "symfony/framework-bundle": "<5.2.1"
     },
