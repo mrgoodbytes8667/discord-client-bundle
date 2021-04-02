@@ -1,15 +1,17 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Services;
+namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
+use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\User;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -18,8 +20,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Trait TestDiscordTrait
- * @package Bytes\DiscordBundle\Tests\Services
+ * Trait TestDiscordResponseTrait
+ * @package Bytes\DiscordBundle\Tests\HttpClient
  *
  * @method assertInstanceOf(string $expected, $actual, string $message = '')
  * @method assertEquals($expected, $actual, string $message = '')
@@ -28,9 +30,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * @method expectException(string $exception)
  * @method expectExceptionMessage(string $message)
  * @method setupClient(HttpClientInterface $httpClient)
+ * @method DiscordResponse setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
  * @property SerializerInterface $serializer
  */
-trait TestDiscordTrait
+trait TestDiscordResponseTrait
 {
     use CommandProviderTrait, ClientExceptionResponseProviderTrait;
 
@@ -39,10 +42,7 @@ trait TestDiscordTrait
      */
     public function testGetGuilds()
     {
-        $client = $this->setupClient(new MockHttpClient([
-            MockJsonResponse::makeFixture('HttpClient/get-guilds.json'),
-        ]));
-        $guilds = $client->getGuilds();
+        $guilds = $this->setupResponse('HttpClient/get-guilds.json', type: '\Bytes\DiscordResponseBundle\Objects\PartialGuild[]')->deserialize();
 
         $this->assertCount(2, $guilds);
         $this->assertInstanceOf(PartialGuild::class, $guilds[0]);
@@ -59,13 +59,14 @@ trait TestDiscordTrait
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function testGetGuildsFailure(int $code)
+    public function testResponseFailure(int $code)
     {
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
 
-        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
-        $client->getGuilds();
+        $test = $this->setupResponse(code: $code);
+
+        $test->deserialize();
     }
 
     /**
@@ -76,11 +77,7 @@ trait TestDiscordTrait
      */
     public function testGetMe()
     {
-        $client = $this->setupClient(new MockHttpClient([
-            MockJsonResponse::makeFixture('HttpClient/get-me.json'),
-        ]));
-
-        $user = $client->getMe();
+        $user = $this->setupResponse('HttpClient/get-me.json', type: User::class)->deserialize();
         $this->validateUser($user, '272930239796055326', 'elvie70', 'cba426068ee1c51edab2f0c38549f4bc', '6793', 0, true);
     }
 
@@ -103,18 +100,5 @@ trait TestDiscordTrait
         $this->assertEquals($discriminator, $user->getDiscriminator());
         $this->assertEquals($flags, $user->getPublicFlags());
         $this->assertEquals($bot, $user->getBot());
-    }
-
-    /**
-     * @dataProvider provideClientExceptionResponses
-     * @param int $code
-     */
-    public function testGetMeFailure(int $code)
-    {
-        $this->expectException(ClientExceptionInterface::class);
-        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
-
-        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', $code)));
-        $client->getMe();
     }
 }

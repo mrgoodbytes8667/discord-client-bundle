@@ -25,7 +25,7 @@ class CreateMessageTest extends TestDiscordBotClientCase
     public function testCreateMessage($channel, $message, $content, $tts)
     {
         $client = $this->setupClient(new MockHttpClient([
-            MockJsonResponse::makeFixture('HttpClient/get-channel-messages-success.json'),
+            MockJsonResponse::makeFixture('HttpClient/get-channel-message-success.json'),
         ]));
 
         $response = $client->createMessage($channel, $content, $tts);
@@ -33,7 +33,7 @@ class CreateMessageTest extends TestDiscordBotClientCase
         $this->assertResponseIsSuccessful($response);
         $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
         $this->assertResponseHasContent($response);
-        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/get-channel-messages-success.json'));
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/get-channel-message-success.json'));
     }
 
     /**

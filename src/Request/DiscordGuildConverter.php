@@ -4,7 +4,7 @@
 namespace Bytes\DiscordBundle\Request;
 
 
-use Bytes\DiscordBundle\Services\Client\DiscordBot;
+use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -47,17 +47,11 @@ class DiscordGuildConverter implements ParamConverterInterface
     const OPTIONS_WITH_COUNTS = 'with_counts';
 
     /**
-     * @var DiscordBot
-     */
-    private DiscordBot $client;
-
-    /**
      * DiscordGuildConverter constructor.
-     * @param DiscordBot $client
+     * @param DiscordBotClient $client
      */
-    public function __construct(DiscordBot $client)
+    public function __construct(public DiscordBotClient $client)
     {
-        $this->client = $client;
     }
 
     /**
@@ -106,7 +100,8 @@ class DiscordGuildConverter implements ParamConverterInterface
         $instance->setId($value);
 
         try {
-            $guild = $this->client->getGuild($instance, $withCounts, [], $deserializeInto);
+            $guild = $this->client->getGuild($instance, $withCounts)
+                ->deserialize(type: $deserializeInto);
         } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface | BadRequestHttpException $exception) {
             return false;
         }
@@ -130,6 +125,4 @@ class DiscordGuildConverter implements ParamConverterInterface
 
         return $configuration->getClass() === Guild::class;
     }
-
-
 }

@@ -47,11 +47,15 @@ class Fixture
     }
 
     /**
-     * @param string $file
-     * @return string
+     * @param string|null $file
+     * @return string|null
      */
-    public static function getFixturesData(string $file): string
+    public static function getFixturesData(?string $file): ?string
     {
+        if(empty($file))
+        {
+            return null;
+        }
         return file_get_contents(self::getFixturesFile($file));
     }
 

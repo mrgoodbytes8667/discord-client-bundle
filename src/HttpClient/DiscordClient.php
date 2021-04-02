@@ -7,6 +7,7 @@ namespace Bytes\DiscordBundle\HttpClient;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
 use Bytes\ResponseBundle\Enums\HttpMethods;
@@ -72,11 +73,6 @@ class DiscordClient implements SerializerAwareInterface
     const USER_ME = '@me';
 
     /**
-     * @var string
-     */
-    protected $clientId;
-
-    /**
      * @var ValidatorInterface
      */
     protected $validator;
@@ -87,9 +83,9 @@ class DiscordClient implements SerializerAwareInterface
     protected $serializer;
 
     /**
-     * @var HttpClientInterface
+     * @var DiscordResponse
      */
-    private $httpClient;
+    protected $response;
 
     /**
      * DiscordClient constructor.
@@ -102,7 +98,7 @@ class DiscordClient implements SerializerAwareInterface
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(protected HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, protected string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $headers = [];
         if (!empty($userAgent)) {
@@ -153,25 +149,26 @@ class DiscordClient implements SerializerAwareInterface
      * This endpoint returns 100 guilds by default, which is the maximum number of guilds a non-bot user can join.
      * Therefore, pagination is not needed for integrations that need to get a list of the users' guilds.
      *
-     * @return ResponseInterface
+     * @return DiscordResponse
      *
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/user#get-current-user-guilds
      */
-    public function getGuilds(): ResponseInterface
+    public function getGuilds(): DiscordResponse
     {
-        return $this->request($this->buildURL('users/@me/guilds', 'v6'));
+        return $this->request($this->buildURL('users/@me/guilds', 'v6'), '\Bytes\DiscordResponseBundle\Objects\PartialGuild[]');
     }
 
     /**
      * @param string|string[] $url
+     * @param string|null $type
      * @param array $options = HttpClientInterface::OPTIONS_DEFAULTS
-     * @param HttpMethods|string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
-     * @return ResponseInterface
+     * @param string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
+     * @return DiscordResponse
      * @throws TransportExceptionInterface
      */
-    public function request($url, array $options = [], $method = 'GET')
+    public function request($url, ?string $type = null, array $options = [], $method = 'GET')
     {
         if (is_array($url)) {
             $url = implode('/', $url);
@@ -183,7 +180,7 @@ class DiscordClient implements SerializerAwareInterface
         if (!empty($auth) && is_array($auth)) {
             $options = array_merge_recursive($options, $auth);
         }
-        return $this->httpClient->request($method, $this->buildURL($url), $options);
+        return $this->response->withResponse($this->httpClient->request($method, $this->buildURL($url), $options), $type);
     }
 
     /**
@@ -216,15 +213,15 @@ class DiscordClient implements SerializerAwareInterface
      * Returns the user object of the requester's account. For OAuth2, this requires the identify scope, which will
      * return the object without an email, and optionally the email scope, which returns the object with an email.
      *
-     * @return ResponseInterface
+     * @return DiscordResponse
      *
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/user#get-current-user
      */
-    public function getMe()
+    public function getMe(): DiscordResponse
     {
-        return $this->request([self::ENDPOINT_USER, self::USER_ME]);
+        return $this->request([self::ENDPOINT_USER, self::USER_ME], User::class);
     }
 
     /**
@@ -232,7 +229,7 @@ class DiscordClient implements SerializerAwareInterface
      * Returns a user object for a given user ID.
      * @param IdInterface|string $userId
      *
-     * @return ResponseInterface
+     * @return DiscordResponse
      *
      * @throws TransportExceptionInterface
      *
@@ -240,11 +237,11 @@ class DiscordClient implements SerializerAwareInterface
      *
      * @internal getUser is not available in DiscordUserClient
      */
-    public function getUser($userId)
+    public function getUser($userId): DiscordResponse
     {
         $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
         $urlParts = [self::ENDPOINT_USER, $userId];
-        return $this->request($urlParts);
+        return $this->request($urlParts, User::class);
     }
 
     /**
@@ -280,17 +277,16 @@ class DiscordClient implements SerializerAwareInterface
                 $body['refresh_token'] = $code;
                 break;
         }
-        $response = $this->request($this->buildURL('oauth2/token', ''),
+
+        return $this->request($this->buildURL('oauth2/token', ''),
+            Token::class,
             [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
                 ],
                 'body' => $body,
-            ], HttpMethods::post());
-
-        $json = $response->getContent();
-
-        return $this->serializer->deserialize($json, Token::class, 'json');
+            ], HttpMethods::post())
+            ->deserialize();
     }
 
     /**
@@ -300,6 +296,16 @@ class DiscordClient implements SerializerAwareInterface
     public function setValidator(ValidatorInterface $validator): self
     {
         $this->validator = $validator;
+        return $this;
+    }
+
+    /**
+     * @param DiscordResponse $response
+     * @return $this
+     */
+    public function setResponse(DiscordResponse $response): self
+    {
+        $this->response = $response;
         return $this;
     }
 }

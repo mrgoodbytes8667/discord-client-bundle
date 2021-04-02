@@ -5,6 +5,7 @@ namespace Bytes\DiscordBundle\Command;
 
 
 use Bytes\CommandBundle\Command\BaseCommand;
+use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Symfony\Component\Console\Exception\LogicException;
@@ -24,12 +25,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 abstract class AbstractSlashCommand extends BaseCommand
 {
-
-    /**
-     * @var DiscordBot
-     */
-    protected $client;
-
     /**
      * @var PartialGuild[]
      */
@@ -45,7 +40,7 @@ abstract class AbstractSlashCommand extends BaseCommand
     protected function getGuilds()
     {
         if (empty($this->guilds)) {
-            $this->guilds = $this->client->getGuilds();
+            $this->guilds = $this->client->getGuilds()->deserialize();
         }
         return $this->guilds;
     }
@@ -54,11 +49,9 @@ abstract class AbstractSlashCommand extends BaseCommand
      * AbstractSlashCommand constructor.
      * @param DiscordBot $client
      */
-    public function __construct(DiscordBot $client)
+    public function __construct(protected DiscordBotClient $client)
     {
         parent::__construct(null);
-
-        $this->client = $client;
     }
 
     /**
