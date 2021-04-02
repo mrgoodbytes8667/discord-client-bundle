@@ -25,7 +25,7 @@ trait ValidateUserTrait
      * @param $flags
      * @param $bot
      */
-    protected function validateUser($user, $id, $username, $avatar, $discriminator, $flags, $bot)
+    protected function validateUser($user, $id, $username, $avatar, $discriminator, $flags, $bot = null)
     {
         $this->assertInstanceOf(User::class, $user);
 
