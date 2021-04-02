@@ -4,6 +4,9 @@
 namespace Bytes\DiscordBundle\Services\Client;
 
 
+use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
+use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\User;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -11,9 +14,13 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
+trigger_deprecation('mrgoodbytes8667/discord-bundle', 'dev-main', 'The "%s" trait is deprecated, use "%s", "%s", or "%s" instead.', __CLASS__, DiscordUserClient::class, DiscordBotClient::class, DiscordTokenClient::class);
+
 /**
  * Trait SharedGetMethodsTrait
  * @package Bytes\DiscordBundle\Services\Client
+ *
+ * @deprecated
  *
  * @property $client
  * @property $serializer

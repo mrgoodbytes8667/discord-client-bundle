@@ -7,9 +7,13 @@ namespace Bytes\DiscordBundle\Services\Client;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Symfony\Component\Serializer\SerializerInterface;
 
+trigger_deprecation('mrgoodbytes8667/discord-bundle', 'dev-main', 'The "%s" class is deprecated, use "%s" instead.', DiscordUser::class, DiscordUserClient::class);
+
 /**
  * Class DiscordUser
  * @package Bytes\DiscordBundle\Services\Client
+ *
+ * @deprecated
  */
 class DiscordUser
 {
