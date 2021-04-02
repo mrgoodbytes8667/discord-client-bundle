@@ -470,6 +470,32 @@ class DiscordBotClient extends DiscordClient
     }
 
     /**
+     * Crosspost Message
+     * Crosspost a message in a News Channel to following channels. This endpoint requires the 'SEND_MESSAGES'
+     * permission, if the current user sent the message, or additionally the 'MANAGE_MESSAGES' permission, for all other
+     * messages, to be present for the current user.
+     * @param Message|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/channel#crosspost-message
+     */
+    public function crosspostMessage($messageId, $channelId = null): DiscordResponse
+    {
+        // If a Message object is passed through, get the message and channel Id from it
+        if ($messageId instanceof Message) {
+            $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
+            $channelId = $ids['channelId'];
+            $messageId = $ids['messageId'];
+        } else {
+            $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
+            $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
+        }
+        return $this->request(url: [self::ENDPOINT_CHANNEL, $channelId, self::ENDPOINT_MESSAGE, $messageId, 'crosspost'], type: Message::class, method: HttpMethods::post());
+    }
+
+    /**
      * Leave Guild
      * Leave a guild. Returns a 204 empty response on success.
      *
