@@ -20,7 +20,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordGuildConverterTest extends TestParamConverterCase
 {
-    use TestDiscordGuildTrait, DiscordClientSetupTrait;
+    use TestDiscordGuildTrait, DiscordClientSetupTrait {
+        DiscordClientSetupTrait::setupBotClient as setupClient;
+    }
 
     /**
      *
@@ -39,16 +41,6 @@ class DiscordGuildConverterTest extends TestParamConverterCase
 
         $object = $request->attributes->get('guild');
         $this->validateClientGetGuildAsGuild($object, '737645596567095093', 'Sample Server Alpha', '38ee303112b61ab351dbafdc50e094d8', '282017982734073856', 2, false);
-    }
-
-    /**
-     * @param HttpClientInterface $httpClient
-     * @return DiscordBot
-     */
-    protected function setupClient(HttpClientInterface $httpClient)
-    {
-        $client = $this->setupBotClient($httpClient);
-        return new DiscordBot($client, $this->serializer);
     }
 
     /**
