@@ -3,6 +3,8 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
+use Bytes\Common\Faker\Providers\Discord;
+use Bytes\Common\Faker\Providers\MiscProvider;
 use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockStandaloneResponse;
 use Bytes\Tests\Common\Constraint\ResponseContentSame;
@@ -10,6 +12,8 @@ use Bytes\Tests\Common\Constraint\ResponseStatusCodeSame;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
 use ErrorException;
+use Faker\Factory;
+use Faker\Generator;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -200,6 +204,45 @@ abstract class TestHttpClientCase extends TestCase
         $response = new MockStandaloneResponse(content: $content, fixtureFile: $fixtureFile, statusCode: $code);
 
         return DiscordResponse::make($this->serializer)->withResponse($response, $type);
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getRandomEmoji()
+    {
+        return self::getFaker()->emoji();
+    }
+
+    /**
+     * @return Discord|Generator|MiscProvider
+     */
+    private static function getFaker()
+    {
+        /** @var Generator|Discord $faker */
+        $faker = Factory::create();
+        $faker->addProvider(new Discord($faker));
+
+        return $faker;
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideBooleans()
+    {
+        yield [true];
+        yield [false];
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideBooleansAndNull()
+    {
+        yield [true];
+        yield [false];
+        yield [null];
     }
 
     /**
