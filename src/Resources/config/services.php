@@ -115,14 +115,6 @@ return static function (ContainerConfigurator $container) {
         ])
         ->alias(OAuth::class, 'bytes_discord.oauth')
         ->public();
-
-    $services->set('bytes_discord.services.client.discord.bot', DiscordBot::class)
-        ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
-            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
-        ])
-        ->alias(DiscordBot::class, 'bytes_discord.services.client.discord.bot')
-        ->public();
     //endregion
 
     //region Controllers
