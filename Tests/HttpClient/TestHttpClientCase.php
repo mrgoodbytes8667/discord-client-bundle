@@ -174,6 +174,21 @@ abstract class TestHttpClientCase extends TestCase
     }
 
     /**
+     * @param bool $expected
+     * @param $actual
+     * @param string $message
+     */
+    public static function assertShouldBeNull($expected, $actual, string $message = ''): void {
+        if($expected === true) {
+            static::assertNull($actual, $message);
+        } elseif ($expected === false) {
+            static::assertNotNull($actual, $message);
+        } else {
+            throw new \InvalidArgumentException('Expected should be a boolean');
+        }
+    }
+
+    /**
      * @param string|null $fixtureFile
      * @param null $content
      * @param int $code
