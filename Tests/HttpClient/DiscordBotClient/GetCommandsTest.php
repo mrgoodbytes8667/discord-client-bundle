@@ -17,16 +17,20 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class GetCommandsTest extends TestDiscordBotClientCase
 {
+    use GuildProviderTrait;
+
     /**
+     * @dataProvider provideValidGuilds
+     * @dataProvider provideEmptyGuilds
      * @throws TransportExceptionInterface
      */
-    public function testGetCommands()
+    public function testGetCommands($guild)
     {
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/get-commands-success.json'),
         ]));
 
-        $response = $client->getCommands();
+        $response = $client->getCommands($guild);
 
         $this->assertResponseIsSuccessful($response);
         $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
@@ -47,6 +51,21 @@ class GetCommandsTest extends TestDiscordBotClientCase
         $response = $client->getCommands($guild);
 
         $this->assertResponseStatusCodeSame($response, $code);
+    }
+
+    /**
+     * @dataProvider provideInvalidNotEmptyGetGuildArguments
+     * @param $guild
+     * @throws TransportExceptionInterface
+     */
+    public function testGetCommandsBadGuildArgument($guild)
+    {
+        $this->expectExceptionMessage('The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+        $this->expectException(\InvalidArgumentException::class);
+
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+
+        $client->getCommands($guild);
     }
 }
 

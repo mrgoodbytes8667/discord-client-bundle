@@ -1,0 +1,60 @@
+{
+  "id": "234627215184254300",
+  "type": 0,
+  "content": "",
+  "channel_id": "239800192314657438",
+  "author": {
+    "id": "247310322447430678",
+    "username": "rhea17",
+    "avatar": "a_24f13635d91a054a52938745fc037761",
+    "discriminator": "7461",
+    "public_flags": 1,
+    "bot": true
+  },
+  "attachments": [],
+  "embeds": [
+    {
+      "type": "rich",
+      "title": "Magni natus recusandae qui quidem unde corrupti.",
+      "color": 2066094,
+      "fields": [
+        {
+          "name": "Voluptatem eum.",
+          "value": "Esse vel.",
+          "inline": true
+        },
+        {
+          "name": "Nam ipsam quis quo.",
+          "value": "Vel repellendus voluptas.",
+          "inline": true
+        }
+      ],
+      "author": {
+        "name": "Ipsam et nostrum quaerat ut nisi minima id sit.",
+        "url": "http://www.lang.org/harum-omnis-voluptas-magnam-voluptatibus.html",
+        "icon_url": "https://via.placeholder.com/640x480.png/005500?text=harum",
+        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/UdJHVnJ-JTo9EsNnL_zZSVh4EXc2_LNjOlUhqqiBp3w/%3Ftext%3Dharum/https/via.placeholder.com/640x480.png/005500"
+      },
+      "thumbnail": {
+        "url": "https://via.placeholder.com/640x480.png/00aa00?text=id",
+        "proxy_url": "https://images-ext-2.discordapp.net/external/2IKiCs8K8qupBYt_1XDq2tseWqlSJE_VUii-rCZevuk/%3Ftext%3Did/https/via.placeholder.com/640x480.png/00aa00",
+        "width": 0,
+        "height": 0
+      },
+      "footer": {
+        "text": "Est iure voluptas sed vero est.",
+        "icon_url": "http://reichel.com/et-non-exercitationem-veniam.html",
+        "proxy_icon_url": "https://images-ext-2.discordapp.net/external/RfMFhur1sy8y0tqyF6rYuXq9eyMskq2aZrm__occdHE/http/reichel.com/et-non-exercitationem-veniam.html"
+      }
+    }
+  ],
+  "mentions": [],
+  "mention_roles": [],
+  "pinned": false,
+  "mention_everyone": false,
+  "tts": false,
+  "timestamp": "2021-04-02T13:49:19.968000+00:00",
+  "edited_timestamp": null,
+  "flags": 1,
+  "referenced_message": null
+}

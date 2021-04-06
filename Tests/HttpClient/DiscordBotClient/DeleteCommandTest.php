@@ -2,6 +2,7 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
+use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use InvalidArgumentException;
@@ -15,6 +16,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DeleteCommandTest extends TestDiscordBotClientCase
 {
+    use GuildProviderTrait, CommandProviderTrait;
+
     /**
      * @dataProvider provideCommandAndGuild
      *
@@ -51,15 +54,35 @@ class DeleteCommandTest extends TestDiscordBotClientCase
     }
 
     /**
-     *
+     * @dataProvider provideInvalidCommandAndValidGuild
+     * @param $command
+     * @param $guild
+     * @throws TransportExceptionInterface
      */
-    public function testDeleteCommandFailureBadCommandArgument()
+    public function testDeleteCommandBadCommandArgument($command, $guild)
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The "applicationCommand" argument is required and cannot be blank.');
+        $this->expectException(\InvalidArgumentException::class);
 
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
-        $client->deleteCommand(null, null);
+        $client->deleteCommand($command, $guild);
+    }
+
+    /**
+     * @dataProvider provideValidCommandAndInvalidNotEmptyGuild
+     * @param $command
+     * @param $guild
+     * @throws TransportExceptionInterface
+     */
+    public function testDeleteCommandBadGuildArgument($command, $guild)
+    {
+        $this->expectExceptionMessage('The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+        $this->expectException(\InvalidArgumentException::class);
+
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+
+        $client->deleteCommand($command, $guild);
     }
 }
 

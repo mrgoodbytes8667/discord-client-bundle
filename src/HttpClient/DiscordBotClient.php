@@ -4,7 +4,6 @@
 namespace Bytes\DiscordBundle\HttpClient;
 
 
-use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
@@ -19,6 +18,7 @@ use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Enums\HttpMethods;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Exception\ValidatorException;
@@ -30,8 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class DiscordBotClient
  * @package Bytes\DiscordBundle\HttpClient
- *
- * @see DiscordBot
  */
 class DiscordBotClient extends DiscordClient
 {
@@ -78,49 +76,98 @@ class DiscordBotClient extends DiscordClient
      * ApplicationCommand object.
      *
      * Not deserializable
-     * @param ApplicationCommand $applicationCommand
-     * @param IdInterface|null $guild
+     * @param ApplicationCommand|callable $applicationCommand
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
      * @throws TransportExceptionInterface
-     *
-     * @todo Change $guild argument to take a string
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-guild-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-guild-application-command
      */
-    public function createCommand(ApplicationCommand $applicationCommand, ?IdInterface $guild = null): DiscordResponse
+    public function createCommand(ApplicationCommand|callable $applicationCommand, $guild = null): DiscordResponse
     {
-        $edit = false;
+        if(is_callable($applicationCommand)) {
+            $applicationCommand = $applicationCommand();
+        }
+        $method = HttpMethods::post();
+        $append = [];
         $errors = $this->validator->validate($applicationCommand);
         if (count($errors) > 0) {
             throw new ValidatorException((string)$errors);
         }
 
-        $urlParts = ['applications', $this->clientId];
+        if (!empty($applicationCommand->getId())) {
+            $method = HttpMethods::patch();
+            $append[] = $applicationCommand->getId();
+        }
 
+        return $this->createEditOverwriteCommands($applicationCommand, $guild, $method, ApplicationCommand::class, $append);
+    }
+
+    /**
+     * Bulk Overwrite Global/Guild Application Commands
+     * [Global] Takes a list of application commands, overwriting existing commands that are registered globally for
+     * this application. Updates will be available in all guilds after 1 hour. Returns 200 and a list of
+     * ApplicationCommand objects. Commands that do not already exist will count toward daily application command
+     * create limits.
+     * [Guild] Takes a list of application commands, overwriting existing commands for the guild. Returns 200 and a list
+     * of ApplicationCommand objects.
+     *
+     * @param ApplicationCommand[]|ApplicationCommand $applicationCommands
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to overwrite commands in. Must be a string, a
+     * GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global
+     * command.
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#bulk-overwrite-global-application-commands
+     * @link
+     */
+    public function bulkOverwriteCommands($applicationCommands, $guild = null)
+    {
+        foreach (Arr::wrap($applicationCommands) as $applicationCommand) {
+            $errors = $this->validator->validate($applicationCommand);
+            if (count($errors) > 0) {
+                throw new ValidatorException((string)$errors);
+            }
+        }
+        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]');
+    }
+
+    /**
+     * @param ApplicationCommand[]|ApplicationCommand $applicationCommand
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param HttpMethods $method
+     * @param string $class
+     * @param array $urlAppend
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     */
+    protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [])
+    {
+        $urlParts = ['applications', $this->clientId];
         if (!empty($guild)) {
             $urlParts[] = self::ENDPOINT_GUILD;
-            $urlParts[] = $guild->getId();
+            $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+            $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
-
-        if (!empty($applicationCommand->getId())) {
-            $edit = true;
-            $urlParts[] = $applicationCommand->getId();
+        if(!empty($urlAppend)) {
+            $urlParts = array_merge($urlParts, Arr::wrap($urlAppend));
         }
 
         $body = $this->serializer->serialize($applicationCommand, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
 
         return $this->request(url: $urlParts,
-            type: ApplicationCommand::class,
+            type: $class,
             options: [
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-            'body' => $body,
-        ], method: $edit ? HttpMethods::patch() : HttpMethods::post());
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $body,
+            ], method: $method);
     }
 
     /**
@@ -128,22 +175,23 @@ class DiscordBotClient extends DiscordClient
      * Deletes a global/guild command. Returns 204.
      *
      * Not deserializable
-     * @param ApplicationCommand $applicationCommand
-     * @param IdInterface|null $guild
+     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-guild-application-command
      */
-    public function deleteCommand($applicationCommand, ?IdInterface $guild = null)
+    public function deleteCommand($applicationCommand, $guild = null)
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand);
+        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
             $urlParts[] = self::ENDPOINT_GUILD;
-            $urlParts[] = $guild->getId();
+            $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+            $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
@@ -155,20 +203,21 @@ class DiscordBotClient extends DiscordClient
      * Get Global/Guild Application Commands
      * Fetch all of the guild/global commands for your application [for a specific guild]. Returns an array of
      * ApplicationCommand objects.
-     * @param IdInterface|null $guild
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to get commands for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-commands
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-commands
      */
-    public function getCommands(?IdInterface $guild = null): DiscordResponse
+    public function getCommands($guild = null): DiscordResponse
     {
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
             $urlParts[] = self::ENDPOINT_GUILD;
-            $urlParts[] = $guild->getId();
+            $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+            $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
 
@@ -178,22 +227,22 @@ class DiscordBotClient extends DiscordClient
     /**
      * Get Global/Guild Application Command
      * Fetch a global/guild command for your application. Returns an ApplicationCommand object.
-     * @param $applicationCommand
-     * @param IdInterface|null $guild
+     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
-     * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command
      */
-    public function getCommand($applicationCommand, ?IdInterface $guild = null): DiscordResponse
+    public function getCommand($applicationCommand, $guild = null): DiscordResponse
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand);
+        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
             $urlParts[] = self::ENDPOINT_GUILD;
-            $urlParts[] = $guild->getId();
+            $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+            $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
@@ -467,6 +516,32 @@ class DiscordBotClient extends DiscordClient
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
         return $this->request(url: [self::ENDPOINT_CHANNEL, $channelId, self::ENDPOINT_MESSAGE, $messageId], method: HttpMethods::delete());
+    }
+
+    /**
+     * Crosspost Message
+     * Crosspost a message in a News Channel to following channels. This endpoint requires the 'SEND_MESSAGES'
+     * permission, if the current user sent the message, or additionally the 'MANAGE_MESSAGES' permission, for all other
+     * messages, to be present for the current user.
+     * @param Message|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/channel#crosspost-message
+     */
+    public function crosspostMessage($messageId, $channelId = null): DiscordResponse
+    {
+        // If a Message object is passed through, get the message and channel Id from it
+        if ($messageId instanceof Message) {
+            $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
+            $channelId = $ids['channelId'];
+            $messageId = $ids['messageId'];
+        } else {
+            $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
+            $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
+        }
+        return $this->request(url: [self::ENDPOINT_CHANNEL, $channelId, self::ENDPOINT_MESSAGE, $messageId, 'crosspost'], type: Message::class, method: HttpMethods::post());
     }
 
     /**

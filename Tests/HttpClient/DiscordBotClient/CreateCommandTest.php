@@ -3,16 +3,21 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
+use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonTooManyRetriesResponse;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption;
+use InvalidArgumentException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
@@ -21,32 +26,82 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class CreateCommandTest extends TestDiscordBotClientCase
 {
-    use TestDiscordFakerTrait;
+    use TestDiscordFakerTrait, GuildProviderTrait;
+
+    /**
+     * @dataProvider provideCreateCommand
+     * @param $command
+     * @param $guild
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testCreateCommand($command, $guild) {
+        $client = $this->setupClient(MockClient::requests(
+            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED)));
+
+        $cmd = $client->createCommand($command, $guild);
+        $this->assertResponseIsSuccessful($cmd);
+        $this->assertResponseStatusCodeSame($cmd, Response::HTTP_CREATED);
+    }
+
+    /**
+     * @dataProvider provideEditCommand
+     * @param $command
+     * @param $guild
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testEditCommand($command, $guild) {
+        $client = $this->setupClient(MockClient::requests(
+            MockJsonResponse::makeFixture('HttpClient/edit-command-success.json', Response::HTTP_OK)));
+
+        $cmd = $client->createCommand($command, $guild);
+        $this->assertResponseIsSuccessful($cmd);
+        $this->assertResponseStatusCodeSame($cmd, Response::HTTP_OK);
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideCreateCommand()
+    {
+        foreach($this->provideValidGuilds() as $guild) {
+            yield ['command' => Sample::createCommand(), 'guild' => $guild[0]];
+            yield ['command' => function () {
+                return Sample::createCommand();
+            }, 'guild' => $guild[0]];
+        }
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideEditCommand()
+    {
+        foreach($this->provideValidGuilds() as $guild) {
+            yield ['command' => Sample::createCommand(), 'guild' => $guild[0]];
+            yield ['command' => function () {
+                $c = Sample::createCommand();
+                $c->setId('123');
+                return $c;
+            }, 'guild' => $guild[0]];
+        }
+    }
 
     /**
      * @requires PHPUnit >= 9
      */
-    public function testCreateCommand()
+    public function testCreateCommandWithRetry()
     {
         $client = $this->setupClient(MockClient::requests(
             new MockJsonTooManyRetriesResponse(0.001),
-            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED),
-            MockJsonResponse::makeFixture('HttpClient/edit-command-success.json'),
-            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED),
-            MockJsonResponse::makeFixture('HttpClient/edit-command-success.json')));
+            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED)));
 
         $b = $client->createCommand(Sample::createCommand());
-        $this->assertResponseIsSuccessful($b);
-        $this->assertResponseStatusCodeSame($b, Response::HTTP_CREATED);
-
-        $c = $client->createCommand(Sample::createCommand());
-        $this->assertResponseIsSuccessful($c);
-        $this->assertResponseStatusCodeSame($c, Response::HTTP_OK);
-
-        $stub = $this->createStub(PartialGuild::class);
-        $stub->setId('123');
-
-        $b = $client->createCommand(Sample::createCommand(), $stub);
         $this->assertResponseIsSuccessful($b);
         $this->assertResponseStatusCodeSame($b, Response::HTTP_CREATED);
     }
@@ -94,5 +149,19 @@ class CreateCommandTest extends TestDiscordBotClientCase
 
         $client->createCommand(Sample::createCommand());
     }
-}
 
+    /**
+     * @dataProvider provideInvalidNotEmptyGetGuildArguments
+     * @param $guild
+     * @throws TransportExceptionInterface
+     */
+    public function testCreateCommandBadGuildArgument($guild)
+    {
+        $this->expectExceptionMessage('The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+        $this->expectException(InvalidArgumentException::class);
+
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+
+        $client->createCommand(Sample::createCommand(), $guild);
+    }
+}

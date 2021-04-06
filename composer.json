@@ -29,8 +29,8 @@
         "doctrine/common": "^3.0",
         "fakerphp/faker": "^1.13",
         "mrgoodbytes8667/test-common": ">=0.0.11",
-        "mrgoodbytes8667/test-common-faker": "^0.2.5",
-        "mrgoodbytes8667/test-discord-faker": ">=0.0.5",
+        "mrgoodbytes8667/test-common-faker": "^0.3",
+        "mrgoodbytes8667/test-discord-faker": ">=0.0.7",
         "symfony/phpunit-bridge": "^5.2",
         "symfony/security-bundle": "^5.2",
         "symfony/var-dumper": "^5.2"
