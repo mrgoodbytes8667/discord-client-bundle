@@ -200,6 +200,17 @@ class DiscordBotClient extends DiscordClient
     }
 
     /**
+     * Helper function that utilizes the Bulk Overwrite endpoint to remove all commands.
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete commands for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     */
+    public function deleteAllCommands($guild = null): DiscordResponse
+    {
+        return $this->bulkOverwriteCommands([], $guild);
+    }
+
+    /**
      * Get Global/Guild Application Commands
      * Fetch all of the guild/global commands for your application [for a specific guild]. Returns an array of
      * ApplicationCommand objects.
