@@ -2,6 +2,7 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
+use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use InvalidArgumentException;
@@ -15,7 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DeleteCommandTest extends TestDiscordBotClientCase
 {
-    use GuildProviderTrait;
+    use GuildProviderTrait, CommandProviderTrait;
 
     /**
      * @dataProvider provideCommandAndGuild
@@ -50,18 +51,6 @@ class DeleteCommandTest extends TestDiscordBotClientCase
         $client = $this->setupClient(MockClient::emptyError($code));
 
         $client->deleteCommand($cmd, $guild);
-    }
-
-    /**
-     *
-     */
-    public function testDeleteCommandFailureBadCommandArgument()
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $client = $this->setupClient(MockClient::emptyBadRequest());
-
-        $client->deleteCommand(null, null);
     }
 
     /**

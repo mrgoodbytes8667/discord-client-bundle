@@ -75,20 +75,21 @@ class DiscordBotClient extends DiscordClient
      * ApplicationCommand object.
      *
      * Not deserializable
-     * @param ApplicationCommand $applicationCommand
-     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param ApplicationCommand|callable $applicationCommand
+     * @param null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
      * @throws TransportExceptionInterface
-     *
-     * @todo Change ApplicationCommand to take a callback
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-guild-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-guild-application-command
      */
-    public function createCommand(ApplicationCommand $applicationCommand, $guild = null): DiscordResponse
+    public function createCommand(ApplicationCommand|callable $applicationCommand, $guild = null): DiscordResponse
     {
+        if(is_callable($applicationCommand)) {
+            $applicationCommand = $applicationCommand();
+        }
         $edit = false;
         $errors = $this->validator->validate($applicationCommand);
         if (count($errors) > 0) {
@@ -126,12 +127,10 @@ class DiscordBotClient extends DiscordClient
      * Deletes a global/guild command. Returns 204.
      *
      * Not deserializable
-     * @param ApplicationCommand $applicationCommand
+     * @param ApplicationCommand|IdInterface|string $applicationCommand
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
      * @throws TransportExceptionInterface
-     *
-     * @todo Change $applicationCommand to take a string
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-guild-application-command
@@ -180,12 +179,9 @@ class DiscordBotClient extends DiscordClient
     /**
      * Get Global/Guild Application Command
      * Fetch a global/guild command for your application. Returns an ApplicationCommand object.
-     * @param $applicationCommand
+     * @param ApplicationCommand|IdInterface|string $applicationCommand
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
-     * @throws TransportExceptionInterface
-     *
-     * @todo Change $applicationCommand to take a string
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command
