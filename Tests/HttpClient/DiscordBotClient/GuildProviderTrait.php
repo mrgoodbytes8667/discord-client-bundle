@@ -29,6 +29,14 @@ trait GuildProviderTrait
     /**
      * @return Generator
      */
+    public function provideInvalidNotEmptyGetGuildArguments()
+    {
+        yield ['guild' => new DateTime()];
+    }
+
+    /**
+     * @return Generator
+     */
     public function provideValidGuilds()
     {
         $mock = $this
@@ -46,5 +54,14 @@ trait GuildProviderTrait
         yield [$mock];
 
         yield ['230858112993375816'];
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideEmptyGuilds()
+    {
+        yield [''];
+        yield [null];
     }
 }

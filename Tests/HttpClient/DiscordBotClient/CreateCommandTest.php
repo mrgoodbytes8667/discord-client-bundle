@@ -21,7 +21,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class CreateCommandTest extends TestDiscordBotClientCase
 {
-    use TestDiscordFakerTrait;
+    use TestDiscordFakerTrait, GuildProviderTrait;
 
     /**
      * @requires PHPUnit >= 9
@@ -43,7 +43,7 @@ class CreateCommandTest extends TestDiscordBotClientCase
         $this->assertResponseIsSuccessful($c);
         $this->assertResponseStatusCodeSame($c, Response::HTTP_OK);
 
-        $stub = $this->createStub(PartialGuild::class);
+        $stub = new PartialGuild();
         $stub->setId('123');
 
         $b = $client->createCommand(Sample::createCommand(), $stub);
@@ -93,6 +93,21 @@ class CreateCommandTest extends TestDiscordBotClientCase
         $this->expectExceptionMessage('HTTP 429 returned for');
 
         $client->createCommand(Sample::createCommand());
+    }
+
+    /**
+     * @dataProvider provideInvalidNotEmptyGetGuildArguments
+     * @param $guild
+     * @throws TransportExceptionInterface
+     */
+    public function testCreateCommandBadGuildArgument($guild)
+    {
+        $this->expectExceptionMessage('The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+        $this->expectException(\InvalidArgumentException::class);
+
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+
+        $client->createCommand(Sample::createCommand(), $guild);
     }
 }
 

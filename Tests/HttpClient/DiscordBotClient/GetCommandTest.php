@@ -54,16 +54,34 @@ class GetCommandTest extends TestDiscordBotClientCase
 
     /**
      * @dataProvider provideInvalidCommandAndValidGuild
+     * @param $cmd
      * @param $guild
      * @throws TransportExceptionInterface
      */
     public function testGetCommandBadCommandArgument($cmd, $guild)
     {
+        $this->expectExceptionMessage('The "applicationCommand" argument is required and cannot be blank.');
         $this->expectException(InvalidArgumentException::class);
 
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
         $client->getCommand($cmd, $guild);
+    }
+
+    /**
+     * @dataProvider provideValidCommandAndInvalidNotEmptyGuild
+     * @param $command
+     * @param $guild
+     * @throws TransportExceptionInterface
+     */
+    public function testCreateCommandBadGuildArgument($command, $guild)
+    {
+        $this->expectExceptionMessage('The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
+        $this->expectException(\InvalidArgumentException::class);
+
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+
+        $client->getCommand($command, $guild);
     }
 }
 

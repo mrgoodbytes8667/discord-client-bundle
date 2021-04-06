@@ -4,6 +4,7 @@
 namespace Bytes\DiscordBundle\Tests;
 
 
+use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\GuildProviderTrait;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Generator;
@@ -14,7 +15,7 @@ use Generator;
  */
 trait CommandProviderTrait
 {
-    use ClientExceptionResponseProviderTrait;
+    use ClientExceptionResponseProviderTrait, GuildProviderTrait;
 
     /**
      * @return Generator
@@ -27,11 +28,25 @@ trait CommandProviderTrait
         $g = new PartialGuild();
         $g->setId('737645596567095093');
 
-        foreach([$ac, '846542216677566910'] as $cmd)
+        foreach($this->provideCommandId() as $cmd)
         {
             foreach([$g, null] as $guild) {
-                yield ['command' => $cmd, 'guild' => $guild];
+                yield ['command' => $cmd['command'], 'guild' => $guild];
             }
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideCommandId()
+    {
+        $ac = new ApplicationCommand();
+        $ac->setId('846542216677566910');
+
+        foreach([$ac, '846542216677566910'] as $cmd)
+        {
+            yield ['command' => $cmd];
         }
     }
 
@@ -40,12 +55,26 @@ trait CommandProviderTrait
      */
     public function provideInvalidCommandAndValidGuild()
     {
+        foreach($this->provideValidGuilds() as $guild) {
+            foreach ([123, '', null, new \DateTime(), []] as $cmd) {
+                yield ['command' => $cmd, 'guild' => $guild[0]];
+                yield ['command' => $cmd, 'guild' => null];
+            }
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideValidCommandAndInvalidNotEmptyGuild()
+    {
         $guild = new PartialGuild();
         $guild->setId('737645596567095093');
 
-        foreach([123, '', null, new \DateTime(), []] as $cmd) {
-            yield ['command' => $cmd, 'guild' => $guild];
-            yield ['command' => $cmd, 'guild' => null];
+        foreach($this->provideInvalidNotEmptyGetGuildArguments() as $guild) {
+            foreach ($this->provideCommandId() as $cmd) {
+                yield ['command' => $cmd['command'], 'guild' => $guild['guild']];
+            }
         }
     }
 
