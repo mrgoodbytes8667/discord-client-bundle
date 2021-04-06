@@ -18,6 +18,7 @@ use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Enums\HttpMethods;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Exception\ValidatorException;
@@ -76,7 +77,7 @@ class DiscordBotClient extends DiscordClient
      *
      * Not deserializable
      * @param ApplicationCommand|callable $applicationCommand
-     * @param null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return DiscordResponse
      * @throws TransportExceptionInterface
      *
@@ -90,36 +91,83 @@ class DiscordBotClient extends DiscordClient
         if(is_callable($applicationCommand)) {
             $applicationCommand = $applicationCommand();
         }
-        $edit = false;
+        $method = HttpMethods::post();
+        $append = [];
         $errors = $this->validator->validate($applicationCommand);
         if (count($errors) > 0) {
             throw new ValidatorException((string)$errors);
         }
 
-        $urlParts = ['applications', $this->clientId];
+        if (!empty($applicationCommand->getId())) {
+            $method = HttpMethods::patch();
+            $append[] = $applicationCommand->getId();
+        }
 
+        return $this->createEditOverwriteCommands($applicationCommand, $guild, $method, ApplicationCommand::class, $append);
+    }
+
+    /**
+     * Bulk Overwrite Global/Guild Application Commands
+     * [Global] Takes a list of application commands, overwriting existing commands that are registered globally for
+     * this application. Updates will be available in all guilds after 1 hour. Returns 200 and a list of
+     * ApplicationCommand objects. Commands that do not already exist will count toward daily application command
+     * create limits.
+     * [Guild] Takes a list of application commands, overwriting existing commands for the guild. Returns 200 and a list
+     * of ApplicationCommand objects.
+     *
+     * @param ApplicationCommand[]|ApplicationCommand $applicationCommands
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to overwrite commands in. Must be a string, a
+     * GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global
+     * command.
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#bulk-overwrite-global-application-commands
+     * @link
+     */
+    public function bulkOverwriteCommands($applicationCommands, $guild = null)
+    {
+        foreach (Arr::wrap($applicationCommands) as $applicationCommand) {
+            $errors = $this->validator->validate($applicationCommand);
+            if (count($errors) > 0) {
+                throw new ValidatorException((string)$errors);
+            }
+        }
+        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]');
+    }
+
+    /**
+     * @param ApplicationCommand[]|ApplicationCommand $applicationCommand
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param HttpMethods $method
+     * @param string $class
+     * @param array $urlAppend
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     */
+    protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [])
+    {
+        $urlParts = ['applications', $this->clientId];
         if (!empty($guild)) {
             $urlParts[] = self::ENDPOINT_GUILD;
             $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
             $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
-
-        if (!empty($applicationCommand->getId())) {
-            $edit = true;
-            $urlParts[] = $applicationCommand->getId();
+        if(!empty($urlAppend)) {
+            $urlParts = array_merge($urlParts, Arr::wrap($urlAppend));
         }
 
         $body = $this->serializer->serialize($applicationCommand, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
 
         return $this->request(url: $urlParts,
-            type: ApplicationCommand::class,
+            type: $class,
             options: [
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-            'body' => $body,
-        ], method: $edit ? HttpMethods::patch() : HttpMethods::post());
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $body,
+            ], method: $method);
     }
 
     /**

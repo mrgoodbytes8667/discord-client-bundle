@@ -29,66 +29,81 @@ class CreateCommandTest extends TestDiscordBotClientCase
     use TestDiscordFakerTrait, GuildProviderTrait;
 
     /**
-     * @requires PHPUnit >= 9
-     * @todo Test actual returned values
+     * @dataProvider provideCreateCommand
+     * @param $command
+     * @param $guild
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
-    public function testCreateCommand()
+    public function testCreateCommand($command, $guild) {
+        $client = $this->setupClient(MockClient::requests(
+            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED)));
+
+        $cmd = $client->createCommand($command, $guild);
+        $this->assertResponseIsSuccessful($cmd);
+        $this->assertResponseStatusCodeSame($cmd, Response::HTTP_CREATED);
+    }
+
+    /**
+     * @dataProvider provideEditCommand
+     * @param $command
+     * @param $guild
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testEditCommand($command, $guild) {
+        $client = $this->setupClient(MockClient::requests(
+            MockJsonResponse::makeFixture('HttpClient/edit-command-success.json', Response::HTTP_OK)));
+
+        $cmd = $client->createCommand($command, $guild);
+        $this->assertResponseIsSuccessful($cmd);
+        $this->assertResponseStatusCodeSame($cmd, Response::HTTP_OK);
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideCreateCommand()
+    {
+        foreach($this->provideValidGuilds() as $guild) {
+            yield ['command' => Sample::createCommand(), 'guild' => $guild[0]];
+            yield ['command' => function () {
+                return Sample::createCommand();
+            }, 'guild' => $guild[0]];
+        }
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideEditCommand()
+    {
+        foreach($this->provideValidGuilds() as $guild) {
+            yield ['command' => Sample::createCommand(), 'guild' => $guild[0]];
+            yield ['command' => function () {
+                $c = Sample::createCommand();
+                $c->setId('123');
+                return $c;
+            }, 'guild' => $guild[0]];
+        }
+    }
+
+    /**
+     * @requires PHPUnit >= 9
+     */
+    public function testCreateCommandWithRetry()
     {
         $client = $this->setupClient(MockClient::requests(
             new MockJsonTooManyRetriesResponse(0.001),
-            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED),
-            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED),
-            MockJsonResponse::makeFixture('HttpClient/edit-command-success.json'),
-            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED),
-            MockJsonResponse::makeFixture('HttpClient/edit-command-success.json')));
+            MockJsonResponse::makeFixture('HttpClient/add-command-success.json', Response::HTTP_CREATED)));
 
         $b = $client->createCommand(Sample::createCommand());
         $this->assertResponseIsSuccessful($b);
         $this->assertResponseStatusCodeSame($b, Response::HTTP_CREATED);
-        $this->validateCommand($b);
-
-        $d = $client->createCommand(function () {
-            return Sample::createCommand();
-        });
-        $this->assertResponseIsSuccessful($d);
-        $this->assertResponseStatusCodeSame($d, Response::HTTP_CREATED);
-        $this->validateCommand($d);
-
-        $c = $client->createCommand(Sample::createCommand());
-        $this->assertResponseIsSuccessful($c);
-        $this->assertResponseStatusCodeSame($c, Response::HTTP_OK);
-        $this->validateCommand($c);
-
-        $stub = new PartialGuild();
-        $stub->setId('123');
-
-        $b = $client->createCommand(Sample::createCommand(), $stub);
-        $this->assertResponseIsSuccessful($b);
-        $this->assertResponseStatusCodeSame($b, Response::HTTP_CREATED);
-        $this->validateCommand($b);
-    }
-
-    /**
-     * @param DiscordResponse $response
-     * @throws ClientExceptionInterface
-     * @throws TransportExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     */
-    protected function validateCommand(DiscordResponse $response)
-    {
-        /** @var ApplicationCommand $command */
-        $command = $response->deserialize();
-
-        $this->assertInstanceOf(ApplicationCommand::class, $command);
-        $this->assertEquals('846542216677566910', $command->getId());
-        $this->assertEquals('sample', $command->getName());
-        $this->assertEquals('Sample', $command->getDescription());
-        $this->assertCount(1, $command->getOptions());
-        $options = $command->getOptions();
-        $option = array_shift($options);
-        $this->assertInstanceOf(ApplicationCommandOption::class, $option);
-        $this->assertCount(3, $option->getChoices());
     }
 
     /**

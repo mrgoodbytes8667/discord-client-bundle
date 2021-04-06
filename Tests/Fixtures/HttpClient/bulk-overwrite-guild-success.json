@@ -1,0 +1,176 @@
+[
+  {
+    "id": "829666416713434699",
+    "application_id": "586568566858692924",
+    "name": "ducimus",
+    "description": "harum et sunt",
+    "version": "829666416713434704",
+    "default_permission": true,
+    "guild_id": "737645596567095093",
+    "options": [
+      {
+        "type": 4,
+        "name": "aut",
+        "description": "dicta ipsam suscipit"
+      },
+      {
+        "type": 8,
+        "name": "fugit",
+        "description": "quisquam quas dolor"
+      }
+    ]
+  },
+  {
+    "id": "829666416713434700",
+    "application_id": "586568566858692924",
+    "name": "quae",
+    "description": "iusto sint quos",
+    "version": "829666416713434705",
+    "default_permission": true,
+    "guild_id": "737645596567095093",
+    "options": [
+      {
+        "type": 3,
+        "name": "molestias",
+        "description": "debitis cum error",
+        "choices": [
+          {
+            "name": "dolore",
+            "value": "ut"
+          },
+          {
+            "name": "vel",
+            "value": "quod"
+          },
+          {
+            "name": "voluptatem",
+            "value": "fugit"
+          }
+        ]
+      },
+      {
+        "type": 3,
+        "name": "quas",
+        "description": "iusto culpa totam",
+        "choices": [
+          {
+            "name": "voluptates",
+            "value": "molestiae"
+          },
+          {
+            "name": "quo",
+            "value": "nisi"
+          }
+        ]
+      },
+      {
+        "type": 5,
+        "name": "iure",
+        "description": "quia dolor ab"
+      }
+    ]
+  },
+  {
+    "id": "829666416713434701",
+    "application_id": "586568566858692924",
+    "name": "debitis",
+    "description": "sapiente error quis",
+    "version": "829666416713434706",
+    "default_permission": true,
+    "guild_id": "737645596567095093",
+    "options": [
+      {
+        "type": 5,
+        "name": "consequuntur",
+        "description": "omnis dolore debitis"
+      },
+      {
+        "type": 5,
+        "name": "amet",
+        "description": "cupiditate et beatae"
+      }
+    ]
+  },
+  {
+    "id": "829666416713434702",
+    "application_id": "586568566858692924",
+    "name": "quibusdam",
+    "description": "vitae totam similique",
+    "version": "829666416713434707",
+    "default_permission": true,
+    "guild_id": "737645596567095093",
+    "options": [
+      {
+        "type": 6,
+        "name": "illum",
+        "description": "necessitatibus eligendi nemo",
+        "required": true
+      },
+      {
+        "type": 4,
+        "name": "aspernatur",
+        "description": "voluptatem explicabo nisi",
+        "choices": [
+          {
+            "name": "praesentium",
+            "value": 4
+          },
+          {
+            "name": "voluptate",
+            "value": 9
+          },
+          {
+            "name": "assumenda",
+            "value": 3
+          },
+          {
+            "name": "qui",
+            "value": 6
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "829666416713434703",
+    "application_id": "586568566858692924",
+    "name": "ab",
+    "description": "odit nisi ex",
+    "version": "829047004628910130",
+    "default_permission": true,
+    "guild_id": "737645596567095093",
+    "options": [
+      {
+        "type": 8,
+        "name": "voluptate",
+        "description": "perferendis neque maxime",
+        "required": true
+      },
+      {
+        "type": 7,
+        "name": "quam",
+        "description": "eum esse facere"
+      },
+      {
+        "type": 4,
+        "name": "consectetur",
+        "description": "assumenda tempore voluptatibus"
+      },
+      {
+        "type": 3,
+        "name": "dolorum",
+        "description": "corrupti eos fuga",
+        "choices": [
+          {
+            "name": "ut",
+            "value": "tempore"
+          },
+          {
+            "name": "esse",
+            "value": "lorem"
+          }
+        ]
+      }
+    ]
+  }
+]
