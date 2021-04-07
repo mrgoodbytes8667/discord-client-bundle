@@ -160,7 +160,7 @@ return static function (ContainerConfigurator $container) {
     //region Converters
     $services->set('bytes_discord.discord_guild_converter', DiscordGuildConverter::class)
         ->args([
-            service('bytes_discord.services.client.discord.bot'), // Bytes\DiscordBundle\Services\Client\DiscordBot
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
         ])
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord_guild',
