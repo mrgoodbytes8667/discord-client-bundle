@@ -4,20 +4,29 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
+use Bytes\Common\Faker\Providers\Discord;
+use Bytes\Common\Faker\Providers\MiscProvider;
 use Bytes\DiscordBundle\Tests\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordBundle\Tests\MockHttpClient\MockEmptyResponse;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\DiscordResponseBundle\Objects\Message;
+use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
+use Faker\Factory;
 use Generator;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\ByteString;
+use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -293,5 +302,187 @@ trait TestDiscordClientTrait
         $response = $client->getMe();
 
         $this->assertResponseStatusCodeSame($response, $code);
+    }
+
+    public function provideWebhookArgs()
+    {
+        $faker = $this->getFaker();
+
+        yield ['id' => $faker->snowflake(), 'token' => $faker->accessToken(), 'content' => 'Hello, World!', 'embeds' => Embed::create('Hello, Embed!', description: 'This is an embedded message.'), 'allowedMentions' => null, 'username' => null, 'avatarUrl' => null, 'tts' => false];
+        yield ['id' => $faker->snowflake(), 'token' => $faker->accessToken(), 'content' => WebhookContent::create(Embed::create('Hello, Embed!', description: 'This is an embedded message.'), content: 'Hello, World!', tts: false), 'embeds' => null, 'allowedMentions' => null, 'username' => null, 'avatarUrl' => null, 'tts' => false];
+    }
+
+    /**
+     * @dataProvider provideWebhookArgs
+     * @param $id
+     * @param $token
+     * @param $content
+     * @param $embeds
+     * @param $allowedMentions
+     * @param $username
+     * @param $avatarUrl
+     * @param $tts
+     * @throws TransportExceptionInterface
+     */
+    public function testExecuteWebhook($id, $token, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/execute-webhook-success.json'),
+        ]));
+
+        $response = $client->executeWebhook($id, $token, true, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/execute-webhook-success.json'));
+    }
+
+    /**
+     * @dataProvider provideWebhookArgs
+     * @param $id
+     * @param $token
+     * @param $content
+     * @param $embeds
+     * @param $allowedMentions
+     * @param $username
+     * @param $avatarUrl
+     * @param $tts
+     * @throws TransportExceptionInterface
+     */
+    public function testExecuteWebhookNoWait($id, $token, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts)
+    {
+        $client = $this->setupClient(MockClient::empty());
+
+        $faker = $this->getFaker();
+
+        $response = $client->executeWebhook($id, $token, false, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_NO_CONTENT);
+        $this->assertResponseHasNoContent($response);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testExecuteWebhookValidationFailure()
+    {
+        $client = $this->setupClient(MockClient::empty());
+
+        $faker = $this->getFaker();
+
+        $description = $faker->paragraphsMinimumChars(2000);
+
+        $this->expectException(ValidatorException::class);
+
+        $client->executeWebhook($faker->snowflake(), $faker->snowflake(), $faker->snowflake(), WebhookContent::create(content: $description));
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testEditWebhookMessage()
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/edit-webhook-message-success.json'),
+        ]));
+
+        $faker = $this->getFaker();
+
+        $response = $client->editWebhookMessage($faker->snowflake(), $faker->snowflake(), $faker->snowflake(), 'Hello, oh edited World!', Embed::create('Hello, Embed!', description: 'This is an embedded message.'), tts: false);
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, Fixture::getFixturesData('HttpClient/edit-webhook-message-success.json'));
+    }
+
+    /**
+     * @dataProvider provideDeleteWebhookMessage
+     * @param $id
+     * @param $token
+     * @param $messageId
+     * @throws TransportExceptionInterface
+     */
+    public function testDeleteWebhookMessage($id, $token, $messageId)
+    {
+        $client = $this->setupClient(MockClient::empty());
+
+        $faker = $this->getFaker();
+
+        $response = $client->deleteWebhookMessage($id, $token, $messageId);
+
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_NO_CONTENT);
+        $this->assertResponseHasNoContent($response);
+        $this->assertResponseContentSame($response, '');
+    }
+
+    /**
+     * @dataProvider provideDeleteWebhookMessageInvalidArgument
+     * @param $id
+     * @param $token
+     * @param $messageId
+     * @throws TransportExceptionInterface
+     */
+    public function testDeleteWebhookMessageBadChannelArgument($id, $token, $messageId)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+
+        $client->deleteWebhookMessage($id, $token, $messageId);
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideDeleteWebhookMessageInvalidArgument()
+    {
+        $faker = $this->getFaker();
+
+        $message = new Message();
+        $message->setChannelId('123');
+        yield ['id' => $faker->snowflake(), 'token' => $faker->refreshToken(), 'messageId' => $message];
+        yield ['id' => new \DateTime(), 'token' => $faker->refreshToken(), 'messageId' => $faker->snowflake()];
+    }
+
+    /**
+     * @dataProvider provideClientExceptionResponses
+     *
+     * @param int $code
+     */
+    public function testDeleteWebhookMessageFailure(int $code)
+    {
+        $this->expectException(ClientExceptionInterface::class);
+        $this->expectExceptionMessage(sprintf('HTTP %d returned for', $code));
+
+        $client = $this->setupClient(MockClient::emptyError($code));
+
+        foreach($this->provideDeleteWebhookMessage() as $item) {
+            $client->deleteWebhookMessage($item['id'], $item['token'], $item['messageId']);
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideDeleteWebhookMessage()
+    {
+        $faker = $this->getFaker();
+        yield ['id' => $faker->snowflake(), 'token' => $faker->refreshToken(), 'messageId' => $faker->snowflake()];
+    }
+
+    /**
+     * @return Discord|MiscProvider|\Faker\Generator
+     */
+    protected function getFaker()
+    {
+        /** @var \Faker\Generator|MiscProvider|Discord $faker */
+        $faker = Factory::create();
+        $faker->addProvider(new Discord($faker));
+
+        return $faker;
     }
 }

@@ -1,0 +1,30 @@
+{
+  "id": "487682468505944112",
+  "type": 0,
+  "content": "Hello, World!",
+  "channel_id": "246703651155663276",
+  "author": {
+    "bot": true,
+    "id": "453971306226180868",
+    "username": "Spidey Bot",
+    "avatar": null,
+    "discriminator": "0000"
+  },
+  "attachments": [],
+  "embeds": [
+    {
+      "type": "rich",
+      "title": "Hello, Embed!",
+      "description": "This is an embedded message."
+    }
+  ],
+  "mentions": [],
+  "mention_roles": [],
+  "pinned": false,
+  "mention_everyone": false,
+  "tts": false,
+  "timestamp": "2021-04-07T13:46:32.554000+00:00",
+  "edited_timestamp": null,
+  "flags": 0,
+  "webhook_id": "829350728622800916"
+}

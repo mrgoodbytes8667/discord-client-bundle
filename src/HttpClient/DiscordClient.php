@@ -5,7 +5,11 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
+use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\DiscordResponseBundle\Objects\Message;
+use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
+use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
@@ -15,16 +19,17 @@ use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
 use function Symfony\Component\String\u;
 
 /**
@@ -71,6 +76,7 @@ class DiscordClient implements SerializerAwareInterface
     const ENDPOINT_MEMBER = 'members';
     const ENDPOINT_USER = 'users';
     const USER_ME = '@me';
+    const ENDPOINT_WEBHOOK = 'webhooks';
 
     /**
      * @var ValidatorInterface
@@ -242,6 +248,131 @@ class DiscordClient implements SerializerAwareInterface
         $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
         $urlParts = [self::ENDPOINT_USER, $userId];
         return $this->request($urlParts, User::class);
+    }
+
+    /**
+     * Execute Webhook
+     * @param IdInterface|string $id Webhook Id
+     * @param string $token Webhook token
+     * @param bool $wait True will return a Message object, false does not
+     * @param WebhookContent|string $content the message contents (up to 2000 characters)
+     * @param Embed[]|Embed|null $embeds
+     * @param AllowedMentions|null $allowedMentions
+     * @param string|null $username
+     * @param string|null $avatarUrl
+     * @param bool|null $tts true if this is a TTS message
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/webhook#execute-webhook
+     */
+    public function executeWebhook($id, $token, bool $wait = true, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): DiscordResponse
+    {
+        return $this->sendWebhookPayload($id, $token, HttpMethods::post(), $wait, null, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+    }
+
+    /**
+     * @param IdInterface|string $id Webhook Id or Application Id
+     * @param string $token Webhook token or Interaction token
+     * @param HttpMethods $method = [HttpMethods::post(), HttpMethods::patch()][$any]
+     * @param bool $wait True will return a Message object, false does not
+     * @param IdInterface|string|null $messageId Message Id if editing an existing message
+     * @param WebhookContent|string $content the message contents (up to 2000 characters)
+     * @param Embed[]|Embed|null $embeds
+     * @param AllowedMentions|null $allowedMentions
+     * @param string|null $username
+     * @param string|null $avatarUrl
+     * @param bool $tts true if this is a TTS message
+     * @return DiscordResponse
+     *
+     * @throws TransportExceptionInterface
+     * @internal
+     */
+    protected function sendWebhookPayload($id, $token, HttpMethods $method, bool $wait = true, $messageId = null, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): DiscordResponse
+    {
+        $id = IdNormalizer::normalizeIdArgument($id, 'The "id" argument is required.');
+        $urlParts = [self::ENDPOINT_WEBHOOK, $id, $token];
+        if (!empty($messageId)) {
+            $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument must be null or a valid id.');
+            $urlParts[] = self::ENDPOINT_MESSAGE;
+            $urlParts[] = $messageId;
+        }
+
+        if (!($content instanceof WebhookContent)) {
+            $data = WebhookContent::create($embeds, is_string($content) ? $content : null, $allowedMentions, $username, $avatarUrl, $tts);
+        } else {
+            $data = $content;
+        }
+
+        $errors = $this->validator->validate($data);
+        if (count($errors) > 0) {
+            throw new ValidatorException((string)$errors);
+        }
+
+        $body = $this->serializer->serialize($data, 'json', [
+            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+        ]);
+
+        if ($method === HttpMethods::patch() && !empty($messageId)) {
+            return $this->request($urlParts, type: Message::class, options: [
+                'body' => $body
+            ], method: $method);
+        } elseif ($wait) {
+            return $this->request($urlParts, type: Message::class, options: [
+                'body' => $body,
+                'query' => [
+                    'wait' => $wait
+                ]
+            ], method: $method);
+        } else {
+            return $this->request($urlParts, options: [
+                'body' => $body,
+                'query' => [
+                    'wait' => $wait
+                ]
+            ], method: $method);
+        }
+    }
+
+    /**
+     * Edit Webhook Message
+     * Edits a previously-sent webhook message from the same token. Returns a message object on success.
+     * @param IdInterface|string $id Webhook Id
+     * @param string $token Webhook token
+     * @param IdInterface|string $messageId Message Id to edit
+     * @param WebhookContent|string $content the message contents (up to 2000 characters)
+     * @param Embed[]|Embed|null $embeds
+     * @param AllowedMentions|null $allowedMentions
+     * @param string|null $username
+     * @param string|null $avatarUrl
+     * @param bool|null $tts true if this is a TTS message
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/webhook#edit-webhook-message
+     */
+    public function editWebhookMessage($id, $token, $messageId, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): DiscordResponse
+    {
+        return $this->sendWebhookPayload($id, $token, HttpMethods::patch(), true, $messageId, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+    }
+
+    /**
+     * Delete Webhook Message
+     * Deletes a message that was created by the webhook. Returns a 204 NO CONTENT response on success.
+     * @param IdInterface|string $id Webhook Id
+     * @param string $token Webhook token
+     * @param IdInterface|string $messageId Message Id to delete
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/resources/webhook#delete-webhook-message
+     */
+    public function deleteWebhookMessage($id, $token, $messageId)
+    {
+        $id = IdNormalizer::normalizeIdArgument($id, 'The "id" argument is required and cannot be blank.');
+        $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
+
+        return $this->request(url: [self::ENDPOINT_WEBHOOK, $id, $token, self::ENDPOINT_MESSAGE, $messageId], method: HttpMethods::delete());
     }
 
     /**
