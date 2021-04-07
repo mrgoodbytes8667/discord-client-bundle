@@ -124,10 +124,7 @@ class CreateCommandTest extends TestDiscordBotClientCase
      */
     public function testCreateCommandInvalidDescriptionValidatorError()
     {
-        $description = '';
-        do {
-            $description .= $this->faker->paragraph();
-        } while (strlen($description) < 1000);
+        $description = $this->faker->paragraphsMinimumChars(1000);
 
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/add-command-failure-description-too-long.json', Response::HTTP_BAD_REQUEST),

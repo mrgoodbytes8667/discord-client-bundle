@@ -2,6 +2,7 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
+use Bytes\Common\Faker\Providers\MiscProvider;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
@@ -9,6 +10,7 @@ use Bytes\DiscordResponseBundle\Enums\ApplicationCommandOptionType as ACOT;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption as Option;
 use Faker\Factory;
+use Faker\Generator as FakerGenerator;
 use Generator;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,11 +59,11 @@ class BulkOverwriteCommandTest extends TestDiscordBotClientCase
      */
     public function provideInvalidCommandSetForValidator()
     {
+        /** @var FakerGenerator|MiscProvider $faker */
         $faker = Factory::create();
-        $description = '';
-        do {
-            $description .= $faker->paragraph();
-        } while (strlen($description) < 1000);
+        $faker->addProvider(new MiscProvider($faker));
+
+        $description = $faker->paragraphsMinimumChars(1000);
 
         yield [
             [
