@@ -43,7 +43,7 @@ class DeleteMessageTest extends TestDiscordBotClientCase
 
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
-        $client->getChannelMessages($channel);
+        $client->deleteMessage($message, $channel);
     }
 
     /**
