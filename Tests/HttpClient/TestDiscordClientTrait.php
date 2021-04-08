@@ -48,7 +48,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 trait TestDiscordClientTrait
 {
-    use CommandProviderTrait, ClientExceptionResponseProviderTrait;
+    use CommandProviderTrait, ClientExceptionResponseProviderTrait, WebhookProviderTrait;
 
     /**
      *
@@ -302,14 +302,6 @@ trait TestDiscordClientTrait
         $response = $client->getMe();
 
         $this->assertResponseStatusCodeSame($response, $code);
-    }
-
-    public function provideWebhookArgs()
-    {
-        $faker = $this->getFaker();
-
-        yield ['id' => $faker->snowflake(), 'token' => $faker->accessToken(), 'content' => 'Hello, World!', 'embeds' => Embed::create('Hello, Embed!', description: 'This is an embedded message.'), 'allowedMentions' => null, 'username' => null, 'avatarUrl' => null, 'tts' => false];
-        yield ['id' => $faker->snowflake(), 'token' => $faker->accessToken(), 'content' => WebhookContent::create(Embed::create('Hello, Embed!', description: 'This is an embedded message.'), content: 'Hello, World!', tts: false), 'embeds' => null, 'allowedMentions' => null, 'username' => null, 'avatarUrl' => null, 'tts' => false];
     }
 
     /**
