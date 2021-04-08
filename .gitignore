@@ -21,17 +21,21 @@ npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
-###> phpdoc
+###> phpdoc ###
 phpdoc.xml
 /data/
 /docs/
-###< phpdoc
+###< phpdoc ###
+
+###> coverage ###
+clover.xml
+###< coverage ###
 
 ###> symfony bundle
 composer.lock
 bin/phpunit
 ###< symfony bundle
 
-###> jetbrains
+###> jetbrains ###
 .idea
-###< jetbrains
+###< jetbrains ###

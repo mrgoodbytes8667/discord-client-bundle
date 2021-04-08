@@ -1,0 +1,59 @@
+name: Code Coverage
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  coverage:
+    # The type of runner that the job will run on
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ 8.0 ]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ubuntu-latest-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ubuntu-latest-php${{ matrix.php }}-composer-
+
+      - name: Setup PHP
+        if: success()
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: pcov
+
+      - name: Install dependencies
+        if: success()
+        run: |
+          composer update --prefer-stable --prefer-dist --no-interaction --no-progress --optimize-autoloader
+          vendor/bin/simple-phpunit install
+
+      - name: Setup and Run PHPUnit
+        if: success()
+        run: php vendor/bin/simple-phpunit --coverage-clover=clover.xml
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1
