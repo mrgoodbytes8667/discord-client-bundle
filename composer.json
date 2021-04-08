@@ -9,7 +9,7 @@
         "doctrine/annotations": "^1.12",
         "doctrine/collections": "^1.6",
         "mrgoodbytes8667/command-bundle": "^1.0",
-        "mrgoodbytes8667/discord-response-bundle": "^0.8.1",
+        "mrgoodbytes8667/discord-response-bundle": "^0.8.2",
         "mrgoodbytes8667/http-client-common": "^0.1.1",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/config": "^5.2",

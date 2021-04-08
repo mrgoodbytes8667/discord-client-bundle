@@ -5,6 +5,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -53,17 +54,20 @@ class DeleteOriginalInteractionResponseTest extends TestDiscordBotClientCase
     }
 
     /**
-     * @todo change to JsonErrorCodes::INVALID_WEBHOOK_TOKEN
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function testEditFollowupMessageExpiredInteractionToken()
     {
-        $client = $this->setupClient(MockClient::jsonErrorCode(50027, 'Invalid Webhook Token', Response::HTTP_UNAUTHORIZED));
+        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::invalidWebhookTokenProvided(), 'Invalid Webhook Token', Response::HTTP_UNAUTHORIZED));
 
         $response = $client->deleteOriginalInteractionResponse($this->faker->refreshToken());
 
         $this->assertResponseStatusCodeSame($response, Response::HTTP_UNAUTHORIZED);
         $this->assertResponseHasContent($response);
-        $this->assertResponseContentSame($response, Fixture::getJsonErrorCodeData(50027, 'Invalid Webhook Token'));
+        $this->assertResponseContentSame($response, Fixture::getJsonErrorCodeData(JsonErrorCodes::invalidWebhookTokenProvided(), 'Invalid Webhook Token'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage(sprintf('HTTP %d returned for', Response::HTTP_UNAUTHORIZED));

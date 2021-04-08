@@ -92,17 +92,20 @@ class CreateFollowupMessageTest extends TestDiscordBotClientCase
     }
 
     /**
-     * @todo change to JsonErrorCodes::INVALID_WEBHOOK_TOKEN
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function testCreateFollowupMessageExpiredInteractionToken()
     {
-        $client = $this->setupClient(MockClient::jsonErrorCode(50027, 'Invalid Webhook Token', Response::HTTP_UNAUTHORIZED));
+        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::invalidWebhookTokenProvided(), 'Invalid Webhook Token', Response::HTTP_UNAUTHORIZED));
 
         $response = $client->createFollowupMessage($this->faker->refreshToken(), $this->faker->paragraph());
 
         $this->assertResponseStatusCodeSame($response, Response::HTTP_UNAUTHORIZED);
         $this->assertResponseHasContent($response);
-        $this->assertResponseContentSame($response, Fixture::getJsonErrorCodeData(50027, 'Invalid Webhook Token'));
+        $this->assertResponseContentSame($response, Fixture::getJsonErrorCodeData(JsonErrorCodes::invalidWebhookTokenProvided(), 'Invalid Webhook Token'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage(sprintf('HTTP %d returned for', Response::HTTP_UNAUTHORIZED));
