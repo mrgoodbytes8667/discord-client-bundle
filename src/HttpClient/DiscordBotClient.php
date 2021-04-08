@@ -13,7 +13,9 @@ use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Member;
 use Bytes\DiscordResponseBundle\Objects\Message;
+use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
 use Bytes\DiscordResponseBundle\Objects\Message\Content;
+use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
@@ -790,4 +792,90 @@ class DiscordBotClient extends DiscordClient
         }
         return $limit;
     }
+
+    /**
+     * Edit Original Interaction Response
+     * Edits the initial Interaction response. Functions the same as Edit Webhook Message.
+     * @param string $token Interaction token
+     * @param WebhookContent|string $content the message contents (up to 2000 characters)
+     * @param Embed[]|Embed|null $embeds
+     * @param AllowedMentions|null $allowedMentions
+     * @param bool|null $tts true if this is a TTS message
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#edit-original-interaction-response
+     */
+    public function editOriginalInteractionResponse(string $token, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?bool $tts = null): DiscordResponse
+    {
+        return $this->editWebhookMessage(id: $this->clientId, token: $token, messageId: '@original', content: $content, embeds: $embeds, allowedMentions: $allowedMentions, tts: $tts);
+    }
+
+    /**
+     * Delete Original Interaction Response
+     * Deletes the initial Interaction response. Returns 204 on success.
+     * @param string $token Interaction token
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#delete-original-interaction-response
+     */
+    public function deleteOriginalInteractionResponse(string $token)
+    {
+        return $this->deleteWebhookMessage(id: $this->clientId, token: $token, messageId: '@original');
+    }
+
+    /**
+     * Create Followup Message
+     * Create a followup message for an Interaction. Functions the same as Execute Webhook, but wait is always true.
+     * @param string $token Interaction token
+     * @param WebhookContent|string $content the message contents (up to 2000 characters)
+     * @param Embed[]|Embed|null $embeds
+     * @param AllowedMentions|null $allowedMentions
+     * @param bool|null $tts
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#create-followup-message
+     */
+    public function createFollowupMessage(string $token, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?bool $tts = null): DiscordResponse
+    {
+        return $this->executeWebhook(id: $this->clientId, token: $token, wait: true, content: $content, embeds: $embeds, allowedMentions: $allowedMentions, tts: $tts);
+    }
+
+    /**
+     * Edit Followup Message
+     * Edits a followup message for an Interaction. Functions the same as Edit Webhook Message.
+     * @param string $token Interaction token
+     * @param IdInterface|string $messageId Message Id to edit
+     * @param WebhookContent|string $content the message contents (up to 2000 characters)
+     * @param Embed[]|Embed|null $embeds
+     * @param AllowedMentions|null $allowedMentions
+     * @param bool|null $tts true if this is a TTS message
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#edit-followup-message
+     */
+    public function editFollowupMessage(string $token, $messageId, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?bool $tts = null): DiscordResponse
+    {
+        return $this->editWebhookMessage(id: $this->clientId, token: $token, messageId: $messageId, content: $content, embeds: $embeds, allowedMentions: $allowedMentions, tts: $tts);
+    }
+
+    /**
+     * Delete Followup Message
+     * Deletes a followup message for an Interaction. Returns 204 on success.
+     * @param string $token Interaction token
+     * @param IdInterface|string $messageId Message Id to delete
+     * @return DiscordResponse
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#delete-followup-message
+     */
+    public function deleteFollowupMessage(string $token, $messageId)
+    {
+        return $this->deleteWebhookMessage(id: $this->clientId, token: $token, messageId: $messageId);
+    }
+
+
 }

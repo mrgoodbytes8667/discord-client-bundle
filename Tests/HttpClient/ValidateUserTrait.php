@@ -12,6 +12,7 @@ use Bytes\DiscordResponseBundle\Objects\User;
  *
  * @method assertInstanceOf(string $expected, $actual, string $message = '')
  * @method assertEquals($expected, $actual, string $message = '')
+ * @method assertNull($actual, string $message = '')
  */
 trait ValidateUserTrait
 {
@@ -27,13 +28,22 @@ trait ValidateUserTrait
      */
     protected function validateUser($user, $id, $username, $avatar, $discriminator, $flags, $bot = null)
     {
-        $this->assertInstanceOf(User::class, $user);
+        if(!empty($user)) {
+            $this->assertInstanceOf(User::class, $user);
 
-        $this->assertEquals($id, $user->getId());
-        $this->assertEquals($username, $user->getUsername());
-        $this->assertEquals($avatar, $user->getAvatar());
-        $this->assertEquals($discriminator, $user->getDiscriminator());
-        $this->assertEquals($flags, $user->getPublicFlags());
-        $this->assertEquals($bot, $user->getBot());
+            $this->assertEquals($id, $user->getId());
+            $this->assertEquals($username, $user->getUsername());
+            $this->assertEquals($avatar, $user->getAvatar());
+            $this->assertEquals($discriminator, $user->getDiscriminator());
+            $this->assertEquals($flags, $user->getPublicFlags());
+            $this->assertEquals($bot, $user->getBot());
+        } else {
+            $this->assertNull($id);
+            $this->assertNull($username);
+            $this->assertNull($avatar);
+            $this->assertNull($discriminator);
+            $this->assertNull($flags);
+            $this->assertNull($bot);
+        }
     }
 }

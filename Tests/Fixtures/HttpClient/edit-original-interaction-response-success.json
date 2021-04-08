@@ -1,0 +1,43 @@
+{
+  "id": "487682468505944112",
+  "type": 0,
+  "content": "Hello, oh edited World!",
+  "channel_id": "246703651155663276",
+  "author": {
+    "id": "453971306226180868",
+    "username": "Spidey Bot",
+    "avatar": null,
+    "discriminator": "0000",
+    "public_flags": 0,
+    "bot": true
+  },
+  "attachments": [],
+  "embeds": [
+    {
+      "type": "rich",
+      "title": "Hello, Embed!",
+      "description": "This is an embedded message."
+    }
+  ],
+  "mentions": [],
+  "mention_roles": [],
+  "pinned": false,
+  "mention_everyone": false,
+  "tts": false,
+  "timestamp": "2021-04-08T15:09:59.913000+00:00",
+  "edited_timestamp": "2021-04-08T15:10:59.379188+00:00",
+  "flags": 0,
+  "interaction": {
+    "id": "846542216677566910",
+    "type": 2,
+    "name": "sample",
+    "user": {
+      "id": "272930239796055326",
+      "username": "elvie70",
+      "avatar": "cba426068ee1c51edab2f0c38549f4bc",
+      "discriminator": "6793",
+      "public_flags": 0
+    }
+  },
+  "webhook_id": "829350728622800916"
+}
