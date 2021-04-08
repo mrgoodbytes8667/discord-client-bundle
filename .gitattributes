@@ -3,4 +3,3 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /phpunit.xml.dist export-ignore
-/GenerateMocks.php export-ignore
