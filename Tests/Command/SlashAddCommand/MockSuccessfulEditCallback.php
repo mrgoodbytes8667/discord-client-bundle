@@ -4,7 +4,7 @@
 namespace Bytes\DiscordBundle\Tests\Command\SlashAddCommand;
 
 
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClientCallbackIterator;
+use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 
 /**

@@ -4,11 +4,9 @@
 namespace Bytes\DiscordBundle\Tests\Command;
 
 
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClientCallbackIterator;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonTooManyRetriesResponse;
-use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
+use Exception;
 
 /**
  * Class MockTooManyRequestsCallback
@@ -18,7 +16,7 @@ class MockTooManyRequestsCallback extends MockClientCallbackIterator
 {
     /**
      * MockTooManyRequestsCallback constructor.
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
@@ -30,7 +28,7 @@ class MockTooManyRequestsCallback extends MockClientCallbackIterator
 
     /**
      * @return MockJsonTooManyRetriesResponse[]
-     * @throws \Exception
+     * @throws Exception
      */
     public static function getResponses(float $retryAfter = 0.123)
     {

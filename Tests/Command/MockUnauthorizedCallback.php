@@ -4,7 +4,7 @@
 namespace Bytes\DiscordBundle\Tests\Command;
 
 
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClientCallbackIterator;
+use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -9,6 +9,8 @@ use Iterator;
 /**
  * Class MockClientCallbackIterator
  * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ *
+ * @deprecated v0.0.2 Replace with mrgoodbytes8667/test-common Bytes\Tests\Common\MockHttpClient
  */
 abstract class MockClientCallbackIterator implements Iterator
 {

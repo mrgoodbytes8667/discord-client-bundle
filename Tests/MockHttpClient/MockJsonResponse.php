@@ -6,13 +6,14 @@ namespace Bytes\DiscordBundle\Tests\MockHttpClient;
 
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
+use Bytes\Tests\Common\MockHttpClient\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockJsonResponse
  * @package Bytes\DiscordBundle\Tests\MockHttpClient
  */
-class MockJsonResponse extends MockDiscordResponse
+class MockJsonResponse extends MockResponse
 {
     /**
      * MockJsonResponse constructor.
@@ -27,7 +28,7 @@ class MockJsonResponse extends MockDiscordResponse
     public function __construct($body = '', int $code = Response::HTTP_OK, array $info = [])
     {
         $info['response_headers']['Content-Type'] = 'application/json';
-        parent::__construct($body, $code, $info);
+        parent::__construct($body, $code, $info, new MockDiscordResponseHeader());
     }
 
     /**

@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class MockEmptyResponse
  * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ *
+ * @deprecated v0.0.2 Replace with mrgoodbytes8667/test-common Bytes\Tests\Common\MockHttpClient
  */
 class MockEmptyResponse extends MockDiscordResponse
 {
