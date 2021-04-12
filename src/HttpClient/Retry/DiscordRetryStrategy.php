@@ -6,6 +6,7 @@ namespace Bytes\DiscordBundle\HttpClient\Retry;
 
 use Bytes\HttpClient\Common\Retry\APIRetryStrategy;
 use Exception;
+use InvalidArgumentException;
 use Symfony\Component\HttpClient\Response\AsyncContext;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -41,12 +42,13 @@ class DiscordRetryStrategy extends APIRetryStrategy implements RetryStrategyInte
      * @param AsyncContext $context
      * @return int
      */
-    protected function getReset(AsyncContext $context)
+    protected function getReset(AsyncContext $context): int
     {
-        if (($context->getInfo('retry_count') ?? 0) > 1 && array_key_exists(self::RATELIMITHEADER, $context->getHeaders())) {
-            $header = $context->getHeaders()[self::RATELIMITHEADER];
-            if (array_key_exists(0, $header)) {
-                return $context->getHeaders()[self::RATELIMITHEADER][0];
+        if (($context->getInfo('retry_count') ?? 0) > 1) {
+            try {
+                return self::getHeaderValue($context->getHeaders(), self::RATELIMITHEADER);
+            } catch (InvalidArgumentException $exception) {
+                return -1;
             }
         }
 
