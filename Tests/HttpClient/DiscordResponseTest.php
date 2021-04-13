@@ -8,7 +8,7 @@ use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
 use Bytes\DiscordBundle\HttpClient\DiscordClient;
 use Bytes\DiscordBundle\HttpClient\DiscordResponse;
-use Bytes\DiscordBundle\Tests\ClientExceptionResponseProviderTrait;
+use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Faker\Factory;

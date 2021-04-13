@@ -28,7 +28,7 @@
     "require-dev": {
         "doctrine/common": "^3.0",
         "fakerphp/faker": "^1.13",
-        "mrgoodbytes8667/test-common": ">=0.0.12",
+        "mrgoodbytes8667/test-common": ">=0.0.13",
         "mrgoodbytes8667/test-common-faker": "^0.3.2",
         "mrgoodbytes8667/test-discord-faker": ">=0.0.7",
         "symfony/phpunit-bridge": "^5.2",

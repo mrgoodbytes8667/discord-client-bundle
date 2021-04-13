@@ -10,6 +10,7 @@ use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption as Option;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOptionChoice;
+use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use DateTime;
 use Generator;
 

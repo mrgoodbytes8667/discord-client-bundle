@@ -5,7 +5,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
 use Bytes\DiscordBundle\HttpClient\DiscordResponse;
-use Bytes\DiscordBundle\Tests\ClientExceptionResponseProviderTrait;
+use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordResponseBundle\Enums\MessageType;
 use Bytes\DiscordResponseBundle\Objects\Message;
