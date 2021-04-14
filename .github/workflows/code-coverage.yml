@@ -57,3 +57,5 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v1
+        with:
+          files: ./clover.xml
