@@ -16,6 +16,7 @@ use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
+use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -171,10 +172,11 @@ class DiscordClient implements SerializerAwareInterface
      * @param string|null $type
      * @param array $options = HttpClientInterface::OPTIONS_DEFAULTS
      * @param string $method = ['GET','HEAD','POST','PUT','DELETE','CONNECT','OPTIONS','TRACE','PATCH'][$any]
-     * @return DiscordResponse
+     * @param ClientResponseInterface|string|null $responseClass
+     * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      */
-    public function request($url, ?string $type = null, array $options = [], $method = 'GET')
+    public function request($url, ?string $type = null, array $options = [], $method = 'GET', ClientResponseInterface|string|null $responseClass = null)
     {
         if (is_array($url)) {
             $url = implode('/', $url);
@@ -186,7 +188,17 @@ class DiscordClient implements SerializerAwareInterface
         if (!empty($auth) && is_array($auth)) {
             $options = array_merge_recursive($options, $auth);
         }
-        return $this->response->withResponse($this->httpClient->request($method, $this->buildURL($url), $options), $type);
+        if(!is_null($responseClass))
+        {
+            if(is_string($responseClass) && is_subclass_of($responseClass, ClientResponseInterface::class)) {
+                $response = $responseClass::makeFrom($this->response);
+            } else {
+                $response = $responseClass;
+            }
+        } else {
+            $response = $this->response;
+        }
+        return $response->withResponse($this->httpClient->request($method, $this->buildURL($url), $options), $type);
     }
 
     /**

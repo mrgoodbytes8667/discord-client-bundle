@@ -60,6 +60,15 @@ class DiscordResponse implements ClientResponseInterface
     }
 
     /**
+     * @param ClientResponseInterface $clientResponse
+     * @return static
+     */
+    public static function makeFrom(ClientResponseInterface $clientResponse): static
+    {
+        return new static($clientResponse->getSerializer());
+    }
+
+    /**
      * Method to instantiate the response from the HttpClient
      * @param ResponseInterface $response
      * @param string|null $type Type to deserialize into for deserialize(), can be overloaded by deserialize()
@@ -79,6 +88,14 @@ class DiscordResponse implements ClientResponseInterface
     }
 
     //region Getters/Setters
+
+    /**
+     * @return SerializerInterface
+     */
+    public function getSerializer(): SerializerInterface
+    {
+        return $this->serializer;
+    }
 
     /**
      * @return string|null

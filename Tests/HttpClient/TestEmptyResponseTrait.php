@@ -5,6 +5,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
 use Bytes\DiscordBundle\HttpClient\DiscordResponse;
+use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -14,7 +15,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  *
  * @method DiscordResponse setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
  * @method assertTrue($condition, string $message = '')
- * @method assertResponseStatusCodeNotSame(ResponseInterface|DiscordResponse $response, int $expectedCode, string $message = '')
+ * @method assertResponseStatusCodeNotSame(ResponseInterface|ClientResponseInterface $response, int $expectedCode, string $message = '')
  */
 trait TestEmptyResponseTrait
 {
