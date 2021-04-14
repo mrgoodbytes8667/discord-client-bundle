@@ -197,13 +197,15 @@ abstract class TestHttpClientCase extends TestCase
      * @param null $content
      * @param int $code
      * @param string $type
+     * @param array $context
+     * @param callable|null $onSuccessCallable
      * @return DiscordResponse
      */
-    public function setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = stdClass::class): DiscordResponse
+    public function setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = stdClass::class, array $context = [], ?callable $onSuccessCallable = null): DiscordResponse
     {
         $response = new MockStandaloneResponse(content: $content, fixtureFile: $fixtureFile, statusCode: $code);
 
-        return DiscordResponse::make($this->serializer)->withResponse($response, $type);
+        return DiscordResponse::make($this->serializer)->withResponse($response, $type, $context, $onSuccessCallable);
     }
 
     /**

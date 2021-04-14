@@ -66,7 +66,7 @@ class DiscordResponseTest extends TestHttpClientCase
     /**
      * @throws TransportExceptionInterface
      */
-    public function testIsSuccessWithException()
+    public function testGetStatusCodeWithException()
     {
         $response = $this
             ->getMockBuilder(ResponseInterface::class)
@@ -120,6 +120,22 @@ class DiscordResponseTest extends TestHttpClientCase
     }
 
     /**
+     * @throws TransportExceptionInterface
+     */
+    public function testIsSuccessWithException()
+    {
+        $response = $this
+            ->getMockBuilder(ResponseInterface::class)
+            ->getMock();
+        $response->method('getStatusCode')
+            ->willThrowException(new TransportException());
+
+        $discordResponse = DiscordResponse::make($this->serializer)->withResponse($response, null);
+
+        $this->assertFalse($discordResponse->isSuccess());
+    }
+
+    /**
      * @dataProvider provideEmptySuccessfulResponse
      * @param $response
      * @param $headers
@@ -141,6 +157,28 @@ class DiscordResponseTest extends TestHttpClientCase
     {
         // To cover getType() in DiscordResponse
         $this->assertNull($response->getType());
+    }
+
+    /**
+     * @dataProvider provideEmptySuccessfulResponse
+     * @param $response
+     * @param $headers
+     */
+    public function testGetDeserializeContext($response, $headers)
+    {
+        // To cover getDeserializeContext() in DiscordResponse
+        $this->assertEmpty($response->getDeserializeContext());
+    }
+
+    /**
+     * @dataProvider provideEmptySuccessfulResponse
+     * @param $response
+     * @param $headers
+     */
+    public function testGetOnSuccessCallable($response, $headers)
+    {
+        // To cover getOnSuccessCallable() in DiscordResponse
+        $this->assertNull($response->getOnSuccessCallable());
     }
 
     /**

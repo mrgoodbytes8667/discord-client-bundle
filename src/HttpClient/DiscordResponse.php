@@ -4,6 +4,8 @@
 namespace Bytes\DiscordBundle\HttpClient;
 
 
+use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
+use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -17,7 +19,7 @@ use function Symfony\Component\String\u;
  * Class DiscordResponse
  * @package Bytes\DiscordBundle\HttpClient
  */
-class DiscordResponse
+class DiscordResponse implements ClientResponseInterface
 {
     /**
      * @var ResponseInterface
@@ -28,6 +30,16 @@ class DiscordResponse
      * @var string
      */
     private $type;
+
+    /**
+     * @var array|null
+     */
+    private $deserializeContext = [];
+
+    /**
+     * @var callable|null
+     */
+    private $onSuccessCallable;
 
     /**
      * DiscordResponse constructor.
@@ -48,15 +60,20 @@ class DiscordResponse
     }
 
     /**
+     * Method to instantiate the response from the HttpClient
      * @param ResponseInterface $response
-     * @param string|null $type
+     * @param string|null $type Type to deserialize into for deserialize(), can be overloaded by deserialize()
+     * @param array $context Additional context for deserialize(), can be overloaded by deserialize()
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      * @return static
      */
-    public function withResponse(ResponseInterface $response, ?string $type): static
+    public function withResponse(ResponseInterface $response, ?string $type, array $context = [], ?callable $onSuccessCallable = null): static
     {
         $new = clone $this;
         $new->setResponse($response);
         $new->setType($type);
+        $new->setDeserializeContext($context);
+        $new->setOnSuccessCallable($onSuccessCallable);
 
         return $new;
     }
@@ -98,6 +115,42 @@ class DiscordResponse
         $this->response = $response;
         return $this;
     }
+
+    /**
+     * @return array|null
+     */
+    public function getDeserializeContext(): ?array
+    {
+        return $this->deserializeContext;
+    }
+
+    /**
+     * @param array|null $deserializeContext
+     * @return $this
+     */
+    public function setDeserializeContext(?array $deserializeContext): self
+    {
+        $this->deserializeContext = $deserializeContext;
+        return $this;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getOnSuccessCallable(): ?callable
+    {
+        return $this->onSuccessCallable;
+    }
+
+    /**
+     * @param callable|null $onSuccessCallable
+     * @return $this
+     */
+    public function setOnSuccessCallable(?callable $onSuccessCallable): self
+    {
+        $this->onSuccessCallable = $onSuccessCallable;
+        return $this;
+    }
     //endregion
 
     /**
@@ -112,8 +165,8 @@ class DiscordResponse
      */
     public function deserialize(bool $throw = true, array $context = [], ?string $type = null)
     {
-        if(empty($type ?? $this->type)) {
-            throw new \InvalidArgumentException(sprintf('The argument "$type" must be provided to %s if the type property is not set.', __METHOD__));
+        if (empty($type ?? $this->type)) {
+            throw new InvalidArgumentException(sprintf('The argument "$type" must be provided to %s if the type property is not set.', __METHOD__));
         }
         try {
             $content = $this->response->getContent();
@@ -130,7 +183,13 @@ class DiscordResponse
                 return [$this->serializer->deserialize($content, $single, 'json', $context)];
             }
         }
-        return $this->serializer->deserialize($content, $type ?? $this->type, 'json', $context);
+        $results = $this->serializer->deserialize($content, $type ?? $this->type, 'json', $context ?? $this->deserializeContext);
+
+        if (!is_null($this->onSuccessCallable) && is_callable($this->onSuccessCallable)) {
+            call_user_func($this->onSuccessCallable, $this, $results);
+        }
+
+        return $results;
     }
 
     /**
@@ -140,8 +199,7 @@ class DiscordResponse
     {
         try {
             return $this->response->getStatusCode() >= 200 && $this->response->getStatusCode() < 300;
-        } catch (TransportExceptionInterface)
-        {
+        } catch (TransportExceptionInterface) {
             return false;
         }
     }
