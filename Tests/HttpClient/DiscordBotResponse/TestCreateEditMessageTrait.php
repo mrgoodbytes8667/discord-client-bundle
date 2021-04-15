@@ -4,7 +4,6 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -16,7 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  * Trait TestCreateEditMessageTrait
  * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
  *
- * @method DiscordResponse setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
+ * @method \Bytes\ResponseBundle\HttpClient\Response\Response setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
  * @method assertEquals($expected, $actual, string $message = '')
  * @method assertInstanceOf(string $expected, $actual, string $message = '')
  * @method assertNull($actual, string $message = '')

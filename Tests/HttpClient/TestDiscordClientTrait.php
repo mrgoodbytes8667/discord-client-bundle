@@ -13,7 +13,7 @@ use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Guild;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;

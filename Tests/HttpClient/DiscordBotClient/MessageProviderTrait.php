@@ -6,7 +6,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\Content;
 use Generator;

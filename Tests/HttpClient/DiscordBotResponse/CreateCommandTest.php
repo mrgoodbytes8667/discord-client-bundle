@@ -2,7 +2,6 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption;

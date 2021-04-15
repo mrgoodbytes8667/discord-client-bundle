@@ -6,11 +6,11 @@ namespace Bytes\DiscordBundle\Tests;
 
 use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\ResponseBundle\HttpClient\Response\Response;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -82,7 +82,7 @@ trait DiscordClientSetupTrait
     {
         $client->setSerializer($this->serializer);
         $client->setValidator($this->validator);
-        $client->setResponse(DiscordResponse::make($this->serializer));
+        $client->setResponse(Response::make($this->serializer));
         return $client;
     }
 }

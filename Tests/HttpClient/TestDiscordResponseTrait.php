@@ -4,7 +4,6 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordResponseBundle\Enums\MessageType;
@@ -31,7 +30,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * @method expectException(string $exception)
  * @method expectExceptionMessage(string $message)
  * @method setupClient(HttpClientInterface $httpClient)
- * @method DiscordResponse setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, array $context = [], ?callable $onSuccessCallable = null)
+ * @method \Bytes\ResponseBundle\HttpClient\Response\Response setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, array $context = [], ?callable $onSuccessCallable = null)
  * @property SerializerInterface $serializer
  */
 trait TestDiscordResponseTrait

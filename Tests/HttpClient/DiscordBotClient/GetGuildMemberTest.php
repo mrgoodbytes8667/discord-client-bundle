@@ -5,7 +5,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Generator;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
