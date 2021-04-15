@@ -4,6 +4,7 @@ namespace Bytes\DiscordBundle\Tests;
 
 use Bytes\DiscordBundle\BytesDiscordBundle;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\ResponseBundle\BytesResponseBundle;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -65,6 +66,7 @@ class Kernel extends BaseKernel
         return [
             new FrameworkBundle(),
             new SecurityBundle(),
+            new BytesResponseBundle(),
             new BytesDiscordBundle(),
         ];
     }
