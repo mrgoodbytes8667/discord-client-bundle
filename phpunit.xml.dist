@@ -23,6 +23,7 @@
 
     <php>
         <env name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0" />
         <env name="BYTES_MOCK_RESPONSE_CLASS" value="\Bytes\DiscordBundle\Tests\MockHttpClient\MockDiscordResponseHeader" />
     </php>
 </phpunit>
