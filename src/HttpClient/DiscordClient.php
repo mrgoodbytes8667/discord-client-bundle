@@ -18,6 +18,7 @@ use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use Bytes\ResponseBundle\HttpClient\AbstractClient;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
+use Bytes\ResponseBundle\Validator\ValidatorTrait;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -40,7 +41,7 @@ use function Symfony\Component\String\u;
  */
 class DiscordClient extends AbstractClient implements SerializerAwareInterface
 {
-    use SerializerAwareTrait;
+    use SerializerAwareTrait, ValidatorTrait;
 
     /**
      *
@@ -79,16 +80,6 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
     const ENDPOINT_USER = 'users';
     const USER_ME = '@me';
     const ENDPOINT_WEBHOOK = 'webhooks';
-
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
-
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
 
     /**
      * DiscordClient constructor.
@@ -426,15 +417,5 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
                 'body' => $body,
             ], HttpMethods::post())
             ->deserialize();
-    }
-
-    /**
-     * @param ValidatorInterface $validator
-     * @return $this
-     */
-    public function setValidator(ValidatorInterface $validator): self
-    {
-        $this->validator = $validator;
-        return $this;
     }
 }
