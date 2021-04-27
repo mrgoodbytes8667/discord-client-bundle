@@ -6,6 +6,9 @@ namespace Bytes\DiscordBundle\HttpClient;
 
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
+use Bytes\ResponseBundle\Event\EventDispatcherTrait;
+use Bytes\ResponseBundle\HttpClient\Token\AbstractTokenClient;
+use Bytes\ResponseBundle\Objects\Push;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -18,45 +21,62 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * Class DiscordTokenClient
  * @package Bytes\DiscordBundle\HttpClient
  */
-class DiscordTokenClient extends DiscordClient
+class DiscordTokenClient extends AbstractTokenClient
 {
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
+    use EventDispatcherTrait;
 
     /**
      * DiscordTokenClient constructor.
      * @param HttpClientInterface $httpClient
-     * @param RetryStrategyInterface|null $strategy
-     * @param UrlGeneratorInterface $urlGenerator
      * @param string $clientId
      * @param string $clientSecret
      * @param string|null $userAgent
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, UrlGeneratorInterface $urlGenerator, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $this->urlGenerator = $urlGenerator;
-        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
+        parent::__construct($httpClient, $userAgent,
+            array_merge_recursive([
+                // the options defined as values apply only to the URLs matching
+                // the regular expressions defined as keys
+
+                // Matches OAuth token revoke API routes
+                DiscordClientEndpoints::SCOPE_OAUTH_TOKEN_REVOKE => [
+                    'headers' => $headers,
+                    'query' => [
+                        'client_id' => $clientId,
+                    ]
+                ],
+                // Matches OAuth token API routes
+                DiscordClientEndpoints::SCOPE_OAUTH_TOKEN => [
+                    'headers' => $headers,
+                    'body' => [
+                        'client_id' => $clientId,
+                        'client_secret' => $clientSecret,
+                    ]
+                ],
+                // Matches OAuth API routes (though there shouldn't be any...)
+                DiscordClientEndpoints::SCOPE_OAUTH => [
+                    'headers' => $headers,
+                ],
+            ], $defaultOptionsByRegexp), $defaultRegexp);
     }
 
     /**
-     * @param string $code
-     * @param string $redirect Route name
-     * @param array $scopes
-     * @param OAuthGrantTypes|null $grantType
-     * @return Token|null
-     *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
+     * @return string|null
      */
-    public function tokenExchange(string $code, string $redirect, array $scopes = [], OAuthGrantTypes $grantType = null)
+    protected static function getTokenExchangeBaseUri()
     {
-        $redirect = $this->urlGenerator->generate($redirect, [], UrlGeneratorInterface::ABSOLUTE_URL);
-        return parent::tokenExchange($code, $redirect, $scopes, $grantType);
+        return DiscordClientEndpoints::ENDPOINT_DISCORD_API;
+    }
+
+    /**
+     * @return string|null
+     */
+    protected static function getTokenExchangeDeserializationClass()
+    {
+        return Token::class;
     }
 }

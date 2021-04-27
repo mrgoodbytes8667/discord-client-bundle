@@ -6,11 +6,12 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
-use Bytes\ResponseBundle\HttpClient\Response\Response;
-use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\ResponseBundle\HttpClient\Response\Response;
+use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Faker\Factory;
 use Generator;
 use Symfony\Component\HttpClient\Exception\TransportException;
@@ -52,7 +53,7 @@ class DiscordResponseTest extends TestHttpClientCase
             new MockResponse($body()),
         ]), [
             // Matches non-oauth API routes
-            DiscordClient::SCOPE_API => [
+            DiscordClientEndpoints::SCOPE_API => [
                 'headers' => ['User-Agent' => Fixture::USER_AGENT],
                 'timeout' => 2.5,
             ]

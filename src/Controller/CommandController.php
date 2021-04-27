@@ -4,7 +4,7 @@
 namespace Bytes\DiscordBundle\Controller;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Symfony\Component\HttpFoundation\JsonResponse;

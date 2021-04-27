@@ -3,7 +3,7 @@
 namespace Bytes\DiscordBundle\Command;
 
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;

@@ -1,33 +1,30 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient;
+namespace Bytes\DiscordBundle\HttpClient\Api;
 
 
+use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
-use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
 use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
-use Bytes\HttpClient\Common\HttpClient\ConfigurableScopingHttpClient;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
-use Bytes\ResponseBundle\HttpClient\AbstractClient;
+use Bytes\ResponseBundle\HttpClient\Api\AbstractApiClient;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Validator\ValidatorTrait;
-use InvalidArgumentException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
-use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -37,9 +34,9 @@ use function Symfony\Component\String\u;
 
 /**
  * Class DiscordClient
- * @package Bytes\DiscordBundle\HttpClient
+ * @package Bytes\DiscordBundle\HttpClient\Api
  */
-class DiscordClient extends AbstractClient implements SerializerAwareInterface
+class DiscordClient extends AbstractApiClient implements SerializerAwareInterface
 {
     use SerializerAwareTrait, ValidatorTrait;
 
@@ -47,39 +44,6 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
      *
      */
     const PREVENTATIVE_RATE_LIMIT_SECONDS = 2;
-
-    /**
-     * Matches Slash Command API routes
-     */
-    const SCOPE_SLASH_COMMAND = 'https://discord\.com/api/v8/applications';
-
-    /**
-     * Matches OAuth token revoke API routes
-     */
-    const SCOPE_OAUTH_TOKEN_REVOKE = 'https://discord\.com/api(|/v6|/v8)/oauth2/token/revoke';
-
-    /**
-     * Matches OAuth token API routes
-     */
-    const SCOPE_OAUTH_TOKEN = 'https://discord\.com/api(|/v6|/v8)/oauth2/token';
-
-    /**
-     * Matches OAuth API routes (though there shouldn't be any...)
-     */
-    const SCOPE_OAUTH = 'https://discord\.com/api(|/v6|/v8)/oauth2';
-
-    /**
-     * Matches non-oauth API routes
-     */
-    const SCOPE_API = 'https://discord\.com/api(|/v6|/v8)/((?!oauth2).)';
-
-    const ENDPOINT_CHANNEL = 'channels';
-    const ENDPOINT_GUILD = 'guilds';
-    const ENDPOINT_MESSAGE = 'messages';
-    const ENDPOINT_MEMBER = 'members';
-    const ENDPOINT_USER = 'users';
-    const USER_ME = '@me';
-    const ENDPOINT_WEBHOOK = 'webhooks';
 
     /**
      * DiscordClient constructor.
@@ -94,31 +58,28 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
      */
     public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $headers = [];
-        if (!empty($userAgent)) {
-            $headers['User-Agent'] = $userAgent;
-        }
+        $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
         parent::__construct($httpClient, $strategy, $clientId, $userAgent,
             array_merge_recursive([
                 // the options defined as values apply only to the URLs matching
                 // the regular expressions defined as keys
 
                 // Matches Slash Command API routes
-                self::SCOPE_SLASH_COMMAND => [
+                DiscordClientEndpoints::SCOPE_SLASH_COMMAND => [
                     'headers' => array_merge($headers, [
                         'Authorization' => 'Bot ' . $botToken,
                     ]),
                 ],
 
                 // Matches OAuth token revoke API routes
-                self::SCOPE_OAUTH_TOKEN_REVOKE => [
+                DiscordClientEndpoints::SCOPE_OAUTH_TOKEN_REVOKE => [
                     'headers' => $headers,
                     'query' => [
                         'client_id' => $clientId,
                     ]
                 ],
                 // Matches OAuth token API routes
-                self::SCOPE_OAUTH_TOKEN => [
+                DiscordClientEndpoints::SCOPE_OAUTH_TOKEN => [
                     'headers' => $headers,
                     'body' => [
                         'client_id' => $clientId,
@@ -126,12 +87,12 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
                     ]
                 ],
                 // Matches OAuth API routes (though there shouldn't be any...)
-                self::SCOPE_OAUTH => [
+                DiscordClientEndpoints::SCOPE_OAUTH => [
                     'headers' => $headers,
                 ],
 
                 // Matches non-oauth API routes
-                self::SCOPE_API => [
+                DiscordClientEndpoints::SCOPE_API => [
                     'headers' => $headers,
                 ],
             ], $defaultOptionsByRegexp), $defaultRegexp);
@@ -204,13 +165,13 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
     protected function buildURL(string $path, string $version = 'v8')
     {
         $url = u($path);
-        if ($url->startsWith('https://discord.com/api/')) {
+        if ($url->startsWith(DiscordClientEndpoints::ENDPOINT_DISCORD_API)) {
             return $path;
         }
         if (!empty($version)) {
             $url = $url->ensureStart($version . '/');
         }
-        return $url->ensureStart('https://discord.com/api/')->toString();
+        return $url->ensureStart(DiscordClientEndpoints::ENDPOINT_DISCORD_API)->toString();
     }
 
     /**
@@ -226,7 +187,7 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
      */
     public function getMe(): ClientResponseInterface
     {
-        return $this->request([self::ENDPOINT_USER, self::USER_ME], User::class);
+        return $this->request([DiscordClientEndpoints::ENDPOINT_USER, DiscordClientEndpoints::USER_ME], User::class);
     }
 
     /**
@@ -245,7 +206,7 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
     public function getUser($userId): ClientResponseInterface
     {
         $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
-        $urlParts = [self::ENDPOINT_USER, $userId];
+        $urlParts = [DiscordClientEndpoints::ENDPOINT_USER, $userId];
         return $this->request($urlParts, User::class);
     }
 
@@ -290,10 +251,10 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
     protected function sendWebhookPayload($id, $token, HttpMethods $method, bool $wait = true, $messageId = null, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
     {
         $id = IdNormalizer::normalizeIdArgument($id, 'The "id" argument is required.');
-        $urlParts = [self::ENDPOINT_WEBHOOK, $id, $token];
+        $urlParts = [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token];
         if (!empty($messageId)) {
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument must be null or a valid id.');
-            $urlParts[] = self::ENDPOINT_MESSAGE;
+            $urlParts[] = DiscordClientEndpoints::ENDPOINT_MESSAGE;
             $urlParts[] = $messageId;
         }
 
@@ -371,7 +332,7 @@ class DiscordClient extends AbstractClient implements SerializerAwareInterface
         $id = IdNormalizer::normalizeIdArgument($id, 'The "id" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
 
-        return $this->request(url: [self::ENDPOINT_WEBHOOK, $id, $token, self::ENDPOINT_MESSAGE, $messageId], method: HttpMethods::delete());
+        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId], method: HttpMethods::delete());
     }
 
     /**

@@ -58,8 +58,8 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface
         $definition->replaceArgument(4, $config['user_agent']);
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord.token');
-        $definition->replaceArgument(3, $config['client_id']);
-        $definition->replaceArgument(4, $config['client_secret']);
-        $definition->replaceArgument(5, $config['user_agent']);
+        $definition->replaceArgument(1, $config['client_id']);
+        $definition->replaceArgument(2, $config['client_secret']);
+        $definition->replaceArgument(3, $config['user_agent']);
     }
 }

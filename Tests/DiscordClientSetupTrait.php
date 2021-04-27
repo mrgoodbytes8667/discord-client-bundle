@@ -4,15 +4,16 @@
 namespace Bytes\DiscordBundle\Tests;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
-use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\ResponseBundle\HttpClient\Response\Response;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -24,13 +25,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 trait DiscordClientSetupTrait
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, TestUrlGeneratorTrait;
 
     /**
      * @param HttpClientInterface $httpClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
-     * @return DiscordClient
+     * @return \Bytes\DiscordBundle\HttpClient\Api\DiscordClient
      */
     protected function setupBaseClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
@@ -70,18 +71,26 @@ trait DiscordClientSetupTrait
      */
     protected function setupTokenClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordTokenClient($httpClient, new DiscordRetryStrategy(), $this->urlGenerator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
+        $client = new DiscordTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
         return $this->postClientSetup($client);
     }
 
     /**
-     * @param DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient $client
+     * @param \Bytes\DiscordBundle\HttpClient\Api\DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient $client
      * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient
      */
     private function postClientSetup($client)
     {
         $client->setSerializer($this->serializer);
         $client->setValidator($this->validator);
+        if(method_exists($client, 'setDispatcher'))
+        {
+            $client->setDispatcher($dispatcher ?? new EventDispatcher());
+        }
+        if(method_exists($client, 'setUrlGenerator'))
+        {
+            $client->setUrlGenerator($this->urlGenerator);
+        }
         $client->setResponse(Response::make($this->serializer));
         return $client;
     }

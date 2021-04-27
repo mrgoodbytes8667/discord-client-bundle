@@ -8,10 +8,10 @@ use Bytes\DiscordBundle\Command\SlashDeleteCommand;
 use Bytes\DiscordBundle\Controller\CommandController;
 use Bytes\DiscordBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
-use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Request\DiscordConverter;
 use Bytes\DiscordBundle\Request\DiscordGuildConverter;
@@ -73,15 +73,15 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.discord.token', DiscordTokenClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
-            null, // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
-            service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['user_agent']
         ])
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
+        ->call('setDispatcher', [service('event_dispatcher')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->lazy()
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
         ->public();
@@ -116,7 +116,7 @@ return static function (ContainerConfigurator $container) {
 
     $services->set('bytes_discord.command_controller', CommandController::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
         ])
         ->alias(CommandController::class, 'bytes_discord.command_controller')
@@ -133,7 +133,7 @@ return static function (ContainerConfigurator $container) {
     //region Commands
     $services->set(null, SlashAddCommand::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
         ])
@@ -141,7 +141,7 @@ return static function (ContainerConfigurator $container) {
 
     $services->set(null, SlashDeleteCommand::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
         ])
         ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
     //endregion
@@ -149,7 +149,7 @@ return static function (ContainerConfigurator $container) {
     //region Converters
     $services->set('bytes_discord.discord_guild_converter', DiscordGuildConverter::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\DiscordBotClient
+            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
         ])
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord_guild',

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient;
+namespace Bytes\DiscordBundle\HttpClient\Api;
 
 
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
@@ -9,7 +9,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordUserClient
- * @package Bytes\DiscordBundle\HttpClient
+ * @package Bytes\DiscordBundle\HttpClient\Api
  */
 class DiscordUserClient extends DiscordClient
 {
