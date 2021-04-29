@@ -5,6 +5,7 @@ namespace Bytes\DiscordBundle\DependencyInjection;
 
 
 use Bytes\DiscordBundle\Slash\SlashCommandInterface;
+use Bytes\ResponseBundle\DependencyInjection\ResponseExtensionInterface;
 use Bytes\ResponseBundle\Objects\ConfigNormalizer;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,8 +17,34 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
  * Class BytesDiscordExtension
  * @package Bytes\DiscordBundle\DependencyInjection
  */
-class BytesDiscordExtension extends Extension implements ExtensionInterface
+class BytesDiscordExtension extends Extension implements ExtensionInterface, ResponseExtensionInterface
 {
+    /**
+     * @var string[]
+     */
+    public static $endpoints = ['bot', 'login', 'slash', 'user'];
+
+    /**
+     * @var string[]
+     */
+    public static $addRemoveParents = ['permissions', 'scopes'];
+
+    /**
+     * @return string[]
+     */
+    public static function getEndpoints(): array
+    {
+        return self::$endpoints;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getAddRemoveParents(): array
+    {
+        return self::$addRemoveParents;
+    }
+
     /**
      * @param array $configs
      * @param ContainerBuilder $container
@@ -33,7 +60,7 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface
         /** @var array $config = ['client_id' => '', 'client_secret' => '', 'client_public_key' => '', 'bot_token' => '', 'user' => false, 'redirects' => ['bot' => ['method' => '', 'route_name' => '', 'url' => '']], 'user' => ['method' => '', 'route_name' => '', 'url' => '']], 'slash' => ['method' => '', 'route_name' => '', 'url' => '']], 'login' => ['method' => '', 'route_name' => '', 'url' => '']]]*/
         $config = $this->processConfiguration($configuration, $configs);
 
-        $config = ConfigNormalizer::normalizeEndpoints($config, ['bot', 'login', 'slash', 'user']);
+        $config = ConfigNormalizer::normalizeEndpoints($config, static::$endpoints, static::$addRemoveParents);
 
         $container->registerForAutoconfiguration(SlashCommandInterface::class)
             ->addTag('bytes_discord.slashcommand');
