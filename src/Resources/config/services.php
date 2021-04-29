@@ -15,7 +15,13 @@ use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Request\DiscordConverter;
 use Bytes\DiscordBundle\Request\DiscordGuildConverter;
+use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
+use Bytes\DiscordBundle\Routing\DiscordLoginOAuth;
+use Bytes\DiscordBundle\Routing\DiscordSlashOAuth;
+use Bytes\DiscordBundle\Routing\DiscordUserOAuth;
 use Bytes\DiscordBundle\Services\OAuth;
+use Bytes\ResponseBundle\Routing\OAuthInterface;
+use function Symfony\Component\String\u;
 
 /**
  * @param ContainerConfigurator $container
@@ -91,6 +97,27 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.retry_strategy.discord', DiscordRetryStrategy::class)
         ->alias(DiscordRetryStrategy::class, 'bytes_discord.httpclient.retry_strategy.discord')
         ->public();
+    //endregion
+
+    //region Routing
+    foreach(['bot' => DiscordBotOAuth::class, 'login' => DiscordLoginOAuth::class, 'slash' => DiscordSlashOAuth::class, 'user' => DiscordUserOAuth::class] as $tag => $class) {
+        $services->set('bytes_discord.oauth.' . $tag, $class)
+            ->args([
+                '', // $config['client_id']
+                [],
+                [] // $config['options']
+            ])
+            ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+            ->call('setValidator', [service('validator')])
+            ->call('setSecurity', [service('security.helper')->ignoreOnInvalid()]) // Symfony\Component\Security\Core\Security
+            ->lazy()
+            ->alias($class, 'bytes_discord.oauth.' . $tag)
+            ->public();
+
+        $alias = u($tag)->title()->prepend(OAuthInterface::class . ' $discord')->append('OAuth')->toString();
+
+        $services->alias($alias, $class);
+    }
     //endregion
 
     //region Services

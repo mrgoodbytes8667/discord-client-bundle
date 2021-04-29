@@ -91,5 +91,11 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface, Res
         $definition->replaceArgument(1, $config['client_id']);
         $definition->replaceArgument(2, $config['client_secret']);
         $definition->replaceArgument(3, $config['user_agent']);
+
+        foreach (['bytes_discord.oauth.bot', 'bytes_discord.oauth.login', 'bytes_discord.oauth.slash', 'bytes_discord.oauth.user'] as $value) {
+            $definition = $container->getDefinition($value);
+            $definition->replaceArgument(0, $config['client_id']);
+            $definition->replaceArgument(1, $config['endpoints']);
+        }
     }
 }
