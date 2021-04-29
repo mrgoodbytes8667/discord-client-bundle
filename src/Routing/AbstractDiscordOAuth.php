@@ -73,4 +73,14 @@ abstract class AbstractDiscordOAuth extends AbstractOAuth
             return OAuthPrompts::none()->prompt();
         }
     }
+
+    /**
+     * Converts the Push object to an array for http_build_query().
+     * @param Push $query
+     * @return array
+     */
+    protected function getQueryValues(Push $query): array
+    {
+        return $query->snake();
+    }
 }

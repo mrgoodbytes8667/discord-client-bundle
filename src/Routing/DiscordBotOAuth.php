@@ -77,10 +77,10 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
     public function getAuthorizationUrl(?string $state = null, ...$options): string
     {
         $options = Push::createPush($options, OAuthPrompts::none(), 'prompt')
-            ->push(value: $options['guildId'], key: 'guildId')
+            ->push(value: $options['guildId'] ?? null, key: 'guildId')
             ->push(value: $options['disableGuildSelect'] ?? !empty($options['guildId']), key: 'disableGuildSelect')
             ->value();
-        return parent::getAuthorizationUrl($state, $options);
+        return parent::getAuthorizationUrl($state, ...$options);
     }
 
     /**
@@ -90,7 +90,7 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
      */
     protected function appendToAuthorizationCodeGrantURLQuery(Push $query, ...$options): Push
     {
-        $permissions = $this->permissions ?? $this->normalizePermissions($options['permissions'] ?? $this->defaultPermissions());
+        $permissions = $this->permissions ?? $this->normalizePermissions($options['permissions'] ?? $this->getDefaultPermissions());
         $this->permissions = $permissions;
 
         $query = $query->push(value: $this->permissions, key: 'permissions');
