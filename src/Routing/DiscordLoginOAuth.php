@@ -4,9 +4,9 @@
 namespace Bytes\DiscordBundle\Routing;
 
 
+use BadMethodCallException;
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
-use Bytes\DiscordResponseBundle\Enums\Permissions;
 use Bytes\ResponseBundle\Routing\OAuthPromptInterface;
 
 /**
@@ -22,20 +22,12 @@ class DiscordLoginOAuth extends AbstractDiscordOAuth
     protected static $endpoint = 'login';
 
     /**
-     * @return Permissions[]
-     */
-    public function getDefaultPermissions(): array
-    {
-        return [];
-    }
-
-    /**
      * Returns the $prompt argument for getAuthorizationCodeGrantURL() after normalization and validation
      * @param OAuthPromptInterface|string|bool|null $prompt
      * @param mixed ...$options
      * @return string
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     protected function normalizePrompt(bool|OAuthPromptInterface|string|null $prompt, ...$options)
     {
@@ -47,10 +39,6 @@ class DiscordLoginOAuth extends AbstractDiscordOAuth
      */
     protected function getDefaultScopes(): array
     {
-        return [
-            OAuthScopes::IDENTIFY(),
-            OAuthScopes::CONNECTIONS(),
-            OAuthScopes::GUILDS(),
-        ];
+        return OAuthScopes::getLoginScopes();
     }
 }
