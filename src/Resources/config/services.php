@@ -17,7 +17,6 @@ use Bytes\DiscordBundle\Request\DiscordConverter;
 use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
 use Bytes\DiscordBundle\Routing\DiscordLoginOAuth;
-use Bytes\DiscordBundle\Routing\DiscordSlashOAuth;
 use Bytes\DiscordBundle\Routing\DiscordUserOAuth;
 use Bytes\DiscordBundle\Services\OAuth;
 use Bytes\ResponseBundle\Routing\OAuthInterface;
@@ -100,7 +99,7 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Routing
-    foreach(['bot' => DiscordBotOAuth::class, 'login' => DiscordLoginOAuth::class, 'slash' => DiscordSlashOAuth::class, 'user' => DiscordUserOAuth::class] as $tag => $class) {
+    foreach(['bot' => DiscordBotOAuth::class, 'login' => DiscordLoginOAuth::class, 'user' => DiscordUserOAuth::class] as $tag => $class) {
         $services->set('bytes_discord.oauth.' . $tag, $class)
             ->args([
                 '', // $config['client_id']
