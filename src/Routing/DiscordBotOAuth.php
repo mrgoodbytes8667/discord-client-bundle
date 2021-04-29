@@ -69,21 +69,6 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
     }
 
     /**
-     * Get the external URL begin the OAuth token exchange process
-     * @param string|null $state
-     * @param ...$options = ['prompt' => new OAuthPrompts(), 'guildId' => '', 'disableGuildSelect' => true]
-     * @return string
-     */
-    public function getAuthorizationUrl(?string $state = null, ...$options): string
-    {
-        $options = Push::createPush($options, OAuthPrompts::none(), 'prompt')
-            ->push(value: $options['guildId'] ?? null, key: 'guildId')
-            ->push(value: $options['disableGuildSelect'] ?? !empty($options['guildId']), key: 'disableGuildSelect')
-            ->value();
-        return parent::getAuthorizationUrl($state, ...$options);
-    }
-
-    /**
      * @param Push $query
      * @param ...$options
      * @return Push
@@ -93,7 +78,9 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
         $permissions = $this->permissions ?? $this->normalizePermissions($options['permissions'] ?? $this->getDefaultPermissions());
         $this->permissions = $permissions;
 
-        $query = $query->push(value: $this->permissions, key: 'permissions');
+        $query = $query->push(value: $this->permissions, key: 'permissions')
+            ->push(value: $options['guildId'] ?? null, key: 'guildId')
+            ->push(value: ($options['disableGuildSelect'] ?? !empty($options['guildId'])) ? 'true' : 'false', key: 'disableGuildSelect');
 
         return parent::appendToAuthorizationCodeGrantURLQuery($query, $options);
     }
