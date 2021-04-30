@@ -13,6 +13,7 @@ use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
 use Bytes\DiscordBundle\Request\DiscordConverter;
 use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
@@ -85,10 +86,20 @@ return static function (ContainerConfigurator $container) {
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
         ->call('setDispatcher', [service('event_dispatcher')])
-        ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->lazy()
         ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token')
+        ->public();
+    //endregion
+
+    //region Response
+    $services->set('bytes_discord.httpclient.response.token.user', DiscordUserTokenResponse::class)
+        ->args([
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+            service('event_dispatcher'), // Symfony\Component\Serializer\SerializerInterface
+        ])
+        ->alias(DiscordUserTokenResponse::class, 'bytes_discord.httpclient.response.token.user')
         ->public();
     //endregion
 
