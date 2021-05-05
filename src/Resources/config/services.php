@@ -12,7 +12,6 @@ use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\HttpClient\Token\AbstractDiscordTokenClient;
 use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
 use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
@@ -21,7 +20,6 @@ use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
 use Bytes\DiscordBundle\Routing\DiscordLoginOAuth;
 use Bytes\DiscordBundle\Routing\DiscordUserOAuth;
-use Bytes\DiscordBundle\Services\OAuth;
 use Bytes\ResponseBundle\Routing\OAuthInterface;
 use function Symfony\Component\String\u;
 
@@ -93,7 +91,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setDispatcher', [service('event_dispatcher')])
         ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-        ->call('setOAuth', [service('bytes_discord.oauth.bot')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
+        ->call('setOAuth', [service('bytes_discord.oauth.bot')])
         ->lazy()
         ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
         ->public();
@@ -110,7 +108,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setDispatcher', [service('event_dispatcher')])
         ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-        ->call('setOAuth', [service('bytes_discord.oauth.user')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
+        ->call('setOAuth', [service('bytes_discord.oauth.user')])
         ->lazy()
         ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
         ->public();
@@ -153,23 +151,12 @@ return static function (ContainerConfigurator $container) {
     }
     //endregion
 
-    //region Services
-    $services->set('bytes_discord.oauth', OAuth::class)
-        ->args([
-            service('security.helper'), // Symfony\Component\Security\Core\Security
-            service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-            '', // $config['client_id']
-            '', // $config['redirects']
-            '', // $config['user']
-        ])
-        ->alias(OAuth::class, 'bytes_discord.oauth')
-        ->public();
-    //endregion
-
     //region Controllers
     $services->set('bytes_discord.oauth_controller', OAuthController::class)
         ->args([
-            service('bytes_discord.oauth'), // Bytes\DiscordBundle\Services\OAuth
+            service('bytes_discord.oauth.bot'),
+            service('bytes_discord.oauth.login'),
+            service('bytes_discord.oauth.user'),
         ])
         ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
         ->public();

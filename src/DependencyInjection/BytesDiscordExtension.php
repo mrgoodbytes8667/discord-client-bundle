@@ -65,11 +65,6 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface, Res
         $container->registerForAutoconfiguration(SlashCommandInterface::class)
             ->addTag('bytes_discord.slashcommand');
 
-        $definition = $container->getDefinition('bytes_discord.oauth');
-        $definition->replaceArgument(2, $config['client_id']);
-        $definition->replaceArgument(3, $config['endpoints']);
-        $definition->replaceArgument(4, $config['user']);
-
         $definition = $container->getDefinition('bytes_discord.httpclient.discord');
         $definition->replaceArgument(2, $config['client_id']);
         $definition->replaceArgument(3, $config['client_secret']);

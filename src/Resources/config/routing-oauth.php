@@ -16,16 +16,11 @@ return function (RoutingConfigurator $routes) {
         ->controller([OAuthController::class, 'botRedirect'])
         ->defaults(['guildId' => null]);
 
-    //@Route("/slash/redirect/{guildId}", name="bytesdiscordbundle_oauth_slash_redirect")
-    $routes->add('bytesdiscordbundle_oauth_slash_redirect', '/slash/redirect/{guildId}')
-        ->controller([OAuthController::class, 'slashRedirect'])
-        ->defaults(['guildId' => null]);
-
     //@Route("/user/redirect", name="bytesdiscordbundle_oauth_user_redirect")
     $routes->add('bytesdiscordbundle_oauth_user_redirect', '/user/redirect')
         ->controller([OAuthController::class, 'userRedirect']);
 
     //@Route("/login", name="bytesdiscordbundle_oauth_login_redirect")
     $routes->add('bytesdiscordbundle_oauth_login_redirect', '/login')
-        ->controller([OAuthController::class, 'routeOAuthLogin']);
+        ->controller([OAuthController::class, 'loginRedirect']);
 };

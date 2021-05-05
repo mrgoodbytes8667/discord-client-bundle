@@ -18,12 +18,12 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Class OAuthTest
+ * Class LegacyOAuthTest
  * @package Bytes\DiscordBundle\Services
  *
  * @deprecated Since 0.9.0
  */
-class OAuthTest extends TestCase
+class LegacyOAuthTest extends TestCase
 {
     /**
      * @var Security
@@ -139,7 +139,7 @@ class OAuthTest extends TestCase
 
     //region testGetOAuthRedirect
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetBotOAuthRedirect(array $config, bool $user)
     {
@@ -150,7 +150,7 @@ class OAuthTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetLoginOAuthRedirect(array $config, bool $user)
     {
@@ -161,7 +161,7 @@ class OAuthTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetSlashOAuthRedirect(array $config, bool $user)
     {
@@ -172,7 +172,7 @@ class OAuthTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetUserOAuthRedirect(array $config, bool $user)
     {
@@ -185,7 +185,7 @@ class OAuthTest extends TestCase
 
     //region testGetScopes
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetScopesBot(array $config, bool $user)
     {
@@ -194,7 +194,7 @@ class OAuthTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetScopesLogin(array $config, bool $user)
     {
@@ -207,7 +207,7 @@ class OAuthTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetScopesSlash(array $config, bool $user)
     {
@@ -216,7 +216,7 @@ class OAuthTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOAuthConfig
+     * @dataProvider provideLegacyOAuthConfig
      */
     public function testGetScopesUser(array $config, bool $user)
     {
@@ -228,7 +228,6 @@ class OAuthTest extends TestCase
     //region testGetAuthorizationUrl
     /**
      * @dataProvider provideAuthorizationUrl
-     * @group legacy
      */
     public function testGetBotAuthorizationUrl(array $config, bool $user, array $permissions, string $state, ?string $guildId)
     {
@@ -331,8 +330,9 @@ class OAuthTest extends TestCase
     /**
      * @return \Generator
      */
-    public function provideOAuthConfig()
+    public function provideLegacyOAuthConfig()
     {
+        $this->expectDeprecation();
         $this->setupFaker();
         foreach(range(1, 10) as $i) {
             yield [
@@ -369,7 +369,7 @@ class OAuthTest extends TestCase
     public function provideAuthorizationCodeGrants()
     {
         $this->setupFaker();
-        foreach($this->provideOAuthConfig() as $i) {
+        foreach($this->provideLegacyOAuthConfig() as $i) {
             yield [
                 'config' => $i['config'],
                 'user' => $i['user'],
@@ -392,7 +392,7 @@ class OAuthTest extends TestCase
     public function provideAuthorizationUrl()
     {
         $this->setupFaker();
-        foreach($this->provideOAuthConfig() as $i) {
+        foreach($this->provideLegacyOAuthConfig() as $i) {
             yield [
                 'config' => $i['config'],
                 'user' => $i['user'],

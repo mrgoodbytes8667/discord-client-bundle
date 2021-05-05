@@ -5,6 +5,7 @@ namespace Bytes\DiscordBundle\Controller;
 
 
 use Bytes\DiscordBundle\Services\OAuth;
+use Bytes\ResponseBundle\Routing\OAuthInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,17 +16,13 @@ use Symfony\Component\HttpFoundation\Response;
 class OAuthController
 {
     /**
-     * @var OAuth
-     */
-    private $oauth;
-
-    /**
      * OAuthController constructor.
-     * @param OAuth $oauth
+     * @param OAuthInterface $discordBotOAuth
+     * @param OAuthInterface $discordLoginOAuth
+     * @param OAuthInterface $discordUserOAuth
      */
-    public function __construct(OAuth $oauth)
+    public function __construct(private OAuthInterface $discordBotOAuth, private OAuthInterface $discordLoginOAuth, private OAuthInterface $discordUserOAuth)
     {
-        $this->oauth = $oauth;
     }
 
     /**
@@ -37,19 +34,7 @@ class OAuthController
      */
     public function botRedirect(string $guildId = null)
     {
-        return new RedirectResponse($this->oauth->getBotAuthorizationUrl($guildId), Response::HTTP_FOUND);
-    }
-
-    /**
-     * Route("/slash/redirect/{guildId}", name="bytesdiscordbundle_oauth_slash_redirect")
-     *
-     * @param string|null $guildId
-     *
-     * @return RedirectResponse
-     */
-    public function slashRedirect(string $guildId = null)
-    {
-        return new RedirectResponse($this->oauth->getSlashAuthorizationUrl($guildId), Response::HTTP_FOUND);
+        return new RedirectResponse($this->discordBotOAuth->getAuthorizationUrl($guildId), Response::HTTP_FOUND);
     }
 
     /**
@@ -59,7 +44,7 @@ class OAuthController
      */
     public function userRedirect()
     {
-        return new RedirectResponse($this->oauth->getUserAuthorizationUrl(), Response::HTTP_FOUND);
+        return new RedirectResponse($this->discordUserOAuth->getAuthorizationUrl(), Response::HTTP_FOUND);
     }
 
     /**
@@ -67,8 +52,8 @@ class OAuthController
      *
      * @return RedirectResponse
      */
-    public function routeOAuthLogin()
+    public function loginRedirect()
     {
-        return new RedirectResponse($this->oauth->getOAuthLoginUrl(), Response::HTTP_FOUND);
+        return new RedirectResponse($this->discordLoginOAuth->getAuthorizationUrl(), Response::HTTP_FOUND);
     }
 }
