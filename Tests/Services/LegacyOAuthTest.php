@@ -20,6 +20,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * Class OAuthTest
  * @package Bytes\DiscordBundle\Services
+ *
+ * @deprecated Since 0.9.0
  */
 class OAuthTest extends TestCase
 {
@@ -226,6 +228,7 @@ class OAuthTest extends TestCase
     //region testGetAuthorizationUrl
     /**
      * @dataProvider provideAuthorizationUrl
+     * @group legacy
      */
     public function testGetBotAuthorizationUrl(array $config, bool $user, array $permissions, string $state, ?string $guildId)
     {

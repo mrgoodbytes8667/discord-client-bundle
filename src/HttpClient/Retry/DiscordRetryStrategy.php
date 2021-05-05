@@ -4,7 +4,7 @@
 namespace Bytes\DiscordBundle\HttpClient\Retry;
 
 
-use Bytes\HttpClient\Common\Retry\APIRetryStrategy;
+use Bytes\ResponseBundle\HttpClient\Retry\APIRetryStrategy;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\Response\AsyncContext;
