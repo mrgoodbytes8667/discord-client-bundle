@@ -205,7 +205,7 @@ abstract class TestHttpClientCase extends TestCase
     {
         $response = new MockStandaloneResponse(content: $content, fixtureFile: $fixtureFile, statusCode: $code);
 
-        return \Bytes\ResponseBundle\HttpClient\Response\Response::make($this->serializer)->withResponse($response, $type, $context, $onSuccessCallable);
+        return \Bytes\ResponseBundle\HttpClient\Response\Response::make($this->serializer)->withResponse($response, $type, $context, onSuccessCallable: $onSuccessCallable);
     }
 
     /**

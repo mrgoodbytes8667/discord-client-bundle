@@ -1,0 +1,26 @@
+{
+  "application": {
+    "id": "586568566858692924",
+    "name": "moore.belle",
+    "icon": "11363a1d4a14c3c45f08a4b3121be6d0",
+    "description": "",
+    "summary": "",
+    "hook": true,
+    "bot_public": false,
+    "bot_require_code_grant": true,
+    "verify_key": "1T2HKBQX5EpLAE6VyG4cNWdGLJBYs9"
+  },
+  "scopes": [
+    "identify",
+    "connections",
+    "guilds"
+  ],
+  "expires": "2021-05-12T14:02:52.247000+00:00",
+  "user": {
+    "id": "108363497252953230",
+    "username": "caltenwerth",
+    "avatar": "2c9d49dc54613614755cd7bedceeb114",
+    "discriminator": "7715",
+    "public_flags": 0
+  }
+}

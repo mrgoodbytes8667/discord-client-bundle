@@ -5,9 +5,14 @@ namespace Bytes\DiscordBundle\HttpClient\Token;
 
 
 use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordBundle\HttpClient\DiscordClientTrait;
+use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\HttpMethods;
+use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use Bytes\ResponseBundle\Event\EventDispatcherTrait;
+use Bytes\ResponseBundle\Event\TokenGrantedEvent;
+use Bytes\ResponseBundle\Event\TokenRefreshedEvent;
 use Bytes\ResponseBundle\Event\TokenRevokedEvent;
 use Bytes\ResponseBundle\HttpClient\Token\AbstractTokenClient;
 use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
@@ -16,16 +21,19 @@ use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Class DiscordTokenClient
+ * Class AbstractDiscordTokenClient
  * @package Bytes\DiscordBundle\HttpClient\Token
  */
-class DiscordTokenClient extends AbstractTokenClient implements AppTokenClientInterface, UserTokenClientInterface
+abstract class AbstractDiscordTokenClient extends AbstractTokenClient
 {
-    use EventDispatcherTrait;
+    use DiscordClientTrait, EventDispatcherTrait;
 
     /**
      * DiscordTokenClient constructor.
@@ -82,58 +90,5 @@ class DiscordTokenClient extends AbstractTokenClient implements AppTokenClientIn
     protected static function getTokenExchangeDeserializationClass()
     {
         return Token::class;
-    }
-
-    /**
-     * Refreshes the provided access token
-     * @param AccessTokenInterface|null $token
-     * @return AccessTokenInterface|null
-     */
-    public function refreshToken(AccessTokenInterface $token = null): ?AccessTokenInterface
-    {
-        // TODO: Implement refreshToken() method.
-        return null;
-    }
-
-    /**
-     * Revokes the provided access token
-     * @param AccessTokenInterface $token
-     * @return ClientResponseInterface
-     *
-     * @throws TransportExceptionInterface
-     */
-    public function revokeToken(AccessTokenInterface $token): ClientResponseInterface
-    {
-        $tokenString = static::normalizeAccessToken($token, false, 'The $token argument is required and cannot be empty.');
-
-        return $this->request($this->buildURL('oauth2/revoke'), options: ['body' => [
-            'token' => $tokenString
-        ]], method: HttpMethods::post(), onSuccessCallable: function ($self, $results) use ($token) {
-            $this->dispatcher->dispatch(TokenRevokedEvent::new($token), TokenRevokedEvent::NAME);
-        });
-    }
-
-    /**
-     * Validates the provided access token
-     * Should fire a TokenValidatedEvent on success
-     * @param AccessTokenInterface $token
-     * @return TokenValidationResponseInterface|null
-     *
-     * @see TokenValidatedEvent
-     */
-    public function validateToken(AccessTokenInterface $token): ?TokenValidationResponseInterface
-    {
-        // TODO: Implement validateToken() method.
-        return null;
-    }
-
-    /**
-     * Returns an access token
-     * @return AccessTokenInterface|null
-     */
-    public function getToken(): ?AccessTokenInterface
-    {
-        // TODO: Implement getToken() method.
-        return null;
     }
 }

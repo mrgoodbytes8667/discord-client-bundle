@@ -12,7 +12,9 @@ use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\AbstractDiscordTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
 use Bytes\DiscordBundle\Request\DiscordConverter;
 use Bytes\DiscordBundle\Request\DiscordGuildConverter;
@@ -78,79 +80,40 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Clients (Tokens)
-    foreach(['bot', 'login', 'user'] as $tag) {
-        $services->set('bytes_discord.httpclient.discord.token.' . $tag, DiscordTokenClient::class)
-            ->args([
-                service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
-                '', // $config['client_id']
-                '', // $config['client_secret']
-                '', // $config['user_agent']
-            ])
-            ->call('setSerializer', [service('serializer')])
-            ->call('setValidator', [service('validator')])
-            ->call('setDispatcher', [service('event_dispatcher')])
-            ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-            ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-            ->call('setOAuth', [service('bytes_discord.oauth.' . $tag)]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
-            ->lazy()
-            ->alias(DiscordTokenClient::class, 'bytes_discord.httpclient.discord.token.' . $tag)
-            ->public();
-
-        $alias = u($tag)->title()->prepend(DiscordTokenClient::class . ' $discord')->append('TokenClient')->toString();
-
-        $services->alias($alias, 'bytes_discord.httpclient.discord.token.' . $tag);
-    }
-
-//    $services->set('bytes_discord.httpclient.discord.token.bot', DiscordBotTokenClient::class)
-//        ->args([
-//            service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
-//            '', // $config['client_id']
-//            '', // $config['client_secret']
-//            '', // $config['user_agent']
-//        ])
-//        ->call('setSerializer', [service('serializer')])
-//        ->call('setValidator', [service('validator')])
-//        ->call('setDispatcher', [service('event_dispatcher')])
-//        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-//        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-//        ->call('setOAuth', [service('bytes_discord.oauth.bot')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
-//        ->lazy()
-//        ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
-//        ->public();
-//
-//    $services->set('bytes_discord.httpclient.discord.token.login', DiscordLoginTokenClient::class)
-//        ->args([
-//            service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
-//            '', // $config['client_id']
-//            '', // $config['client_secret']
-//            '', // $config['user_agent']
-//        ])
-//        ->call('setSerializer', [service('serializer')])
-//        ->call('setValidator', [service('validator')])
-//        ->call('setDispatcher', [service('event_dispatcher')])
-//        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-//        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-//        ->call('setOAuth', [service('bytes_discord.oauth.login')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
-//        ->lazy()
-//        ->alias(DiscordLoginTokenClient::class, 'bytes_discord.httpclient.discord.token.login')
-//        ->public();
-//
-//    $services->set('bytes_discord.httpclient.discord.token.user', DiscordUserTokenClient::class)
-//        ->args([
-//            service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
-//            '', // $config['client_id']
-//            '', // $config['client_secret']
-//            '', // $config['user_agent']
-//        ])
-//        ->call('setSerializer', [service('serializer')])
-//        ->call('setValidator', [service('validator')])
-//        ->call('setDispatcher', [service('event_dispatcher')])
-//        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-//        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
-//        ->call('setOAuth', [service('bytes_discord.oauth.user')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
-//        ->lazy()
-//        ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
-//        ->public();
+    $services->set('bytes_discord.httpclient.discord.token.bot', DiscordBotTokenClient::class)
+        ->args([
+            service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            '', // $config['client_id']
+            '', // $config['client_secret']
+            '', // $config['bot_token']
+            '', // $config['user_agent']
+        ])
+        ->call('setSerializer', [service('serializer')])
+        ->call('setValidator', [service('validator')])
+        ->call('setDispatcher', [service('event_dispatcher')])
+        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
+        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+        ->call('setOAuth', [service('bytes_discord.oauth.bot')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
+        ->lazy()
+        ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
+        ->public();
+    
+    $services->set('bytes_discord.httpclient.discord.token.user', DiscordUserTokenClient::class)
+        ->args([
+            service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            '', // $config['client_id']
+            '', // $config['client_secret']
+            '', // $config['user_agent']
+        ])
+        ->call('setSerializer', [service('serializer')])
+        ->call('setValidator', [service('validator')])
+        ->call('setDispatcher', [service('event_dispatcher')])
+        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
+        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+        ->call('setOAuth', [service('bytes_discord.oauth.user')]) // Bytes\TwitchClientBundle\Routing\TwitchUserOAuth
+        ->lazy()
+        ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
+        ->public();
     //endregion
 
     //region Response
