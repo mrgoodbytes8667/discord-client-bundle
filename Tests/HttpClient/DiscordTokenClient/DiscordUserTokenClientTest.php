@@ -17,9 +17,12 @@ use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
+use Bytes\Tests\Common\Constraint\DateIntervalSame;
+use Bytes\Tests\Common\TestDateIntervalTrait;
 use DateInterval;
 use Exception;
 use Generator;
+use PHPUnit\Framework\Constraint\IsEqual;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\ByteString;
@@ -36,7 +39,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DiscordUserTokenClientTest extends TestHttpClientCase
 {
-    use ClientExceptionResponseProviderTrait, TestDiscordFakerTrait, TestUrlGeneratorTrait, DiscordClientSetupTrait {
+    use TestDateIntervalTrait, ClientExceptionResponseProviderTrait, TestDiscordFakerTrait, TestUrlGeneratorTrait, DiscordClientSetupTrait {
         DiscordClientSetupTrait::setupUserTokenClient as setupClient;
     }
 
@@ -67,7 +70,7 @@ class DiscordUserTokenClientTest extends TestHttpClientCase
 
         $this->assertEquals('Bearer', $response->getTokenType());
         $this->assertEquals('v6XtvrnWt1D3R6YFzSejQoBv6oVW5W', $response->getAccessToken());
-        $this->assertEquals(new DateInterval('PT604800S'), $response->getExpiresIn());
+        $this->assertDateIntervalEquals('P7D', $response->getExpiresIn());
         $this->assertEquals('tDpAVPmhq4PZqeXiXCTV6mRGvhgDu9', $response->getRefreshToken());
         $this->assertEquals('identify connections guilds bot applications.commands', $response->getScope());
 
@@ -128,7 +131,7 @@ class DiscordUserTokenClientTest extends TestHttpClientCase
 
         $this->assertEquals('Bearer', $response->getTokenType());
         $this->assertEquals('v6XtvrnWt1D3R6YFzSejQoBv6oVW5W', $response->getAccessToken());
-        $this->assertEquals(new DateInterval('PT604800S'), $response->getExpiresIn());
+        $this->assertDateIntervalEquals('P7D', $response->getExpiresIn());
         $this->assertEquals('tDpAVPmhq4PZqeXiXCTV6mRGvhgDu9', $response->getRefreshToken());
         $this->assertEquals('identify connections guilds bot applications.commands', $response->getScope());
 
