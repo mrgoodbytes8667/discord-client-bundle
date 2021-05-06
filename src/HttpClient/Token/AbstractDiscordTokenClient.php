@@ -33,7 +33,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 abstract class AbstractDiscordTokenClient extends AbstractTokenClient
 {
-    use DiscordClientTrait, EventDispatcherTrait;
+    use DiscordClientTrait;
 
     /**
      * DiscordTokenClient constructor.

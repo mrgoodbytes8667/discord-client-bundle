@@ -113,7 +113,7 @@ class DiscordBotTokenClient extends AbstractDiscordTokenClient implements AppTok
                 'Authorization' => 'Bot ' . $tokenString
             ]
         ], onSuccessCallable: function ($self, $results) use ($token) {
-            $this->dispatcher->dispatch(TokenValidatedEvent::new($token, $results), TokenValidatedEvent::NAME);
+            $this->dispatch(TokenValidatedEvent::new($token, $results));
         });
         try {
             if ($response->isSuccess()) {

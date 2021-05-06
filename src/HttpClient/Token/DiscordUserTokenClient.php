@@ -45,7 +45,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
         return $this->request($this->buildURL('oauth2/revoke'), options: ['body' => [
             'token' => $tokenString
         ]], method: HttpMethods::post(), onSuccessCallable: function ($self, $results) use ($token) {
-            $this->dispatcher->dispatch(TokenRevokedEvent::new($token), TokenRevokedEvent::NAME);
+            $this->dispatch(TokenRevokedEvent::new($token));
         })->onSuccessCallback();
     }
 
@@ -67,7 +67,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
                 /** @var AccessTokenInterface|null $results */
 
                 /** @var TokenRefreshedEvent $event */
-                $event = $this->dispatcher->dispatch(TokenRefreshedEvent::new($results, $token), TokenRefreshedEvent::NAME);
+                $event = $this->dispatch(TokenRefreshedEvent::new($results, $token));
 
                 return $event->getToken();
             })->deserialize();
@@ -91,7 +91,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
     {
         return $this->tokenExchange($code, $route, $url, $scopes, OAuthGrantTypes::authorizationCode(), onDeserializeCallable: function ($self, $results) {
             /** @var TokenGrantedEvent $event */
-            $event = $this->dispatcher->dispatch(TokenGrantedEvent::new($results), TokenGrantedEvent::NAME);
+            $event = $this->dispatch(TokenGrantedEvent::new($results));
             return $event->getToken();
         }, onSuccessCallable: $onSuccessCallable)->deserialize();
     }
@@ -117,7 +117,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
         $response = $this->request(url: ['oauth2', 'applications', DiscordClientEndpoints::USER_ME], type: User::class, options: [
             'auth_bearer' => $tokenString
         ], onSuccessCallable: function ($self, $results) use ($token) {
-            $this->dispatcher->dispatch(TokenValidatedEvent::new($token, $results), TokenValidatedEvent::NAME);
+            $this->dispatch(TokenValidatedEvent::new($token, $results));
         });
         try {
             if ($response->isSuccess()) {
