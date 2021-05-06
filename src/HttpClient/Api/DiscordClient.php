@@ -318,49 +318,4 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
 
         return $this->request(url: [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId], method: HttpMethods::delete());
     }
-
-    /**
-     * @param string $code
-     * @param string $redirect
-     * @param array $scopes
-     * @param OAuthGrantTypes|null $grantType
-     * @return Token|null
-     *
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    public function tokenExchange(string $code, string $redirect, array $scopes = [], OAuthGrantTypes $grantType = null)
-    {
-        if (empty($scopes)) {
-            $scopes = OAuthScopes::getBotScopes();
-        }
-        if (empty($grantType)) {
-            $grantType = OAuthGrantTypes::authorizationCode();
-        }
-        $body = [
-            'grant_type' => $grantType->value,
-            'redirect_uri' => $redirect,
-            'scope' => OAuthScopes::buildOAuthString($scopes),
-        ];
-        switch ($grantType) {
-            case OAuthGrantTypes::authorizationCode():
-                $body['code'] = $code;
-                break;
-            case OAuthGrantTypes::refreshToken():
-                $body['refresh_token'] = $code;
-                break;
-        }
-
-        return $this->request($this->buildURL('oauth2/token', ''),
-            Token::class,
-            [
-                'headers' => [
-                    'Content-Type' => 'application/x-www-form-urlencoded',
-                ],
-                'body' => $body,
-            ], HttpMethods::post())
-            ->deserialize();
-    }
 }
