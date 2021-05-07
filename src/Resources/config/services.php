@@ -20,6 +20,9 @@ use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
 use Bytes\DiscordBundle\Routing\DiscordLoginOAuth;
 use Bytes\DiscordBundle\Routing\DiscordUserOAuth;
+use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
+use Bytes\ResponseBundle\HttpClient\Token\TokenClientInterface;
+use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
 use Bytes\ResponseBundle\Routing\OAuthInterface;
 use function Symfony\Component\String\u;
 
@@ -95,6 +98,9 @@ return static function (ContainerConfigurator $container) {
         ->lazy()
         ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
         ->public();
+
+    $services->alias(TokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
+    $services->alias(AppTokenClientInterface::class.' $discordTokenClient', DiscordBotTokenClient::class);
     
     $services->set('bytes_discord.httpclient.discord.token.user', DiscordUserTokenClient::class)
         ->args([
@@ -112,6 +118,9 @@ return static function (ContainerConfigurator $container) {
         ->lazy()
         ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
         ->public();
+
+    $services->alias(TokenClientInterface::class.' $discordUserTokenClient', DiscordUserTokenClient::class);
+    $services->alias(UserTokenClientInterface::class.' $discordTokenClient', DiscordUserTokenClient::class);
     //endregion
 
     //region Response
