@@ -101,6 +101,7 @@ return static function (ContainerConfigurator $container) {
 
     $services->alias(TokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
     $services->alias(AppTokenClientInterface::class.' $discordTokenClient', DiscordBotTokenClient::class);
+    $services->alias(AppTokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
     
     $services->set('bytes_discord.httpclient.discord.token.user', DiscordUserTokenClient::class)
         ->args([
@@ -121,6 +122,7 @@ return static function (ContainerConfigurator $container) {
 
     $services->alias(TokenClientInterface::class.' $discordUserTokenClient', DiscordUserTokenClient::class);
     $services->alias(UserTokenClientInterface::class.' $discordTokenClient', DiscordUserTokenClient::class);
+    $services->alias(UserTokenClientInterface::class.' $discordUserTokenClient', DiscordUserTokenClient::class);
     //endregion
 
     //region Response
