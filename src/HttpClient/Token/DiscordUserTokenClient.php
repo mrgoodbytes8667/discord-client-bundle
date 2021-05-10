@@ -10,10 +10,12 @@ use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\User;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
+use Bytes\ResponseBundle\Event\RevokeTokenEvent;
 use Bytes\ResponseBundle\Event\TokenGrantedEvent;
 use Bytes\ResponseBundle\Event\TokenRefreshedEvent;
 use Bytes\ResponseBundle\Event\TokenRevokedEvent;
 use Bytes\ResponseBundle\Event\TokenValidatedEvent;
+use Bytes\ResponseBundle\HttpClient\Token\AbstractTokenClient;
 use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Objects\Push;
@@ -25,6 +27,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordUserTokenClient
@@ -32,6 +35,21 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserTokenClientInterface
 {
+    /**
+     * Overloadable method to setup the revoke/fire on refresh variables
+     * @param bool $revokeOnRefresh
+     * @param bool $fireRevokeOnRefresh
+     * @return $this
+     */
+    public function setupRevokeOnRefresh(bool $revokeOnRefresh, bool $fireRevokeOnRefresh): self
+    {
+        // Discord auto-revokes the original token. Force the event to fire.
+        $this->revokeOnRefresh = false;
+        $this->fireRevokeOnRefresh = true;
+
+        return $this;
+    }
+
     /**
      * Revokes the provided access token
      * @param AccessTokenInterface $token
@@ -69,6 +87,14 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
 
                 /** @var TokenRefreshedEvent $event */
                 $event = $this->dispatch(TokenRefreshedEvent::new($results, $token));
+
+                if($this->revokeOnRefresh) {
+                    $this->dispatch(RevokeTokenEvent::new($token));
+                }
+                if($this->fireRevokeOnRefresh)
+                {
+                    $this->dispatch(TokenRevokedEvent::new($event->getToken()));
+                }
 
                 return $event->getToken();
             })->deserialize();
