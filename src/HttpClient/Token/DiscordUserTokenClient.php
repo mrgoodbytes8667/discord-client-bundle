@@ -16,6 +16,7 @@ use Bytes\ResponseBundle\Event\TokenRevokedEvent;
 use Bytes\ResponseBundle\Event\TokenValidatedEvent;
 use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
+use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
@@ -130,5 +131,21 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
         } catch (NotEncodableValueException | NotNormalizableValueException) {
             return null;
         }
+    }
+
+    /**
+     * Remove scope and redirect_uri from Discord token refreshes
+     * @param Push $body
+     * @return Push
+     */
+    protected function normalizeTokenExchangeBody(Push $body): Push
+    {
+        $grantType = $body->getValue('grant_type');
+        if($grantType == 'refresh_token')
+        {
+            $body->removeKey('scope')
+                ->removeKey('redirect_uri');
+        }
+        return $body;
     }
 }
