@@ -65,7 +65,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('route_name')->defaultValue('')->end()
                                     ->scalarNode('url')->defaultValue('')->end()
                                 ->end()
-                            ->end()
+                            ->end() // end redirects
                             ->arrayNode('permissions')
                                 ->addDefaultsIfNotSet()
                                 ->info('String constants from the Permissions enum class')
@@ -87,7 +87,7 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                     ->end()
                                 ->end()
-                            ->end()
+                            ->end() // end permissions
                             ->arrayNode('scopes')
                                 ->addDefaultsIfNotSet()
                                 ->info('String constants from the OAuthScopes enum class')
@@ -109,7 +109,15 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                     ->end()
                                 ->end()
-                            ->end()
+                            ->end() // end scopes
+                            ->booleanNode('revokeOnRefresh')
+                                ->info('Should the existing token be revoked when refreshing a token?')
+                                ->defaultFalse()
+                            ->end() // end revokeOnRefresh
+                            ->booleanNode('fireRevokeOnRefresh')
+                                ->info('Should the existing token fire the revoke event when refreshing a token? Ignored if revokeOnRefresh is true.')
+                                ->defaultFalse()
+                            ->end() // end fireRevokeOnRefresh
                         ->end()
                     ->end()
                 ->end()
