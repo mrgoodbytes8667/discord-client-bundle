@@ -35,12 +35,14 @@ class DiscordBotTokenClient extends AbstractDiscordTokenClient implements AppTok
      * @param string $clientSecret
      * @param string $botToken
      * @param string|null $userAgent
+     * @param bool $revokeOnRefresh
+     * @param bool $fireRevokeOnRefresh
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, string $clientId, string $clientSecret, private string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, string $clientId, string $clientSecret, private string $botToken, ?string $userAgent, bool $revokeOnRefresh, bool $fireRevokeOnRefresh, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        parent::__construct($httpClient, $clientId, $clientSecret, $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        parent::__construct($httpClient, $clientId, $clientSecret, $userAgent, $revokeOnRefresh, $fireRevokeOnRefresh, $defaultOptionsByRegexp, $defaultRegexp);
     }
 
     /**

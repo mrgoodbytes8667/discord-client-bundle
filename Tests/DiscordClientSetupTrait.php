@@ -75,7 +75,7 @@ trait DiscordClientSetupTrait
      */
     protected function setupBotTokenClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordBotTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
+        $client = new DiscordBotTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
         return $this->postClientSetup($client, TokenResponse::class);
     }
 
@@ -87,7 +87,7 @@ trait DiscordClientSetupTrait
      */
     protected function setupUserTokenClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordUserTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
+        $client = new DiscordUserTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
         return $this->postClientSetup($client, DiscordUserTokenResponse::class);
     }
 
