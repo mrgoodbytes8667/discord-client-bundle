@@ -114,7 +114,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
     {
         $tokenString = static::normalizeAccessToken($token, false, 'The $token argument is required and cannot be empty.');
 
-        $response = $this->request(url: ['oauth2', 'applications', DiscordClientEndpoints::USER_ME], type: User::class, options: [
+        $response = $this->request(url: ['oauth2', DiscordClientEndpoints::USER_ME], type: User::class, options: [
             'auth_bearer' => $tokenString
         ], onSuccessCallable: function ($self, $results) use ($token) {
             $this->dispatch(TokenValidatedEvent::new($token, $results));
