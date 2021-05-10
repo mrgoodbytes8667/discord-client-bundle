@@ -20,6 +20,7 @@ use Bytes\DiscordBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
 use Bytes\DiscordBundle\Routing\DiscordLoginOAuth;
 use Bytes\DiscordBundle\Routing\DiscordUserOAuth;
+use Bytes\DiscordBundle\Subscriber\RevokeTokenSubscriber;
 use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\TokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
@@ -218,5 +219,13 @@ return static function (ContainerConfigurator $container) {
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord'
         ]);
+    //endregion
+
+    //region Subscribers
+    $services->set('bytes_discord.subscriber.revoke_token', RevokeTokenSubscriber::class)
+        ->args([
+            service('bytes_discord.httpclient.discord.token.user'),
+        ])
+        ->tag('kernel.event_subscriber');
     //endregion
 };
