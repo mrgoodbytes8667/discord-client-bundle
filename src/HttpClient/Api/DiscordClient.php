@@ -16,6 +16,7 @@ use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
+use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\HttpClient\Api\AbstractApiClient;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
@@ -326,5 +327,16 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
     public static function getDefaultIndexName(): string
     {
         return 'DISCORD';
+    }
+
+    /**
+     * Returns the TokenSource for the token
+     * @return TokenSource
+     *
+     * @throws \LogicException When this abstract method is not implemented
+     */
+    protected static function getTokenSource(): TokenSource
+    {
+        throw new \LogicException('You must override the getTokenSource() method in the concrete client class.');
     }
 }

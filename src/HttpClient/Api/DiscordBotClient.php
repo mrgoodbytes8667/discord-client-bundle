@@ -20,6 +20,7 @@ use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Enums\HttpMethods;
+use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Illuminate\Support\Arr;
@@ -886,5 +887,20 @@ class DiscordBotClient extends DiscordClient
     public static function getDefaultIndexName(): string
     {
         return 'DISCORD-BOT';
+    }
+
+    /**
+     * Identifier used for differentiating different token providers
+     * @var string
+     */
+    protected static $identifier = 'DISCORD';
+
+    /**
+     * Returns the TokenSource for the token
+     * @return TokenSource
+     */
+    protected static function getTokenSource(): TokenSource
+    {
+        return TokenSource::app();
     }
 }
