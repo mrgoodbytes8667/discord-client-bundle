@@ -22,7 +22,7 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface, Res
     /**
      * @var string[]
      */
-    public static $endpoints = ['bot', 'login', 'slash', 'user'];
+    public static $endpoints = ['bot', 'login', 'user'];
 
     /**
      * @var string[]
@@ -101,6 +101,15 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface, Res
             $definition = $container->getDefinition($value);
             $definition->replaceArgument(0, $config['client_id']);
             $definition->replaceArgument(1, $config['endpoints']);
+        }
+
+        $container->getDefinition('bytes_discord.security.oauth.handler')
+            ->setArgument(5, $config['login_redirect_route'])
+            ->setArgument(6, $config['login_success_route']);
+
+        foreach (['bot', 'login', 'user'] as $type) {
+            $container->getDefinition(sprintf('bytes_discord.oauth_controller.%s', $type))
+                ->setArgument(2, $config['login_success_route']);
         }
     }
 }

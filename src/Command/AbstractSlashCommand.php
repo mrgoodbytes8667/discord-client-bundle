@@ -47,7 +47,7 @@ abstract class AbstractSlashCommand extends BaseCommand
 
     /**
      * AbstractSlashCommand constructor.
-     * @param DiscordBot $client
+     * @param DiscordBotClient $client
      */
     public function __construct(protected DiscordBotClient $client)
     {

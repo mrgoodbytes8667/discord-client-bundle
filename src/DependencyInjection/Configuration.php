@@ -50,6 +50,14 @@ class Configuration implements ConfigurationInterface
                     ->info('Should security be passed to the child OAuth handler?')
                     ->defaultFalse()
                 ->end()
+                ->scalarNode('login_redirect_route')
+                    ->info('Route name for OAuth login')
+                    ->defaultValue('')
+                ->end() // end login_redirect_route
+                ->scalarNode('login_success_route')
+                    ->info('Route name for a successful OAuth login')
+                    ->defaultValue('')
+                ->end() // end login_success_route
                 ->arrayNode('endpoints')
                     ->useAttributeAsKey('name')
                     ->arrayPrototype()

@@ -6,7 +6,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Bytes\DiscordBundle\Command\SlashAddCommand;
 use Bytes\DiscordBundle\Command\SlashDeleteCommand;
 use Bytes\DiscordBundle\Controller\CommandController;
-use Bytes\DiscordBundle\Controller\OAuthController;
+use Bytes\DiscordBundle\Security\DiscordOAuthAuthenticator;
+use Bytes\ResponseBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
@@ -168,14 +169,15 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Controllers
-    $services->set('bytes_discord.oauth_controller', OAuthController::class)
-        ->args([
-            service('bytes_discord.oauth.bot'),
-            service('bytes_discord.oauth.login'),
-            service('bytes_discord.oauth.user'),
-        ])
-        ->alias(OAuthController::class, 'bytes_discord.oauth_controller')
-        ->public();
+    foreach (['bot', 'login', 'user'] as $type) {
+        $services->set(sprintf('bytes_discord.oauth_controller.%s', $type), OAuthController::class)
+            ->args([
+                service(sprintf('bytes_discord.oauth.%s', $type)), // Bytes\ResponseBundle\Routing\OAuthInterface
+                service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+                '', // destination route
+            ])
+            ->public();
+    }
 
     $services->set('bytes_discord.command_controller', CommandController::class)
         ->args([
@@ -223,6 +225,11 @@ return static function (ContainerConfigurator $container) {
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord'
         ]);
+    //endregion
+
+    //region Security
+    $services->set('bytes_discord.security.oauth.handler', DiscordOAuthAuthenticator::class)
+        ->tag('bytes_response.security.oauth');
     //endregion
 
     //region Subscribers
