@@ -27,4 +27,13 @@ class DiscordUserClient extends DiscordClient
     {
         parent::__construct($httpClient, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
     }
+
+    /**
+     * Return the client name
+     * @return string
+     */
+    public static function getDefaultIndexName(): string
+    {
+        return 'DISCORD-USER';
+    }
 }

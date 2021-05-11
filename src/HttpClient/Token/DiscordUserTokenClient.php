@@ -173,4 +173,13 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
         }
         return $body;
     }
+
+    /**
+     * Return the client name
+     * @return string
+     */
+    public static function getDefaultIndexName(): string
+    {
+        return 'DISCORD-TOKEN-USER';
+    }
 }

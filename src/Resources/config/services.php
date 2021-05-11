@@ -48,6 +48,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->tag('bytes_response.http_client')
         ->lazy()
         ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
         ->public();
@@ -64,6 +65,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->tag('bytes_response.http_client')
         ->alias(DiscordBotClient::class, 'bytes_discord.httpclient.discord.bot')
         ->public();
 
@@ -78,6 +80,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setSerializer', [service('serializer')])
         ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->tag('bytes_response.http_client')
         ->alias(DiscordUserClient::class, 'bytes_discord.httpclient.discord.user')
         ->public();
     //endregion
@@ -99,6 +102,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->call('setOAuth', [service('bytes_discord.oauth.bot')])
+        ->tag('bytes_response.http_client')
         ->lazy()
         ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
         ->public();
@@ -122,6 +126,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->call('setOAuth', [service('bytes_discord.oauth.user')])
+        ->tag('bytes_response.http_client')
         ->lazy()
         ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
         ->public();
@@ -158,6 +163,7 @@ return static function (ContainerConfigurator $container) {
             ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             ->call('setValidator', [service('validator')])
             ->call('setSecurity', [service('security.helper')->ignoreOnInvalid()]) // Symfony\Component\Security\Core\Security
+            ->tag('bytes_response.oauth')
             ->lazy()
             ->alias($class, 'bytes_discord.oauth.' . $tag)
             ->public();

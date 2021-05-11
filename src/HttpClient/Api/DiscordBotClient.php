@@ -879,5 +879,12 @@ class DiscordBotClient extends DiscordClient
         return $this->deleteWebhookMessage(id: $this->clientId, token: $token, messageId: $messageId);
     }
 
-
+    /**
+     * Return the client name
+     * @return string
+     */
+    public static function getDefaultIndexName(): string
+    {
+        return 'DISCORD-BOT';
+    }
 }

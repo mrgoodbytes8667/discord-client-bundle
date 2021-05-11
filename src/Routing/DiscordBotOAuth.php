@@ -126,4 +126,13 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
     {
         return OAuthPrompts::consent()->prompt();
     }
+
+    /**
+     * Return the client name
+     * @return string
+     */
+    public static function getDefaultIndexName(): string
+    {
+        return 'DISCORD-BOT';
+    }
 }

@@ -41,4 +41,13 @@ class DiscordLoginOAuth extends AbstractDiscordOAuth
     {
         return OAuthScopes::getLoginScopes();
     }
+
+    /**
+     * Return the client name
+     * @return string
+     */
+    public static function getDefaultIndexName(): string
+    {
+        return 'DISCORD-LOGIN';
+    }
 }
