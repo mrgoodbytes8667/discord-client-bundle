@@ -104,12 +104,12 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface, Res
         }
 
         $container->getDefinition('bytes_discord.security.oauth.handler')
-            ->setArgument(5, $config['login_redirect_route'])
-            ->setArgument(6, $config['login_success_route']);
+            ->replaceArgument(5, $config['login_redirect_route'])
+            ->replaceArgument(6, $config['login_success_route']);
 
         foreach (['bot', 'login', 'user'] as $type) {
             $container->getDefinition(sprintf('bytes_discord.oauth_controller.%s', $type))
-                ->setArgument(2, $config['login_success_route']);
+                ->replaceArgument(2, $config['login_success_route']);
         }
     }
 }

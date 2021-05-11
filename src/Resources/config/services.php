@@ -240,6 +240,15 @@ return static function (ContainerConfigurator $container) {
 
     //region Security
     $services->set('bytes_discord.security.oauth.handler', DiscordOAuthAuthenticator::class)
+        ->args([
+            service('doctrine.orm.default_entity_manager'),
+            service('security.helper'),
+            service('router.default'),
+            service('bytes_discord.oauth.login'),
+            service('bytes_discord.httpclient.discord.token.user'),
+            '',
+            ''
+        ])
         ->tag('bytes_response.security.oauth');
     //endregion
 
