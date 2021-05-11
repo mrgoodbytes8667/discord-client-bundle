@@ -6,7 +6,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Bytes\DiscordBundle\Command\SlashAddCommand;
 use Bytes\DiscordBundle\Command\SlashDeleteCommand;
 use Bytes\DiscordBundle\Controller\CommandController;
-use Bytes\DiscordBundle\Security\DiscordOAuthAuthenticator;
 use Bytes\ResponseBundle\Controller\OAuthController;
 use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
@@ -236,20 +235,6 @@ return static function (ContainerConfigurator $container) {
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord'
         ]);
-    //endregion
-
-    //region Security
-    $services->set('bytes_discord.security.oauth.handler', DiscordOAuthAuthenticator::class)
-        ->args([
-            service('doctrine.orm.default_entity_manager'),
-            service('security.helper'),
-            service('router.default'),
-            service('bytes_discord.oauth.login'),
-            service('bytes_discord.httpclient.discord.token.user'),
-            '',
-            ''
-        ])
-        ->tag('bytes_response.security.oauth');
     //endregion
 
     //region Subscribers
