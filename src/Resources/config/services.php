@@ -49,6 +49,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
+        ->tag('bytes_response.http_client.api')
         ->lazy()
         ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
         ->public();
@@ -66,6 +67,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
+        ->tag('bytes_response.http_client.api')
         ->alias(DiscordBotClient::class, 'bytes_discord.httpclient.discord.bot')
         ->public();
 
@@ -81,6 +83,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
+        ->tag('bytes_response.http_client.api')
         ->alias(DiscordUserClient::class, 'bytes_discord.httpclient.discord.user')
         ->public();
     //endregion
@@ -103,6 +106,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->call('setOAuth', [service('bytes_discord.oauth.bot')])
         ->tag('bytes_response.http_client')
+        ->tag('bytes_response.http_client.token')
         ->lazy()
         ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
         ->public();
@@ -127,6 +131,7 @@ return static function (ContainerConfigurator $container) {
         ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->call('setOAuth', [service('bytes_discord.oauth.user')])
         ->tag('bytes_response.http_client')
+        ->tag('bytes_response.http_client.token')
         ->lazy()
         ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
         ->public();
