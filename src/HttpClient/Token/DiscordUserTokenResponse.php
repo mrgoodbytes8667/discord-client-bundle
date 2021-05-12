@@ -19,12 +19,5 @@ class DiscordUserTokenResponse extends TokenResponse
      */
     protected static $identifier = 'DISCORD';
 
-    /**
-     * Returns the TokenSource for the token
-     * @return TokenSource
-     */
-    protected static function getTokenSource(): TokenSource
-    {
-        return TokenSource::user();
-    }
+    protected static $tokenSource = 'user';
 }

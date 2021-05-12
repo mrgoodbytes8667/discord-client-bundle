@@ -4,8 +4,12 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\HttpClient\MockClientResponse;
+use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
+use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
 use DateTime;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Faker\Factory;
 use Faker\Generator;
 use Faker\Provider\Internet;
@@ -24,7 +28,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DiscordClientTest extends TestHttpClientCase
 {
-    use TestDiscordClientTrait, DiscordClientSetupTrait {
+    use AssertClientAnnotationsSameTrait, TestDiscordClientTrait, DiscordClientSetupTrait {
         DiscordClientSetupTrait::setupBaseClient as setupClient;
     }
 
@@ -159,5 +163,36 @@ class DiscordClientTest extends TestHttpClientCase
         $response = $client->request($url, caller: __METHOD__, responseClass: $mock);
 
         $this->assertInstanceOf(ClientResponseInterface::class, $response);
+    }
+
+    /**
+     *
+     */
+    public function testClientAnnotations()
+    {
+        $actual = $this->setupClient();
+        self::assertEquals('DISCORD', $actual->getIdentifier());
+        self::assertNull($actual->getTokenSource());
+    }
+
+    /**
+     *
+     */
+    public function testUsesClientAnnotations()
+    {
+        $actual = $this->setupClient();
+        $reader = $this->getMockBuilder(Reader::class)->getMock();
+
+        $reader->expects($this->exactly(2))
+            ->method('getClassAnnotation');
+
+        $actual->setReader($reader);
+
+        $actual->getIdentifier();
+        $actual->getTokenSource();
+
+        $actual->setReader(new AnnotationReader());
+        $this->assertNotEmpty($actual->getIdentifier());
+        $this->assertNull($actual->getTokenSource());
     }
 }

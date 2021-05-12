@@ -8,6 +8,7 @@ use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\User;
+use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use Bytes\ResponseBundle\Event\RevokeTokenEvent;
@@ -32,6 +33,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Class DiscordUserTokenClient
  * @package Bytes\DiscordBundle\HttpClient\Token
+ *
+ * @Client(identifier="DISCORD", tokenSource="user")
  */
 class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserTokenClientInterface
 {

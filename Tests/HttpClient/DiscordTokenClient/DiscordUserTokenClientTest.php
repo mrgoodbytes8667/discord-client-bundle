@@ -14,7 +14,9 @@ use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\User;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
+use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Bytes\Tests\Common\Constraint\DateIntervalSame;
@@ -39,7 +41,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DiscordUserTokenClientTest extends TestHttpClientCase
 {
-    use TestDateIntervalTrait, ClientExceptionResponseProviderTrait, TestDiscordFakerTrait, TestUrlGeneratorTrait, DiscordClientSetupTrait {
+    use AssertClientAnnotationsSameTrait, TestDateIntervalTrait, ClientExceptionResponseProviderTrait, TestDiscordFakerTrait, TestUrlGeneratorTrait, DiscordClientSetupTrait {
         DiscordClientSetupTrait::setupUserTokenClient as setupClient;
     }
 
@@ -296,5 +298,22 @@ class DiscordUserTokenClientTest extends TestHttpClientCase
         $this->assertResponseStatusCodeSame($response, Response::HTTP_NO_CONTENT);
         $this->assertResponseHasNoContent($response);
         $this->assertResponseContentSame($response, '');
+    }
+
+    /**
+     *
+     */
+    public function testClientAnnotations()
+    {
+        $client = $this->setupClient();
+        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user(), $client);
+    }
+
+    /**
+     *
+     */
+    public function testUsesClientAnnotations()
+    {
+        $this->assertUsesClientAnnotations($this->setupClient());
     }
 }

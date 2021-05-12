@@ -13,6 +13,7 @@ use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Annotations\Auth;
+use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\HttpClient\Api\AbstractApiClient;
@@ -31,6 +32,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Class DiscordClient
  * @package Bytes\DiscordBundle\HttpClient\Api
+ *
+ * @Client(identifier="DISCORD")
  */
 class DiscordClient extends AbstractApiClient implements SerializerAwareInterface
 {
@@ -326,16 +329,5 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
     public static function getDefaultIndexName(): string
     {
         return 'DISCORD';
-    }
-
-    /**
-     * Returns the TokenSource for the token
-     * @return TokenSource
-     *
-     * @throws \LogicException When this abstract method is not implemented
-     */
-    protected static function getTokenSource(): TokenSource
-    {
-        throw new \LogicException('You must override the getTokenSource() method in the concrete client class.');
     }
 }

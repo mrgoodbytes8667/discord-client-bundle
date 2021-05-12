@@ -7,6 +7,7 @@ namespace Bytes\DiscordBundle\HttpClient\Token;
 use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Event\TokenValidatedEvent;
 use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
@@ -25,6 +26,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Class DiscordBotTokenClient
  * @package Bytes\DiscordBundle\HttpClient\Token
+ *
+ * @Client(identifier="DISCORD", tokenSource="app")
  */
 class DiscordBotTokenClient extends AbstractDiscordTokenClient implements AppTokenClientInterface
 {

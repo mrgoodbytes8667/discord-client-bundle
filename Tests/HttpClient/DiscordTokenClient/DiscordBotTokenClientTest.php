@@ -11,6 +11,8 @@ use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordBundle\Tests\TestUrlGeneratorTrait;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\Token;
+use Bytes\ResponseBundle\Enums\TokenSource;
+use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Generator;
@@ -28,7 +30,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
  */
 class DiscordBotTokenClientTest extends TestHttpClientCase
 {
-    use ClientExceptionResponseProviderTrait, TestDiscordFakerTrait, TestUrlGeneratorTrait, DiscordClientSetupTrait {
+    use AssertClientAnnotationsSameTrait, ClientExceptionResponseProviderTrait, TestDiscordFakerTrait, TestUrlGeneratorTrait, DiscordClientSetupTrait {
         DiscordClientSetupTrait::setupBotTokenClient as setupClient;
     }
 
@@ -126,6 +128,23 @@ class DiscordBotTokenClientTest extends TestHttpClientCase
         ]));
 
         $this->assertNull($client->validateToken(Token::createFromAccessToken($this->faker->accessToken())));
+    }
+
+    /**
+     *
+     */
+    public function testClientAnnotations()
+    {
+        $client = $this->setupClient();
+        $this->assertClientAnnotationEquals('DISCORD', TokenSource::app(), $client);
+    }
+
+    /**
+     *
+     */
+    public function testUsesClientAnnotations()
+    {
+        $this->assertUsesClientAnnotations($this->setupClient());
     }
 }
 

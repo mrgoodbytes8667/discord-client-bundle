@@ -19,6 +19,7 @@ use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
+use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
@@ -35,6 +36,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Class DiscordBotClient
  * @package Bytes\DiscordBundle\HttpClient\Api
+ *
+ * @Client(identifier="DISCORD", tokenSource="app")
  */
 class DiscordBotClient extends DiscordClient
 {
@@ -889,20 +892,5 @@ class DiscordBotClient extends DiscordClient
     public static function getDefaultIndexName(): string
     {
         return 'DISCORD-BOT';
-    }
-
-    /**
-     * Identifier used for differentiating different token providers
-     * @var string
-     */
-    protected static $identifier = 'DISCORD';
-
-    /**
-     * Returns the TokenSource for the token
-     * @return TokenSource
-     */
-    protected static function getTokenSource(): TokenSource
-    {
-        return TokenSource::app();
     }
 }
