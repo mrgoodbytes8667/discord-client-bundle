@@ -46,7 +46,7 @@ class DiscordClientTest extends TestHttpClientCase
             ]),
         ]));
 
-        $response = $client->request($url);
+        $response = $client->request($url, caller: __METHOD__);
 
         $this->validateRequestResponse($response, $content);
 
@@ -93,7 +93,7 @@ class DiscordClientTest extends TestHttpClientCase
         $client = $this->setupClient(new MockHttpClient());
 
         $this->expectException(InvalidArgumentException::class);
-        $client->request($url);
+        $client->request($url, caller: __METHOD__);
     }
 
     /**
@@ -125,7 +125,7 @@ class DiscordClientTest extends TestHttpClientCase
             new MockResponse($content),
         ]));
 
-        $response = $client->request($url, responseClass: MockClientResponse::class);
+        $response = $client->request($url, caller: __METHOD__, responseClass: MockClientResponse::class);
 
         $this->validateRequestResponse($response, $content);
 
@@ -156,7 +156,7 @@ class DiscordClientTest extends TestHttpClientCase
         $mock->method('withResponse')
             ->willReturnSelf();
 
-        $response = $client->request($url, responseClass: $mock);
+        $response = $client->request($url, caller: __METHOD__, responseClass: $mock);
 
         $this->assertInstanceOf(ClientResponseInterface::class, $response);
     }
