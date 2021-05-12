@@ -1,15 +1,16 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient;
+namespace Bytes\DiscordBundle\HttpClient\Api;
 
 
+use Bytes\ResponseBundle\Enums\TokenSource;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordUserClient
- * @package Bytes\DiscordBundle\HttpClient
+ * @package Bytes\DiscordBundle\HttpClient\Api
  */
 class DiscordUserClient extends DiscordClient
 {
@@ -26,5 +27,27 @@ class DiscordUserClient extends DiscordClient
     public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         parent::__construct($httpClient, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+    }
+
+    /**
+     * Return the client name
+     * @return string
+     */
+    public static function getDefaultIndexName(): string
+    {
+        return 'DISCORD-USER';
+    }    /**
+ * Identifier used for differentiating different token providers
+ * @var string
+ */
+    protected static $identifier = 'DISCORD';
+
+    /**
+     * Returns the TokenSource for the token
+     * @return TokenSource
+     */
+    protected static function getTokenSource(): TokenSource
+    {
+        return TokenSource::user();
     }
 }

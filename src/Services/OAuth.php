@@ -15,6 +15,8 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use function Symfony\Component\String\u;
 
+trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "Bytes\DiscordBundle\Services\OAuth" is deprecated, use one of Bytes\DiscordBundle\Routing\DiscordBotOAuth, Bytes\DiscordBundle\Routing\DiscordLoginOAuth, Bytes\DiscordBundle\Routing\DiscordSlashOAuth, or Bytes\DiscordBundle\Routing\DiscordUserOAuth instead.');
+
 /**
  * Class OAuth
  * @package Bytes\DiscordBundle\Services
@@ -23,6 +25,8 @@ use function Symfony\Component\String\u;
  * @method array getScopesLogin()
  * @method array getScopesSlash()
  * @method array getScopesUser()
+ *
+ * @deprecated Since 0.0.1, use one of Bytes\DiscordBundle\Routing\DiscordBotOAuth, Bytes\DiscordBundle\Routing\DiscordLoginOAuth, Bytes\DiscordBundle\Routing\DiscordSlashOAuth, or Bytes\DiscordBundle\Routing\DiscordUserOAuth instead
  */
 class OAuth
 {
@@ -174,6 +178,41 @@ class OAuth
     }
 
     /**
+     * @param string|null $state
+     * @param array $permissions
+     * @return string
+     */
+    public function getUserAuthorizationUrl(?string $state = null, array $permissions = []): string
+    {
+        return $this->getAuthorizationCodeGrantURL(
+            $permissions ?: [],
+            $this->getUserOAuthRedirect(),
+            $this->defaultScopes['user'],
+            $state,
+            'user');
+    }
+
+    /**
+     * @param string|null $guildId
+     * @param string|null $state
+     * @param array $permissions
+     * @return string
+     */
+    public function getSlashAuthorizationUrl(string $guildId = null, ?string $state = null, array $permissions = []): string
+    {
+        return $this->getAuthorizationCodeGrantURL(
+            $permissions ?: [],
+            $this->getSlashOAuthRedirect(),
+            $this->defaultScopes['slash'],
+            $state,
+            'slash',
+            'code',
+            $guildId,
+            !empty($guildId)
+        );
+    }
+
+    /**
      * @param array $permissions = Permissions::all()
      * @param string $redirect
      * @param array $scopes = OAuthScopes::all()
@@ -289,46 +328,11 @@ class OAuth
     }
 
     /**
-     * @param string|null $guildId
-     * @param string|null $state
-     * @param array $permissions
-     * @return string
-     */
-    public function getSlashAuthorizationUrl(string $guildId = null, ?string $state = null, array $permissions = []): string
-    {
-        return $this->getAuthorizationCodeGrantURL(
-            $permissions ?: [],
-            $this->getSlashOAuthRedirect(),
-            $this->defaultScopes['slash'],
-            $state,
-            'slash',
-            'code',
-            $guildId,
-            !empty($guildId)
-        );
-    }
-
-    /**
      * @return string
      */
     public function getSlashOAuthRedirect(): string
     {
         return $this->slashOAuthRedirect;
-    }
-
-    /**
-     * @param string|null $state
-     * @param array $permissions
-     * @return string
-     */
-    public function getUserAuthorizationUrl(?string $state = null, array $permissions = []): string
-    {
-        return $this->getAuthorizationCodeGrantURL(
-            $permissions ?: [],
-            $this->getUserOAuthRedirect(),
-            $this->defaultScopes['user'],
-            $state,
-            'user');
     }
 
     /**

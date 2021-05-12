@@ -5,8 +5,8 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockStandaloneResponse;
+use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\Tests\Common\Constraint\ResponseContentSame;
 use Bytes\Tests\Common\Constraint\ResponseStatusCodeSame;
 use Bytes\Tests\Common\TestFullSerializerTrait;
@@ -36,13 +36,13 @@ abstract class TestHttpClientCase extends TestCase
     use TestFullSerializerTrait, TestFullValidatorTrait;
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param string $message
      * @throws TransportExceptionInterface
      */
-    public static function assertResponseIsSuccessful(ResponseInterface|DiscordResponse $response, string $message = ''): void
+    public static function assertResponseIsSuccessful(ResponseInterface|ClientResponseInterface $response, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         self::assertThat(
@@ -56,33 +56,33 @@ abstract class TestHttpClientCase extends TestCase
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param int $expectedCode
      * @param string $message
      */
-    public static function assertResponseStatusCodeSame(ResponseInterface|DiscordResponse $response, int $expectedCode, string $message = ''): void
+    public static function assertResponseStatusCodeSame(ResponseInterface|ClientResponseInterface $response, int $expectedCode, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         self::assertThatForResponse($response, new ResponseStatusCodeSame($expectedCode), $message);
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param int $expectedCode
      * @param string $message
      */
-    public static function assertResponseStatusCodeNotSame(ResponseInterface|DiscordResponse $response, int $expectedCode, string $message = ''): void
+    public static function assertResponseStatusCodeNotSame(ResponseInterface|ClientResponseInterface $response, int $expectedCode, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         self::assertThatForResponse($response, static::logicalNot(new ResponseStatusCodeSame($expectedCode)), $message);
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param Constraint $constraint
      * @param string $message
      * @throws ClientExceptionInterface
@@ -90,9 +90,9 @@ abstract class TestHttpClientCase extends TestCase
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function assertThatForResponse(ResponseInterface|DiscordResponse $response, Constraint $constraint, string $message = ''): void
+    public static function assertThatForResponse(ResponseInterface|ClientResponseInterface $response, Constraint $constraint, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         try {
@@ -112,7 +112,7 @@ abstract class TestHttpClientCase extends TestCase
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param string $headerName
      * @param string $message
      * @throws ClientExceptionInterface
@@ -120,48 +120,48 @@ abstract class TestHttpClientCase extends TestCase
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function assertResponseHasHeader(ResponseInterface|DiscordResponse $response, string $headerName, string $message = ''): void
+    public static function assertResponseHasHeader(ResponseInterface|ClientResponseInterface $response, string $headerName, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         self::assertThatForResponse($response, new ResponseConstraint\ResponseHasHeader($headerName), $message);
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param string $message
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function assertResponseHasContent(ResponseInterface|DiscordResponse $response, string $message = ''): void
+    public static function assertResponseHasContent(ResponseInterface|ClientResponseInterface $response, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         static::assertThat($response->getContent(false), static::logicalNot(static::isEmpty()), $message);
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param string $message
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function assertResponseHasNoContent(ResponseInterface|DiscordResponse $response, string $message = ''): void
+    public static function assertResponseHasNoContent(ResponseInterface|ClientResponseInterface $response, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         static::assertThat($response->getContent(false), static::logicalAnd(static::isEmpty()), $message);
     }
 
     /**
-     * @param ResponseInterface|DiscordResponse $response
+     * @param ResponseInterface|ClientResponseInterface $response
      * @param string $content
      * @param string $message
      * @throws ClientExceptionInterface
@@ -169,9 +169,9 @@ abstract class TestHttpClientCase extends TestCase
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function assertResponseContentSame(ResponseInterface|DiscordResponse $response, string $content, string $message = ''): void
+    public static function assertResponseContentSame(ResponseInterface|ClientResponseInterface $response, string $content, string $message = ''): void
     {
-        if ($response instanceof DiscordResponse) {
+        if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
         self::assertThatForResponse($response, new ResponseContentSame($content), $message);
@@ -197,13 +197,15 @@ abstract class TestHttpClientCase extends TestCase
      * @param null $content
      * @param int $code
      * @param string $type
-     * @return DiscordResponse
+     * @param array $context
+     * @param callable|null $onSuccessCallable
+     * @return ClientResponseInterface
      */
-    public function setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = stdClass::class): DiscordResponse
+    public function setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = stdClass::class, array $context = [], ?callable $onSuccessCallable = null): ClientResponseInterface
     {
         $response = new MockStandaloneResponse(content: $content, fixtureFile: $fixtureFile, statusCode: $code);
 
-        return DiscordResponse::make($this->serializer)->withResponse($response, $type);
+        return \Bytes\ResponseBundle\HttpClient\Response\Response::make($this->serializer)->withResponse($response, $type, $context, onSuccessCallable: $onSuccessCallable);
     }
 
     /**

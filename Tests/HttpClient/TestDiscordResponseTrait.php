@@ -4,7 +4,6 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordResponseBundle\Enums\MessageType;
@@ -31,7 +30,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * @method expectException(string $exception)
  * @method expectExceptionMessage(string $message)
  * @method setupClient(HttpClientInterface $httpClient)
- * @method DiscordResponse setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
+ * @method \Bytes\ResponseBundle\HttpClient\Response\Response setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, array $context = [], ?callable $onSuccessCallable = null)
  * @property SerializerInterface $serializer
  */
 trait TestDiscordResponseTrait
@@ -82,6 +81,20 @@ trait TestDiscordResponseTrait
     public function testGetMe()
     {
         $user = $this->setupResponse('HttpClient/get-me.json', type: User::class)->deserialize();
+        $this->validateUser($user, '272930239796055326', 'elvie70', 'cba426068ee1c51edab2f0c38549f4bc', '6793', 0, true);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testGetMeWithResponseCallback()
+    {
+        $user = $this->setupResponse('HttpClient/get-me.json', type: User::class, onSuccessCallable: function($response, $results) {
+            return;
+        })->deserialize();
         $this->validateUser($user, '272930239796055326', 'elvie70', 'cba426068ee1c51edab2f0c38549f4bc', '6793', 0, true);
     }
 

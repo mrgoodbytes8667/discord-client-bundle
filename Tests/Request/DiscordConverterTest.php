@@ -5,7 +5,7 @@ namespace Bytes\DiscordBundle\Tests\Request;
 use Bytes\DiscordBundle\Request\DiscordConverter;
 use Bytes\DiscordResponseBundle\Objects\ChannelMention;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\NameInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;

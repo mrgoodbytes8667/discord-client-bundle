@@ -4,7 +4,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
 
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;

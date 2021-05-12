@@ -5,7 +5,7 @@ namespace Bytes\DiscordBundle\Command;
 
 
 use Bytes\CommandBundle\Command\BaseCommand;
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Symfony\Component\Console\Exception\LogicException;
@@ -47,7 +47,7 @@ abstract class AbstractSlashCommand extends BaseCommand
 
     /**
      * AbstractSlashCommand constructor.
-     * @param DiscordBot $client
+     * @param DiscordBotClient $client
      */
     public function __construct(protected DiscordBotClient $client)
     {

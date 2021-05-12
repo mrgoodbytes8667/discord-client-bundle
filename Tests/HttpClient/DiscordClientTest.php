@@ -2,19 +2,20 @@
 
 namespace Bytes\DiscordBundle\Tests\HttpClient;
 
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordBundle\Tests\Fixtures\HttpClient\MockClientResponse;
+use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use DateTime;
 use Faker\Factory;
 use Faker\Generator;
 use Faker\Provider\Internet;
 use InvalidArgumentException;
-use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
@@ -23,17 +24,56 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class DiscordClientTest extends TestHttpClientCase
 {
-    use TestDiscordClientTrait, ExpectDeprecationTrait, DiscordClientSetupTrait {
+    use TestDiscordClientTrait, DiscordClientSetupTrait {
         DiscordClientSetupTrait::setupBaseClient as setupClient;
     }
 
     /**
-     * @group legacy
+     * @dataProvider provideContent
+     * @param $content
+     * @param $headers
+     * @param $url
+     * @throws TransportExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
      */
-    public function testRequest()
+    public function testRequest($content, $headers, $url)
     {
-        $this->expectDeprecation('Since fakerphp/faker 1.14: Accessing property "word" is deprecated, use "word()" instead.');
-        $this->expectDeprecation('Since fakerphp/faker 1.14: Accessing property "safeEmailDomain" is deprecated, use "safeEmailDomain()" instead.');
+        $client = $this->setupClient(new MockHttpClient([
+            new MockResponse($content, [
+                'response_headers' => $headers
+            ]),
+        ]));
+
+        $response = $client->request($url);
+
+        $this->validateRequestResponse($response, $content);
+
+        $headers = $response->getHeaders();
+        $this->assertCount(1, $headers);
+        $this->assertArrayHasKey('x-lorem-ipsum', $headers);
+        $this->assertCount(1, $headers['x-lorem-ipsum']);
+        $this->assertEquals('Dolor', array_shift($headers['x-lorem-ipsum']));
+    }
+
+    /**
+     * @param $response
+     * @param $content
+     */
+    protected function validateRequestResponse($response, $content)
+    {
+        $this->assertResponseIsSuccessful($response);
+        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
+        $this->assertResponseHasContent($response);
+        $this->assertResponseContentSame($response, $content);
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideContent()
+    {
         /** @var Generator|Internet $faker */
         $faker = Factory::create();
         $content = $faker->randomHtml();
@@ -41,24 +81,7 @@ class DiscordClientTest extends TestHttpClientCase
             'X-Lorem-Ipsum' => 'Dolor'
         ];
 
-        $client = $this->setupClient(new MockHttpClient([
-            new MockResponse($content, [
-                'response_headers' => $headers
-            ]),
-        ]));
-
-        $response = $client->request($faker->url());
-
-        $this->assertResponseIsSuccessful($response);
-        $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
-        $this->assertResponseHasContent($response);
-        $this->assertResponseContentSame($response, $content);
-
-        $headers = $response->getHeaders();
-        $this->assertCount(1, $headers);
-        $this->assertArrayHasKey('x-lorem-ipsum', $headers);
-        $this->assertCount(1, $headers['x-lorem-ipsum']);
-        $this->assertEquals('Dolor', array_shift($headers['x-lorem-ipsum']));
+        yield ['content' => $content, 'headers' => $headers, 'url' => $faker->url()];
     }
 
     /**
@@ -83,5 +106,58 @@ class DiscordClientTest extends TestHttpClientCase
         yield ['url' => []];
         yield ['url' => 1];
         yield ['url' => new DateTime()];
+    }
+
+    /**
+     * @dataProvider provideContent
+     * @group legacy
+     * @param $content
+     * @param $headers
+     * @param $url
+     * @throws TransportExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     */
+    public function testRequestWithResponseClassString($content, $headers, $url)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            new MockResponse($content),
+        ]));
+
+        $response = $client->request($url, responseClass: MockClientResponse::class);
+
+        $this->validateRequestResponse($response, $content);
+
+        $this->assertInstanceOf(ClientResponseInterface::class, $response);
+        $this->assertInstanceOf(MockClientResponse::class, $response);
+    }
+
+    /**
+     * @dataProvider provideContent
+     * @group legacy
+     * @param $content
+     * @param $headers
+     * @param $url
+     * @throws TransportExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     */
+    public function testRequestWithResponseClass($content, $headers, $url)
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            new MockResponse($content),
+        ]));
+
+        $mock = $this
+            ->getMockBuilder(ClientResponseInterface::class)
+            ->getMock();
+        $mock->method('withResponse')
+            ->willReturnSelf();
+
+        $response = $client->request($url, responseClass: $mock);
+
+        $this->assertInstanceOf(ClientResponseInterface::class, $response);
     }
 }

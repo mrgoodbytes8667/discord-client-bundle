@@ -5,7 +5,7 @@ namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
 
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use DateTime;
 use Generator;
 

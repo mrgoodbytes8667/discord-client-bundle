@@ -4,6 +4,7 @@ namespace Bytes\DiscordBundle\Tests;
 
 use Bytes\DiscordBundle\BytesDiscordBundle;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\ResponseBundle\BytesResponseBundle;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -52,6 +53,16 @@ class Kernel extends BaseKernel
             'client_public_key' => Fixture::CLIENT_PUBLIC_KEY,
             'bot_token' => Fixture::BOT_TOKEN,
             'user_agent' => Fixture::USER_AGENT,
+            'endpoints' => [
+                'bot' => [
+                    'revoke_on_refresh' => false,
+                    'fire_revoke_on_refresh' => true,
+                ],
+                'user' => [
+                    'revoke_on_refresh' => false,
+                    'fire_revoke_on_refresh' => true,
+                ]
+            ]
         ], $config);
 
         parent::__construct('test', true);
@@ -65,6 +76,7 @@ class Kernel extends BaseKernel
         return [
             new FrameworkBundle(),
             new SecurityBundle(),
+            new BytesResponseBundle(),
             new BytesDiscordBundle(),
         ];
     }

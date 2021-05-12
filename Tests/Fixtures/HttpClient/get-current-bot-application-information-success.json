@@ -1,0 +1,20 @@
+{
+  "id": "586568566858692924",
+  "name": "moore.belle",
+  "icon": "11363a1d4a14c3c45f08a4b3121be6d0",
+  "description": "",
+  "summary": "",
+  "hook": true,
+  "bot_public": false,
+  "bot_require_code_grant": true,
+  "verify_key": "1T2HKBQX5EpLAE6VyG4cNWdGLJBYs9",
+  "owner": {
+    "id": "807630732938575429",
+    "username": "jedidiah68",
+    "avatar": "e338cceda96dcf55a9781a7b41827250",
+    "discriminator": "5304",
+    "public_flags": 0,
+    "flags": 0
+  },
+  "team": null
+}

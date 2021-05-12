@@ -3,7 +3,6 @@
 namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;

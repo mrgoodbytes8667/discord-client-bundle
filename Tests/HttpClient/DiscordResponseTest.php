@@ -6,17 +6,18 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
-use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\ResponseBundle\HttpClient\Response\Response;
+use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Faker\Factory;
 use Generator;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as Http;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use function Symfony\Component\String\u;
@@ -52,7 +53,7 @@ class DiscordResponseTest extends TestHttpClientCase
             new MockResponse($body()),
         ]), [
             // Matches non-oauth API routes
-            DiscordClient::SCOPE_API => [
+            DiscordClientEndpoints::SCOPE_API => [
                 'headers' => ['User-Agent' => Fixture::USER_AGENT],
                 'timeout' => 2.5,
             ]
@@ -66,7 +67,7 @@ class DiscordResponseTest extends TestHttpClientCase
     /**
      * @throws TransportExceptionInterface
      */
-    public function testIsSuccessWithException()
+    public function testGetStatusCodeWithException()
     {
         $response = $this
             ->getMockBuilder(ResponseInterface::class)
@@ -74,7 +75,7 @@ class DiscordResponseTest extends TestHttpClientCase
         $response->method('getStatusCode')
             ->willThrowException(new TransportException());
 
-        $discordResponse = DiscordResponse::make($this->serializer)->withResponse($response, null);
+        $discordResponse = Response::make($this->serializer)->withResponse($response, null);
 
         $this->expectException(TransportException::class);
         $discordResponse->getStatusCode();
@@ -93,7 +94,7 @@ class DiscordResponseTest extends TestHttpClientCase
         $response->method('getStatusCode')
             ->willReturn($code);
 
-        $discordResponse = DiscordResponse::make($this->serializer)->withResponse($response, null);
+        $discordResponse = Response::make($this->serializer)->withResponse($response, null);
 
         $this->assertTrue($discordResponse->isSuccess());
     }
@@ -114,7 +115,23 @@ class DiscordResponseTest extends TestHttpClientCase
         $response->method('getStatusCode')
             ->willReturn($code);
 
-        $discordResponse = DiscordResponse::make($this->serializer)->withResponse($response, null);
+        $discordResponse = Response::make($this->serializer)->withResponse($response, null);
+
+        $this->assertFalse($discordResponse->isSuccess());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function testIsSuccessWithException()
+    {
+        $response = $this
+            ->getMockBuilder(ResponseInterface::class)
+            ->getMock();
+        $response->method('getStatusCode')
+            ->willThrowException(new TransportException());
+
+        $discordResponse = Response::make($this->serializer)->withResponse($response, null);
 
         $this->assertFalse($discordResponse->isSuccess());
     }
@@ -126,8 +143,8 @@ class DiscordResponseTest extends TestHttpClientCase
      */
     public function testPassthroughMethods($response, $headers)
     {
-        // To cover getStatusCode() in DiscordResponse
-        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        // To cover getStatusCode() in Response
+        $this->assertEquals(Http::HTTP_OK, $response->getStatusCode());
 
         $this->assertCount(1, $response->getHeaders());
     }
@@ -139,8 +156,30 @@ class DiscordResponseTest extends TestHttpClientCase
      */
     public function testGetType($response, $headers)
     {
-        // To cover getType() in DiscordResponse
+        // To cover getType() in Response
         $this->assertNull($response->getType());
+    }
+
+    /**
+     * @dataProvider provideEmptySuccessfulResponse
+     * @param $response
+     * @param $headers
+     */
+    public function testGetDeserializeContext($response, $headers)
+    {
+        // To cover getDeserializeContext() in Response
+        $this->assertEmpty($response->getDeserializeContext());
+    }
+
+    /**
+     * @dataProvider provideEmptySuccessfulResponse
+     * @param $response
+     * @param $headers
+     */
+    public function testGetOnSuccessCallable($response, $headers)
+    {
+        // To cover getOnSuccessCallable() in Response
+        $this->assertNull($response->getOnSuccessCallable());
     }
 
     /**
@@ -163,7 +202,7 @@ class DiscordResponseTest extends TestHttpClientCase
             ->getMockBuilder(ResponseInterface::class)
             ->getMock();
         $ri->method('getStatusCode')
-            ->willReturn(Response::HTTP_OK);
+            ->willReturn(Http::HTTP_OK);
         $ri->method('getHeaders')
             ->willReturn([
                 $header => [
@@ -171,7 +210,7 @@ class DiscordResponseTest extends TestHttpClientCase
                 ]
             ]);
 
-        yield ['response' => DiscordResponse::make($this->serializer)->withResponse($ri, null), 'headers' => $headers];
+        yield ['response' => Response::make($this->serializer)->withResponse($ri, null), 'headers' => $headers];
     }
 
     /**

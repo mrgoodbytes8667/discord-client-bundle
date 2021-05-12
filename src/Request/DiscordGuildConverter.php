@@ -4,7 +4,7 @@
 namespace Bytes\DiscordBundle\Request;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

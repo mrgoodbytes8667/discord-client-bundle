@@ -4,15 +4,20 @@
 namespace Bytes\DiscordBundle\Tests;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\DiscordResponse;
-use Bytes\DiscordBundle\HttpClient\DiscordTokenClient;
-use Bytes\DiscordBundle\HttpClient\DiscordUserClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
 use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordBundle\HttpClient\Token\AbstractDiscordTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\ResponseBundle\HttpClient\Response\Response;
+use Bytes\ResponseBundle\HttpClient\Response\TokenResponse;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -24,13 +29,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 trait DiscordClientSetupTrait
 {
-    use TestFullValidatorTrait, TestFullSerializerTrait;
+    use TestFullValidatorTrait, TestFullSerializerTrait, TestUrlGeneratorTrait;
 
     /**
      * @param HttpClientInterface $httpClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
-     * @return DiscordClient
+     * @return \Bytes\DiscordBundle\HttpClient\Api\DiscordClient
      */
     protected function setupBaseClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
@@ -66,23 +71,43 @@ trait DiscordClientSetupTrait
      * @param HttpClientInterface $httpClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
-     * @return DiscordTokenClient
+     * @return DiscordBotTokenClient
      */
-    protected function setupTokenClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupBotTokenClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordTokenClient($httpClient, new DiscordRetryStrategy(), $this->urlGenerator, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
-        return $this->postClientSetup($client);
+        $client = new DiscordBotTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, TokenResponse::class);
     }
 
     /**
-     * @param DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient $client
-     * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordTokenClient
+     * @param HttpClientInterface $httpClient
+     * @param array $defaultOptionsByRegexp
+     * @param string|null $defaultRegexp
+     * @return DiscordUserTokenClient
      */
-    private function postClientSetup($client)
+    protected function setupUserTokenClient(HttpClientInterface $httpClient, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    {
+        $client = new DiscordUserTokenClient($httpClient, Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, DiscordUserTokenResponse::class);
+    }
+
+    /**
+     * @param \Bytes\DiscordBundle\HttpClient\Api\DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient $client
+     * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient
+     */
+    private function postClientSetup($client, $responseClass = Response::class)
     {
         $client->setSerializer($this->serializer);
         $client->setValidator($this->validator);
-        $client->setResponse(DiscordResponse::make($this->serializer));
+        if(method_exists($client, 'setDispatcher'))
+        {
+            $client->setDispatcher($dispatcher ?? new EventDispatcher());
+        }
+        if(method_exists($client, 'setUrlGenerator'))
+        {
+            $client->setUrlGenerator($this->urlGenerator);
+        }
+        $client->setResponse($responseClass::make($this->serializer, $dispatcher ?? new EventDispatcher()));
         return $client;
     }
 }

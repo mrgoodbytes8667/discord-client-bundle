@@ -5,7 +5,7 @@ namespace Bytes\DiscordBundle\Request;
 
 
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
-use Bytes\DiscordResponseBundle\Objects\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\NameInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
