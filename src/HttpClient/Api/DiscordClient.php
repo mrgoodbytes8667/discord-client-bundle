@@ -6,16 +6,14 @@ namespace Bytes\DiscordBundle\HttpClient\Api;
 
 use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordBundle\HttpClient\DiscordClientTrait;
-use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
 use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
-use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\DiscordResponseBundle\Objects\User;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
+use Bytes\ResponseBundle\Annotations\Auth;
 use Bytes\ResponseBundle\Enums\HttpMethods;
-use Bytes\ResponseBundle\Enums\OAuthGrantTypes;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\HttpClient\Api\AbstractApiClient;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
@@ -27,12 +25,8 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use function Symfony\Component\String\u;
 
 /**
  * Class DiscordClient
@@ -111,10 +105,12 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/user#get-current-user-guilds
+     *
+     * @Auth(scopes={"guilds"})
      */
     public function getGuilds(): ClientResponseInterface
     {
-        return $this->request($this->buildURL('users/@me/guilds', 'v6'), '\Bytes\DiscordResponseBundle\Objects\PartialGuild[]');
+        return $this->request($this->buildURL('users/@me/guilds', 'v6'), caller: __METHOD__, type: '\Bytes\DiscordResponseBundle\Objects\PartialGuild[]');
     }
 
 //    /**
@@ -169,10 +165,12 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/user#get-current-user
+     *
+     * @Auth(scopes={"identify"})
      */
     public function getMe(): ClientResponseInterface
     {
-        return $this->request([DiscordClientEndpoints::ENDPOINT_USER, DiscordClientEndpoints::USER_ME], User::class);
+        return $this->request([DiscordClientEndpoints::ENDPOINT_USER, DiscordClientEndpoints::USER_ME], caller: __METHOD__, type: User::class);
     }
 
     /**
@@ -192,7 +190,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
     {
         $userId = IdNormalizer::normalizeIdArgument($userId, 'The "userId" argument is required.');
         $urlParts = [DiscordClientEndpoints::ENDPOINT_USER, $userId];
-        return $this->request($urlParts, User::class);
+        return $this->request($urlParts, caller: __METHOD__, type: User::class);
     }
 
     /**
@@ -213,7 +211,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      */
     public function executeWebhook($id, $token, bool $wait = true, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
     {
-        return $this->sendWebhookPayload($id, $token, HttpMethods::post(), $wait, null, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+        return $this->sendWebhookPayload($id, $token, HttpMethods::post(), __METHOD__, $wait, null, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
     }
 
     /**
@@ -233,7 +231,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @throws TransportExceptionInterface
      * @internal
      */
-    protected function sendWebhookPayload($id, $token, HttpMethods $method, bool $wait = true, $messageId = null, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
+    protected function sendWebhookPayload($id, $token, HttpMethods $method, \ReflectionMethod|string $caller, bool $wait = true, $messageId = null, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
     {
         $id = IdNormalizer::normalizeIdArgument($id, 'The "id" argument is required.');
         $urlParts = [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token];
@@ -259,18 +257,18 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
         ]);
 
         if ($method === HttpMethods::patch() && !empty($messageId)) {
-            return $this->request($urlParts, type: Message::class, options: [
+            return $this->request($urlParts, caller: $caller, type: Message::class, options: [
                 'body' => $body
             ], method: $method);
         } elseif ($wait) {
-            return $this->request($urlParts, type: Message::class, options: [
+            return $this->request($urlParts, caller: $caller, type: Message::class, options: [
                 'body' => $body,
                 'query' => [
                     'wait' => $wait
                 ]
             ], method: $method);
         } else {
-            return $this->request($urlParts, options: [
+            return $this->request($urlParts, caller: $caller, options: [
                 'body' => $body,
                 'query' => [
                     'wait' => $wait
@@ -298,7 +296,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      */
     public function editWebhookMessage($id, $token, $messageId, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
     {
-        return $this->sendWebhookPayload($id, $token, HttpMethods::patch(), true, $messageId, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+        return $this->sendWebhookPayload($id, $token, HttpMethods::patch(), __METHOD__, true, $messageId, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
     }
 
     /**
@@ -317,7 +315,8 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
         $id = IdNormalizer::normalizeIdArgument($id, 'The "id" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
 
-        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId], method: HttpMethods::delete());
+        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
+            caller: __METHOD__, method: HttpMethods::delete());
     }
 
     /**

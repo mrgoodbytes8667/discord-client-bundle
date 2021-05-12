@@ -44,8 +44,6 @@ return static function (ContainerConfigurator $container) {
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
-        ->call('setSerializer', [service('serializer')])
-        ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
@@ -62,8 +60,6 @@ return static function (ContainerConfigurator $container) {
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
-        ->call('setSerializer', [service('serializer')])
-        ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
@@ -78,8 +74,6 @@ return static function (ContainerConfigurator $container) {
             '', // $config['client_secret']
             '', // $config['user_agent']
         ])
-        ->call('setSerializer', [service('serializer')])
-        ->call('setValidator', [service('validator')])
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
@@ -98,11 +92,7 @@ return static function (ContainerConfigurator $container) {
             '', // revoke_on_refresh
             '', // fire_revoke_on_refresh
         ])
-        ->call('setSerializer', [service('serializer')])
-        ->call('setValidator', [service('validator')])
-        ->call('setDispatcher', [service('event_dispatcher')])
         ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->call('setOAuth', [service('bytes_discord.oauth.bot')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.token')
@@ -123,11 +113,7 @@ return static function (ContainerConfigurator $container) {
             '', // revoke_on_refresh
             '', // fire_revoke_on_refresh
         ])
-        ->call('setSerializer', [service('serializer')])
-        ->call('setValidator', [service('validator')])
-        ->call('setDispatcher', [service('event_dispatcher')])
         ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-        ->call('setUrlGenerator', [service('router.default')]) // Symfony\Component\Routing\Generator\UrlGeneratorInterface
         ->call('setOAuth', [service('bytes_discord.oauth.user')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.token')
