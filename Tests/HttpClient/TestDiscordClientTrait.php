@@ -6,6 +6,11 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
+use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
@@ -42,7 +47,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * @method assertNull($actual, string $message = '')
  * @method expectException(string $exception)
  * @method expectExceptionMessage(string $message)
- * @method setupClient(HttpClientInterface $httpClient)
+ * @method DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient setupClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
  * @property SerializerInterface $serializer
  */
 trait TestDiscordClientTrait

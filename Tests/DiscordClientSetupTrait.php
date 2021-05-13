@@ -16,8 +16,11 @@ use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
 use Bytes\ResponseBundle\HttpClient\Response\Response;
 use Bytes\ResponseBundle\HttpClient\Response\TokenResponse;
+use Bytes\ResponseBundle\HttpClient\Retry\APIRetryStrategy;
 use Bytes\Tests\Common\TestFullSerializerTrait;
 use Bytes\Tests\Common\TestFullValidatorTrait;
+use Bytes\TwitchClientBundle\HttpClient\Api\TwitchClient;
+use Bytes\TwitchResponseBundle\Objects\OAuth2\Token;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -64,6 +67,23 @@ trait DiscordClientSetupTrait
      * @return DiscordUserClient
      */
     protected function setupUserClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    {
+        $client = $this->getMockBuilder(DiscordUserClient::class)
+        ->setConstructorArgs([$httpClient ?? MockClient::empty(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp])
+        ->onlyMethods(['getToken'])
+        ->getMock();
+        $client->method('getToken')
+            ->willReturn(\Bytes\DiscordResponseBundle\Objects\Token::createFromAccessToken(Fixture::BOT_TOKEN));
+        return $this->postClientSetup($client);
+    }
+
+    /**
+     * @param HttpClientInterface|null $httpClient
+     * @param array $defaultOptionsByRegexp
+     * @param string|null $defaultRegexp
+     * @return DiscordUserClient
+     */
+    protected function setupRealUserClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $client = new DiscordUserClient($httpClient ?? MockClient::empty(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
         return $this->postClientSetup($client);

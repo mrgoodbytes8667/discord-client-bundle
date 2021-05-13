@@ -19,11 +19,14 @@ use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
+use Bytes\ResponseBundle\Annotations\Auth;
 use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Enums\HttpMethods;
 use Bytes\ResponseBundle\Enums\TokenSource;
+use Bytes\ResponseBundle\Event\ObtainValidTokenEvent;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -892,5 +895,22 @@ class DiscordBotClient extends DiscordClient
     public static function getDefaultIndexName(): string
     {
         return 'DISCORD-BOT';
+    }
+
+    /**
+     * @param Auth|null $auth
+     * @return array
+     */
+    final protected function getAuthenticationOption(?Auth $auth = null)
+    {
+        return [];
+    }
+
+    /**
+     * @return AccessTokenInterface|null
+     */
+    final protected function getToken(): ?AccessTokenInterface
+    {
+        return null;
     }
 }

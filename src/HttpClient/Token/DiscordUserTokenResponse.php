@@ -4,7 +4,6 @@
 namespace Bytes\DiscordBundle\HttpClient\Token;
 
 
-use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\HttpClient\Response\TokenResponse;
 
 /**
@@ -19,5 +18,8 @@ class DiscordUserTokenResponse extends TokenResponse
      */
     protected static $identifier = 'DISCORD';
 
+    /**
+     * @var string
+     */
     protected static $tokenSource = 'user';
 }

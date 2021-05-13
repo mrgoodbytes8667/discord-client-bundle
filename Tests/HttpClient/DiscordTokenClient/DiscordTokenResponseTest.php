@@ -6,10 +6,8 @@ namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordTokenClient;
 
 use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
 use Bytes\ResponseBundle\Enums\TokenSource;
-use Bytes\ResponseBundle\HttpClient\Response\TokenResponse;
 use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
 use Bytes\Tests\Common\TestSerializerTrait;
-use Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -30,7 +28,7 @@ class DiscordTokenResponseTest extends TestCase
     }
 
     /**
-     * 
+     *
      */
     public function testUsesClientAnnotations()
     {
