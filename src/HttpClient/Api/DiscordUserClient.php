@@ -4,10 +4,8 @@
 namespace Bytes\DiscordBundle\HttpClient\Api;
 
 
-use Bytes\ResponseBundle\Annotations\Auth;
 use Bytes\ResponseBundle\Annotations\Client;
-use Bytes\ResponseBundle\Enums\TokenSource;
-use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
+use Bytes\ResponseBundle\HttpClient\ApiAuthenticationTrait;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -19,6 +17,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordUserClient extends DiscordClient
 {
+    use ApiAuthenticationTrait;
+
     /**
      * DiscordUserClient constructor.
      * @param HttpClientInterface $httpClient
@@ -32,22 +32,6 @@ class DiscordUserClient extends DiscordClient
     public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         parent::__construct($httpClient, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
-    }
-
-    /**
-     * @param Auth|null $auth
-     * @return array
-     * @throws NoTokenException
-     */
-    protected function getAuthenticationOption(?Auth $auth = null)
-    {
-        $token = $this->getToken();
-        if(!empty($token))
-        {
-            return ['auth_bearer' => $token->getAccessToken()];
-        }
-
-        return [];
     }
 
     /**
