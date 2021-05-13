@@ -39,9 +39,12 @@ abstract class TestHttpClientCase extends TestCase
      * @param ResponseInterface|ClientResponseInterface $response
      * @param string $message
      * @throws TransportExceptionInterface
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseIsSuccessful(ResponseInterface|ClientResponseInterface $response, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -59,9 +62,12 @@ abstract class TestHttpClientCase extends TestCase
      * @param ResponseInterface|ClientResponseInterface $response
      * @param int $expectedCode
      * @param string $message
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseStatusCodeSame(ResponseInterface|ClientResponseInterface $response, int $expectedCode, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -72,9 +78,12 @@ abstract class TestHttpClientCase extends TestCase
      * @param ResponseInterface|ClientResponseInterface $response
      * @param int $expectedCode
      * @param string $message
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseStatusCodeNotSame(ResponseInterface|ClientResponseInterface $response, int $expectedCode, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -89,9 +98,12 @@ abstract class TestHttpClientCase extends TestCase
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertThatForResponse(ResponseInterface|ClientResponseInterface $response, Constraint $constraint, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -119,9 +131,12 @@ abstract class TestHttpClientCase extends TestCase
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseHasHeader(ResponseInterface|ClientResponseInterface $response, string $headerName, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -135,9 +150,12 @@ abstract class TestHttpClientCase extends TestCase
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseHasContent(ResponseInterface|ClientResponseInterface $response, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -151,9 +169,12 @@ abstract class TestHttpClientCase extends TestCase
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseHasNoContent(ResponseInterface|ClientResponseInterface $response, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
@@ -168,9 +189,12 @@ abstract class TestHttpClientCase extends TestCase
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @deprecated Since 0.0.1, use "\Bytes\ResponseBundle\Test\AssertClientResponseTrait::assertThatForResponse" instead
      */
     public static function assertResponseContentSame(ResponseInterface|ClientResponseInterface $response, string $content, string $message = ''): void
     {
+        trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "%s" is deprecated, use "%s::%s" instead.', __METHOD__, '\Bytes\ResponseBundle\Test\AssertClientResponseTrait', __FUNCTION__);
         if ($response instanceof ClientResponseInterface) {
             $response = $response->getResponse();
         }
