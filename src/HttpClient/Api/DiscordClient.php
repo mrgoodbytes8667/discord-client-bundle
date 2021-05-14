@@ -54,8 +54,9 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @param string|null $userAgent
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
+     * @param bool $retryAuth
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null, bool $retryAuth = false)
     {
         $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
         parent::__construct($httpClient, $strategy, $clientId, $userAgent,
@@ -94,7 +95,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
                 DiscordClientEndpoints::SCOPE_API => [
                     'headers' => $headers,
                 ],
-            ], $defaultOptionsByRegexp), $defaultRegexp);
+            ], $defaultOptionsByRegexp), $defaultRegexp, $retryAuth);
     }
 
     /**

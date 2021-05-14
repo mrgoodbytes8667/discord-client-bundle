@@ -65,7 +65,7 @@ class DiscordBotClient extends DiscordClient
                 ],
             ],
         ], $defaultOptionsByRegexp);
-        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp);
+        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp, false);
     }
 
     /**
