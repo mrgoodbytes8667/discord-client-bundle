@@ -66,36 +66,36 @@ class BytesDiscordExtension extends Extension implements ExtensionInterface, Res
             ->addTag('bytes_discord.slashcommand');
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord');
-        $definition->replaceArgument(2, $config['client_id']);
-        $definition->replaceArgument(3, $config['client_secret']);
-        $definition->replaceArgument(4, $config['bot_token']);
-        $definition->replaceArgument(5, $config['user_agent']);
+        $definition->replaceArgument(3, $config['client_id']);
+        $definition->replaceArgument(4, $config['client_secret']);
+        $definition->replaceArgument(5, $config['bot_token']);
+        $definition->replaceArgument(6, $config['user_agent']);
 
         $definition = $container->getDefinition('bytes_discord.httpclient.discord.bot');
+        $definition->replaceArgument(3, $config['client_id']);
+        $definition->replaceArgument(4, $config['client_secret']);
+        $definition->replaceArgument(5, $config['bot_token']);
+        $definition->replaceArgument(6, $config['user_agent']);
+
+        $definition = $container->getDefinition('bytes_discord.httpclient.discord.user');
+        $definition->replaceArgument(3, $config['client_id']);
+        $definition->replaceArgument(4, $config['client_secret']);
+        $definition->replaceArgument(5, $config['user_agent']);
+
+        $definition = $container->getDefinition('bytes_discord.httpclient.discord.token.bot');
         $definition->replaceArgument(2, $config['client_id']);
         $definition->replaceArgument(3, $config['client_secret']);
         $definition->replaceArgument(4, $config['bot_token']);
         $definition->replaceArgument(5, $config['user_agent']);
+        $definition->replaceArgument(6, $config['endpoints']['bot']['revoke_on_refresh']);
+        $definition->replaceArgument(7, $config['endpoints']['bot']['fire_revoke_on_refresh']);
 
-        $definition = $container->getDefinition('bytes_discord.httpclient.discord.user');
+        $definition = $container->getDefinition('bytes_discord.httpclient.discord.token.user');
         $definition->replaceArgument(2, $config['client_id']);
         $definition->replaceArgument(3, $config['client_secret']);
         $definition->replaceArgument(4, $config['user_agent']);
-
-        $definition = $container->getDefinition('bytes_discord.httpclient.discord.token.bot');
-        $definition->replaceArgument(1, $config['client_id']);
-        $definition->replaceArgument(2, $config['client_secret']);
-        $definition->replaceArgument(3, $config['bot_token']);
-        $definition->replaceArgument(4, $config['user_agent']);
-        $definition->replaceArgument(5, $config['endpoints']['bot']['revoke_on_refresh']);
-        $definition->replaceArgument(6, $config['endpoints']['bot']['fire_revoke_on_refresh']);
-
-        $definition = $container->getDefinition('bytes_discord.httpclient.discord.token.user');
-        $definition->replaceArgument(1, $config['client_id']);
-        $definition->replaceArgument(2, $config['client_secret']);
-        $definition->replaceArgument(3, $config['user_agent']);
-        $definition->replaceArgument(4, $config['endpoints']['user']['revoke_on_refresh']);
-        $definition->replaceArgument(5, $config['endpoints']['user']['fire_revoke_on_refresh']);
+        $definition->replaceArgument(5, $config['endpoints']['user']['revoke_on_refresh']);
+        $definition->replaceArgument(6, $config['endpoints']['user']['fire_revoke_on_refresh']);
 
         foreach (['bytes_discord.oauth.bot', 'bytes_discord.oauth.login', 'bytes_discord.oauth.user'] as $value) {
             $definition = $container->getDefinition($value);

@@ -21,6 +21,7 @@ use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Validator\ValidatorTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerAwareInterface;
@@ -47,6 +48,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
     /**
      * DiscordClient constructor.
      * @param HttpClientInterface $httpClient
+     * @param EventDispatcherInterface $dispatcher
      * @param RetryStrategyInterface|null $strategy
      * @param string $clientId
      * @param string $clientSecret
@@ -56,10 +58,10 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @param string|null $defaultRegexp
      * @param bool $retryAuth
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null, bool $retryAuth = false)
+    public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null, bool $retryAuth = false)
     {
         $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
-        parent::__construct($httpClient, $strategy, $clientId, $userAgent,
+        parent::__construct($httpClient, $dispatcher, $strategy, $clientId, $userAgent,
             array_merge_recursive([
                 // the options defined as values apply only to the URLs matching
                 // the regular expressions defined as keys

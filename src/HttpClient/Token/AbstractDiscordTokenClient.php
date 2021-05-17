@@ -21,6 +21,7 @@ use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -38,6 +39,7 @@ abstract class AbstractDiscordTokenClient extends AbstractTokenClient
     /**
      * AbstractDiscordTokenClient constructor.
      * @param HttpClientInterface $httpClient
+     * @param EventDispatcherInterface $dispatcher
      * @param string $clientId
      * @param string $clientSecret
      * @param string|null $userAgent
@@ -46,10 +48,10 @@ abstract class AbstractDiscordTokenClient extends AbstractTokenClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, string $clientId, string $clientSecret, ?string $userAgent, bool $revokeOnRefresh, bool $fireRevokeOnRefresh, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, string $clientId, string $clientSecret, ?string $userAgent, bool $revokeOnRefresh, bool $fireRevokeOnRefresh, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
-        parent::__construct($httpClient, $userAgent, $revokeOnRefresh, $fireRevokeOnRefresh,
+        parent::__construct($httpClient, $dispatcher, $userAgent, $revokeOnRefresh, $fireRevokeOnRefresh,
             array_merge_recursive([
                 // the options defined as values apply only to the URLs matching
                 // the regular expressions defined as keys

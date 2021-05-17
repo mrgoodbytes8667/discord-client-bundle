@@ -19,6 +19,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Test\Constraint as ResponseConstraint;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -107,8 +108,11 @@ abstract class TestHttpClientCase extends TestCase
     }
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @param HttpClientInterface|null $httpClient
+     * @param EventDispatcher|null $dispatcher
+     * @param array $defaultOptionsByRegexp
+     * @param string|null $defaultRegexp
      * @return mixed
      */
-    abstract protected function setupClient(HttpClientInterface $httpClient);
+    abstract protected function setupClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null);
 }

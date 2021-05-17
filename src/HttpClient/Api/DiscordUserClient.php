@@ -6,6 +6,7 @@ namespace Bytes\DiscordBundle\HttpClient\Api;
 
 use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\HttpClient\ApiAuthenticationTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -22,6 +23,7 @@ class DiscordUserClient extends DiscordClient
     /**
      * DiscordUserClient constructor.
      * @param HttpClientInterface $httpClient
+     * @param EventDispatcherInterface $dispatcher
      * @param RetryStrategyInterface|null $strategy
      * @param string $clientId
      * @param string $clientSecret
@@ -29,9 +31,9 @@ class DiscordUserClient extends DiscordClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp, true);
+        parent::__construct($httpClient, $dispatcher, $strategy, $clientId, $clientSecret, '', $userAgent, $defaultOptionsByRegexp, $defaultRegexp, true);
     }
 
     /**

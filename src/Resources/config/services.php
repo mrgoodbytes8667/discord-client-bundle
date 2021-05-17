@@ -38,6 +38,7 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.discord', DiscordClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            service('event_dispatcher'),
             null, // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
             '', // $config['client_id']
             '', // $config['client_secret']
@@ -54,6 +55,7 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.discord.bot', DiscordBotClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            service('event_dispatcher'),
             service('bytes_discord.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
             '', // $config['client_id']
             '', // $config['client_secret']
@@ -69,6 +71,7 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.discord.user', DiscordUserClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            service('event_dispatcher'),
             service('bytes_discord.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
             '', // $config['client_id']
             '', // $config['client_secret']
@@ -85,6 +88,7 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.discord.token.bot', DiscordBotTokenClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            service('event_dispatcher'),
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['bot_token']
@@ -107,6 +111,7 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_discord.httpclient.discord.token.user', DiscordUserTokenClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
+            service('event_dispatcher'),
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['user_agent']

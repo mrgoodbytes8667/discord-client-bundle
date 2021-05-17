@@ -42,10 +42,10 @@ trait DiscordClientSetupTrait
      * @param string|null $defaultRegexp
      * @return \Bytes\DiscordBundle\HttpClient\Api\DiscordClient
      */
-    protected function setupBaseClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupBaseClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordClient($httpClient ?? MockClient::empty(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
-        return $this->postClientSetup($client);
+        $client = new DiscordClient($httpClient ?? MockClient::empty(), $dispatcher ?? new EventDispatcher(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, $dispatcher ?? new EventDispatcher());
     }
 
     /**
@@ -54,10 +54,10 @@ trait DiscordClientSetupTrait
      * @param string|null $defaultRegexp
      * @return DiscordBotClient
      */
-    protected function setupBotClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupBotClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordBotClient($httpClient ?? MockClient::empty(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
-        return $this->postClientSetup($client);
+        $client = new DiscordBotClient($httpClient ?? MockClient::empty(), $dispatcher ?? new EventDispatcher(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, $dispatcher ?? new EventDispatcher());
     }
 
     /**
@@ -66,15 +66,15 @@ trait DiscordClientSetupTrait
      * @param string|null $defaultRegexp
      * @return DiscordUserClient
      */
-    protected function setupUserClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupUserClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $client = $this->getMockBuilder(DiscordUserClient::class)
-        ->setConstructorArgs([$httpClient ?? MockClient::empty(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp])
+        ->setConstructorArgs([$httpClient ?? MockClient::empty(), $dispatcher ?? new EventDispatcher(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp])
         ->onlyMethods(['getToken'])
         ->getMock();
         $client->method('getToken')
             ->willReturn(\Bytes\DiscordResponseBundle\Objects\Token::createFromAccessToken(Fixture::BOT_TOKEN));
-        return $this->postClientSetup($client);
+        return $this->postClientSetup($client, $dispatcher ?? new EventDispatcher());
     }
 
     /**
@@ -83,10 +83,10 @@ trait DiscordClientSetupTrait
      * @param string|null $defaultRegexp
      * @return DiscordUserClient
      */
-    protected function setupRealUserClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupRealUserClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordUserClient($httpClient ?? MockClient::empty(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
-        return $this->postClientSetup($client);
+        $client = new DiscordUserClient($httpClient ?? MockClient::empty(), $dispatcher ?? new EventDispatcher(), new DiscordRetryStrategy(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, $dispatcher ?? new EventDispatcher());
     }
 
     /**
@@ -95,10 +95,10 @@ trait DiscordClientSetupTrait
      * @param string|null $defaultRegexp
      * @return DiscordBotTokenClient
      */
-    protected function setupBotTokenClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupBotTokenClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordBotTokenClient($httpClient ?? MockClient::empty(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
-        return $this->postClientSetup($client, TokenResponse::class);
+        $client = new DiscordBotTokenClient($httpClient ?? MockClient::empty(), $dispatcher ?? new EventDispatcher(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::BOT_TOKEN, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, $dispatcher ?? new EventDispatcher(), TokenResponse::class);
     }
 
     /**
@@ -107,17 +107,17 @@ trait DiscordClientSetupTrait
      * @param string|null $defaultRegexp
      * @return DiscordUserTokenClient
      */
-    protected function setupUserTokenClient(HttpClientInterface $httpClient = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    protected function setupUserTokenClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
-        $client = new DiscordUserTokenClient($httpClient ?? MockClient::empty(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
-        return $this->postClientSetup($client, DiscordUserTokenResponse::class);
+        $client = new DiscordUserTokenClient($httpClient ?? MockClient::empty(), $dispatcher ?? new EventDispatcher(), Fixture::CLIENT_ID, Fixture::CLIENT_SECRET, Fixture::USER_AGENT, false, true, $defaultOptionsByRegexp, $defaultRegexp);
+        return $this->postClientSetup($client, $dispatcher ?? new EventDispatcher(), DiscordUserTokenResponse::class);
     }
 
     /**
      * @param \Bytes\DiscordBundle\HttpClient\Api\DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient $client
      * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient
      */
-    private function postClientSetup($client, $responseClass = Response::class)
+    private function postClientSetup($client, ?EventDispatcher $dispatcher = null, $responseClass = Response::class)
     {
         $client->setSerializer($this->serializer);
         $client->setValidator($this->validator);

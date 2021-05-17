@@ -51,7 +51,7 @@ class DiscordResponseTest extends TestHttpClientCase
 
         $client = $this->setupClient(new MockHttpClient([
             new MockResponse($body()),
-        ]), [
+        ]), defaultOptionsByRegexp: [
             // Matches non-oauth API routes
             DiscordClientEndpoints::SCOPE_API => [
                 'headers' => ['User-Agent' => Fixture::USER_AGENT],

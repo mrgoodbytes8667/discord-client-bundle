@@ -28,6 +28,7 @@ use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -47,6 +48,7 @@ class DiscordBotClient extends DiscordClient
     /**
      * DiscordBotClient constructor.
      * @param HttpClientInterface $httpClient
+     * @param EventDispatcherInterface $dispatcher
      * @param RetryStrategyInterface|null $strategy
      * @param string $clientId
      * @param string $clientSecret
@@ -55,7 +57,7 @@ class DiscordBotClient extends DiscordClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         $defaultOptionsByRegexp = array_merge_recursive([
             // Matches non-oauth API routes
@@ -65,7 +67,7 @@ class DiscordBotClient extends DiscordClient
                 ],
             ],
         ], $defaultOptionsByRegexp);
-        parent::__construct($httpClient, $strategy, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp, false);
+        parent::__construct($httpClient, $dispatcher, $strategy, $clientId, $clientSecret, $botToken, $userAgent, $defaultOptionsByRegexp, $defaultRegexp, false);
     }
 
     /**
@@ -901,7 +903,7 @@ class DiscordBotClient extends DiscordClient
      * @param Auth|null $auth
      * @return array
      */
-    final protected function getAuthenticationOption(?Auth $auth = null)
+    final public function getAuthenticationOption(?Auth $auth = null)
     {
         return [];
     }
