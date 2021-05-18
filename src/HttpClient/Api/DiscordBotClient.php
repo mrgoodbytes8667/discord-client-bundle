@@ -901,17 +901,20 @@ class DiscordBotClient extends DiscordClient
 
     /**
      * @param Auth|null $auth
+     * @param bool $refresh
      * @return array
      */
-    final public function getAuthenticationOption(?Auth $auth = null)
+    final public function getAuthenticationOption(?Auth $auth = null, bool $refresh = false): array
     {
         return [];
     }
 
     /**
+     * @param Auth|null $auth
+     * @param bool $reset
      * @return AccessTokenInterface|null
      */
-    final protected function getToken(): ?AccessTokenInterface
+    final protected function getToken(?Auth $auth = null, bool $reset = false): ?AccessTokenInterface
     {
         return null;
     }
