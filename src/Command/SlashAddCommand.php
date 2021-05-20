@@ -1,10 +1,10 @@
 <?php
 
-namespace Bytes\DiscordBundle\Command;
+namespace Bytes\DiscordClientBundle\Command;
 
-use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordBundle\Services\Client\DiscordBot;
+use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Exception;
@@ -22,14 +22,14 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class SlashAddCommand
- * @package Bytes\DiscordBundle\Command
+ * @package Bytes\DiscordClientBundle\Command
  */
 class SlashAddCommand extends AbstractSlashCommand
 {
     /**
      * @var string
      */
-    protected static $defaultName = 'bytes_discord:slash:add';
+    protected static $defaultName = 'bytes_discord_client:slash:add';
 
     /**
      * @var string

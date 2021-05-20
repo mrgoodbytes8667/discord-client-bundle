@@ -1,11 +1,11 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\CommandProviderTrait;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Enums\ApplicationCommandOptionType as ACOT;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption as Option;
@@ -19,7 +19,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class BulkOverwriteCommandTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient
  */
 class BulkOverwriteCommandTest extends TestDiscordBotClientCase
 {

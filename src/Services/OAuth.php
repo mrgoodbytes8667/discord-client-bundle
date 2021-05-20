@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Services;
+namespace Bytes\DiscordClientBundle\Services;
 
 
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
@@ -15,18 +15,18 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use function Symfony\Component\String\u;
 
-trigger_deprecation('mrgoodbytes8667/discord-bundle', '0.0.1', 'Using "Bytes\DiscordBundle\Services\OAuth" is deprecated, use one of Bytes\DiscordBundle\Routing\DiscordBotOAuth, Bytes\DiscordBundle\Routing\DiscordLoginOAuth, Bytes\DiscordBundle\Routing\DiscordSlashOAuth, or Bytes\DiscordBundle\Routing\DiscordUserOAuth instead.');
+trigger_deprecation('mrgoodbytes8667/discord-client-bundle', '0.0.1', 'Using "Bytes\DiscordClientBundle\Services\OAuth" is deprecated, use one of Bytes\DiscordClientBundle\Routing\DiscordBotOAuth, Bytes\DiscordClientBundle\Routing\DiscordLoginOAuth, Bytes\DiscordClientBundle\Routing\DiscordSlashOAuth, or Bytes\DiscordClientBundle\Routing\DiscordUserOAuth instead.');
 
 /**
  * Class OAuth
- * @package Bytes\DiscordBundle\Services
+ * @package Bytes\DiscordClientBundle\Services
  *
  * @method array getScopesBot()
  * @method array getScopesLogin()
  * @method array getScopesSlash()
  * @method array getScopesUser()
  *
- * @deprecated Since 0.0.1, use one of Bytes\DiscordBundle\Routing\DiscordBotOAuth, Bytes\DiscordBundle\Routing\DiscordLoginOAuth, Bytes\DiscordBundle\Routing\DiscordSlashOAuth, or Bytes\DiscordBundle\Routing\DiscordUserOAuth instead
+ * @deprecated Since 0.0.1, use one of Bytes\DiscordClientBundle\Routing\DiscordBotOAuth, Bytes\DiscordClientBundle\Routing\DiscordLoginOAuth, Bytes\DiscordClientBundle\Routing\DiscordSlashOAuth, or Bytes\DiscordClientBundle\Routing\DiscordUserOAuth instead
  */
 class OAuth
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests;
+namespace Bytes\DiscordClientBundle\Tests;
 
 use PHPUnit\Framework\MockObject\MockBuilder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Trait TestUrlGeneratorTrait
- * @package Bytes\DiscordBundle\Tests
+ * @package Bytes\DiscordClientBundle\Tests
  *
  * @method MockBuilder getMockBuilder(string $className)
  */

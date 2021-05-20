@@ -1,14 +1,14 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordTokenClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordTokenClient;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
-use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\HttpClient\TestHttpClientCase;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordBundle\Tests\TestUrlGeneratorTrait;
+use Bytes\DiscordClientBundle\Tests\DiscordClientSetupTrait;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\HttpClient\TestHttpClientCase;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\TestUrlGeneratorTrait;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\TokenSource;
@@ -24,7 +24,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 /**
  * Class DiscordBotTokenClientTest
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  *
  * @requires PHPUnit >= 9
  */

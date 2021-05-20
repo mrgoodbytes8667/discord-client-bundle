@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Command\SlashDeleteCommand;
+namespace Bytes\DiscordClientBundle\Tests\Command\SlashDeleteCommand;
 
 
 use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockSuccessfulDeleteCallback
- * @package Bytes\DiscordBundle\Tests\Command\SlashDeleteCommand
+ * @package Bytes\DiscordClientBundle\Tests\Command\SlashDeleteCommand
  */
 class MockSuccessfulDeleteCallback extends MockClientCallbackIterator
 {

@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Command;
+namespace Bytes\DiscordClientBundle\Tests\Command;
 
 
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonTooManyRetriesResponse;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonTooManyRetriesResponse;
 use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
 use Exception;
 
 /**
  * Class MockTooManyRequestsCallback
- * @package Bytes\DiscordBundle\Tests\Command
+ * @package Bytes\DiscordClientBundle\Tests\Command
  */
 class MockTooManyRequestsCallback extends MockClientCallbackIterator
 {

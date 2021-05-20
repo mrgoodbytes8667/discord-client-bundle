@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
 
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
@@ -11,7 +11,7 @@ use Generator;
 
 /**
  * Trait GuildProviderTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient
  */
 trait GuildProviderTrait
 {

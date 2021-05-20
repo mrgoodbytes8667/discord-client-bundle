@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Routing;
+namespace Bytes\DiscordClientBundle\Routing;
 
 
 use BadMethodCallException;
-use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\ResponseBundle\Objects\Push;

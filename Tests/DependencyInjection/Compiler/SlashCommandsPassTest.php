@@ -1,18 +1,18 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\DependencyInjection\Compiler;
+namespace Bytes\DiscordClientBundle\Tests\DependencyInjection\Compiler;
 
-use Bytes\DiscordBundle\DependencyInjection\Compiler\SlashCommandsPass;
-use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Bar;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Foo;
-use Bytes\DiscordBundle\Tests\Fixtures\Commands\Sample;
+use Bytes\DiscordClientBundle\DependencyInjection\Compiler\SlashCommandsPass;
+use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Commands\Bar;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Commands\Foo;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Commands\Sample;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Class SlashCommandsPassTest
- * @package Bytes\DiscordBundle\Tests\DependencyInjection\Compiler
+ * @package Bytes\DiscordClientBundle\Tests\DependencyInjection\Compiler
  */
 class SlashCommandsPassTest extends TestCase
 {
@@ -39,11 +39,11 @@ class SlashCommandsPassTest extends TestCase
     public function setUpContainer()
     {
         $container = new ContainerBuilder();
-        $container->register('bytes_discord.slashcommands.handler');
+        $container->register('bytes_discord_client.slashcommands.handler');
 
-        $container->register('bytes_discord.sample', Sample::class)->addTag('bytes_discord.slashcommand');
-        $container->register('bytes_discord.foo', Foo::class)->addTag('bytes_discord.slashcommand');
-        $container->register('bytes_discord.bar', Bar::class)->addTag('bytes_discord.slashcommand');
+        $container->register('bytes_discord_client.sample', Sample::class)->addTag('bytes_discord_client.slashcommand');
+        $container->register('bytes_discord_client.foo', Foo::class)->addTag('bytes_discord_client.slashcommand');
+        $container->register('bytes_discord_client.bar', Bar::class)->addTag('bytes_discord_client.slashcommand');
 
         $serializerPass = new SlashCommandsPass();
         $serializerPass->process($container);
@@ -58,7 +58,7 @@ class SlashCommandsPassTest extends TestCase
     {
         $container = $this->container;
 
-        $this->assertCount(3, $container->findTaggedServiceIds('bytes_discord.slashcommand'));
+        $this->assertCount(3, $container->findTaggedServiceIds('bytes_discord_client.slashcommand'));
     }
 
     /**
@@ -66,9 +66,9 @@ class SlashCommandsPassTest extends TestCase
      */
     public function testGetCommandClass()
     {
-        $handler = $this->container->get('bytes_discord.slashcommands.handler');
+        $handler = $this->container->get('bytes_discord_client.slashcommands.handler');
         $commandClass = $handler->getCommandClass('sample');
-        $this->assertEquals('bytes_discord.sample', $commandClass);
+        $this->assertEquals('bytes_discord_client.sample', $commandClass);
     }
 
     /**
@@ -76,7 +76,7 @@ class SlashCommandsPassTest extends TestCase
      */
     public function testGetList()
     {
-        $handler = $this->container->get('bytes_discord.slashcommands.handler');
+        $handler = $this->container->get('bytes_discord_client.slashcommands.handler');
         $this->assertCount(3, $handler->getList());
     }
 
@@ -87,7 +87,7 @@ class SlashCommandsPassTest extends TestCase
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("Cannot find class with name");
-        $handler = $this->container->get('bytes_discord.slashcommands.handler');
+        $handler = $this->container->get('bytes_discord_client.slashcommands.handler');
         $commands = $handler->getCommands();
         $this->assertCount(3, $commands);
     }
@@ -97,13 +97,13 @@ class SlashCommandsPassTest extends TestCase
      */
     public function testSetList()
     {
-        $handler = $this->container->get('bytes_discord.slashcommands.handler');
+        $handler = $this->container->get('bytes_discord_client.slashcommands.handler');
         $list = [];
         $this->assertInstanceOf(SlashCommandsHandlerCollection::class, $handler->setList($list));
         $this->assertCount(0, $handler->getList());
 
         $list = [
-            'sample' => 'bytes_discord.sample'
+            'sample' => 'bytes_discord_client.sample'
         ];
         $this->assertInstanceOf(SlashCommandsHandlerCollection::class, $handler->setList($list));
         $this->assertCount(1, $handler->getList());
@@ -116,7 +116,7 @@ class SlashCommandsPassTest extends TestCase
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("Cannot find class with name");
-        $handler = $this->container->get('bytes_discord.slashcommands.handler');
+        $handler = $this->container->get('bytes_discord_client.slashcommands.handler');
         $handler->getCommand('sample');
     }
 

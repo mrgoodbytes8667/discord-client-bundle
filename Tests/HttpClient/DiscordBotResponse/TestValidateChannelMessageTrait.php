@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
 
-use Bytes\DiscordBundle\Tests\HttpClient\ValidateUserTrait;
+use Bytes\DiscordClientBundle\Tests\HttpClient\ValidateUserTrait;
 use Bytes\DiscordResponseBundle\Objects\Message;
 
 /**
  * Trait TestValidateChannelMessageTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse
  *
  * @method assertEquals($expected, $actual, string $message = '')
  * @method assertInstanceOf(string $expected, $actual, string $message = '')

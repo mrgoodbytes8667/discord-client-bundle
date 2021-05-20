@@ -1,18 +1,18 @@
 <?php
 
 
-namespace Bytes\DiscordBundle;
+namespace Bytes\DiscordClientBundle;
 
 
-use Bytes\DiscordBundle\DependencyInjection\Compiler\SlashCommandsPass;
+use Bytes\DiscordClientBundle\DependencyInjection\Compiler\SlashCommandsPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class BytesDiscordBundle
- * @package Bytes\DiscordBundle
+ * Class BytesDiscordClientBundle
+ * @package Bytes\DiscordClientBundle
  */
-class BytesDiscordBundle extends Bundle
+class BytesDiscordClientBundle extends Bundle
 {
     /**
      * Use this method to register compiler passes and manipulate the container during the building process.

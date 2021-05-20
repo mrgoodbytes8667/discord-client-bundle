@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\EventListener;
+namespace Bytes\DiscordClientBundle\EventListener;
 
 
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Event\RevokeTokenEvent;
 use Bytes\ResponseBundle\EventListener\AbstractRevokeTokenSubscriber;
@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class RevokeTokenSubscriber
- * @package Bytes\DiscordBundle\EventListener
+ * @package Bytes\DiscordClientBundle\EventListener
  */
 class RevokeTokenSubscriber extends AbstractRevokeTokenSubscriber
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\Command;
+namespace Bytes\DiscordClientBundle\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -9,7 +9,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class TestSlashCommand
- * @package Bytes\DiscordBundle\Tests\Command
+ * @package Bytes\DiscordClientBundle\Tests\Command
  */
 abstract class TestSlashCommand extends TestCase
 {

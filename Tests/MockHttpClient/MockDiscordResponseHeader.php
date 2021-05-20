@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
 use Bytes\Common\Faker\Providers\Discord;
@@ -12,7 +12,7 @@ use Faker\Generator as FakerGenerator;
 
 /**
  * Class MockDiscordResponseHeader
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  */
 class MockDiscordResponseHeader implements MockResponseHeaderInterface
 {

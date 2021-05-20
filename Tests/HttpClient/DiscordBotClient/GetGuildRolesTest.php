@@ -1,10 +1,10 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class GetGuildRolesTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient
  */
 class GetGuildRolesTest extends TestDiscordBotClientCase
 {

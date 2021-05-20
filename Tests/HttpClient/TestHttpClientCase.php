@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockStandaloneResponse;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockStandaloneResponse;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Test\AssertClientResponseTrait;
 use Bytes\Tests\Common\Constraint\ResponseContentSame;
@@ -31,7 +31,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * Class TestHttpClientCase
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  */
 abstract class TestHttpClientCase extends TestCase
 {

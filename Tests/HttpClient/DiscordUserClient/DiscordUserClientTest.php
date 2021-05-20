@@ -1,14 +1,14 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordUserClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordUserClient;
 
-use Bytes\DiscordBundle\Tests\HttpClient\TestDiscordClientTrait;
+use Bytes\DiscordClientBundle\Tests\HttpClient\TestDiscordClientTrait;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
 
 /**
  * Class DiscordUserClientTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordUserClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordUserClient
  */
 class DiscordUserClientTest extends TestDiscordUserClientCase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class DeleteMessageTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient
  */
 class DeleteMessageTest extends TestDiscordBotClientCase
 {

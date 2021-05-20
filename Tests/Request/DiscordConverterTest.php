@@ -1,8 +1,8 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\Request;
+namespace Bytes\DiscordClientBundle\Tests\Request;
 
-use Bytes\DiscordBundle\Request\DiscordConverter;
+use Bytes\DiscordClientBundle\Request\DiscordConverter;
 use Bytes\DiscordResponseBundle\Objects\ChannelMention;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class DiscordConverterTest
- * @package Bytes\DiscordBundle\Tests\Request
+ * @package Bytes\DiscordClientBundle\Tests\Request
  */
 class DiscordConverterTest extends TestParamConverterCase
 {

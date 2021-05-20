@@ -1,12 +1,12 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\Request;
+namespace Bytes\DiscordClientBundle\Tests\Request;
 
-use Bytes\DiscordBundle\Request\DiscordGuildConverter;
-use Bytes\DiscordBundle\Services\Client\DiscordBot;
-use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
-use Bytes\DiscordBundle\Tests\TestDiscordGuildTrait;
+use Bytes\DiscordClientBundle\Request\DiscordGuildConverter;
+use Bytes\DiscordClientBundle\Services\Client\DiscordBot;
+use Bytes\DiscordClientBundle\Tests\DiscordClientSetupTrait;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\TestDiscordGuildTrait;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordGuildConverterTest
- * @package Bytes\DiscordBundle\Tests\Request
+ * @package Bytes\DiscordClientBundle\Tests\Request
  */
 class DiscordGuildConverterTest extends TestParamConverterCase
 {

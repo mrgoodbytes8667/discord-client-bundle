@@ -1,9 +1,9 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests;
+namespace Bytes\DiscordClientBundle\Tests;
 
-use Bytes\DiscordBundle\BytesDiscordBundle;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\BytesDiscordClientBundle;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Bytes\ResponseBundle\BytesResponseBundle;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\Security;
 
 /**
  * Class Kernel
- * @package Bytes\DiscordBundle\Tests\Command
+ * @package Bytes\DiscordClientBundle\Tests\Command
  */
 class Kernel extends BaseKernel
 {
@@ -77,7 +77,7 @@ class Kernel extends BaseKernel
             new FrameworkBundle(),
             new SecurityBundle(),
             new BytesResponseBundle(),
-            new BytesDiscordBundle(),
+            new BytesDiscordClientBundle(),
         ];
     }
 
@@ -127,7 +127,7 @@ class Kernel extends BaseKernel
 //            $container->register(MockTooManyRequestsCallback::class);
 
 
-            $container->loadFromExtension('bytes_discord', $this->config);
+            $container->loadFromExtension('bytes_discord_client', $this->config);
         });
     }
 

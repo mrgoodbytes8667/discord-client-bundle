@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordUserResponse;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordUserResponse;
 
 
-use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
-use Bytes\DiscordBundle\Tests\HttpClient\TestDiscordResponseTrait;
+use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordClientBundle\Tests\HttpClient\TestDiscordResponseTrait;
 
 /**
  * Class DiscordUserResponseTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordUserResponse
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordUserResponse
  */
 class DiscordUserResponseTest extends TestDiscordBotClientCase
 {

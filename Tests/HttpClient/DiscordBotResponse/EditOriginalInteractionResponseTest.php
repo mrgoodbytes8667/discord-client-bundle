@@ -1,9 +1,9 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
-use Bytes\DiscordBundle\Tests\HttpClient\WebhookProviderTrait;
+use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordClientBundle\Tests\HttpClient\WebhookProviderTrait;
 use Bytes\DiscordResponseBundle\Enums\InteractionType;
 use Bytes\DiscordResponseBundle\Enums\MessageType;
 use Bytes\DiscordResponseBundle\Objects\Message;
@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class EditOriginalInteractionResponseTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse
  */
 class EditOriginalInteractionResponseTest extends TestDiscordBotClientCase
 {

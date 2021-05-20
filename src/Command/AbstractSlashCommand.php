@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Command;
+namespace Bytes\DiscordClientBundle\Command;
 
 
 use Bytes\CommandBundle\Command\BaseCommand;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordBundle\Services\Client\DiscordBot;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -21,7 +21,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class AbstractSlashCommand
- * @package Bytes\DiscordBundle\Command
+ * @package Bytes\DiscordClientBundle\Command
  */
 abstract class AbstractSlashCommand extends BaseCommand
 {

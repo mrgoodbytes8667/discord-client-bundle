@@ -1,17 +1,17 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Bytes\Tests\Common\MockHttpClient\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockJsonResponse
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  */
 class MockJsonResponse extends MockResponse
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\Services;
+namespace Bytes\DiscordClientBundle\Tests\Services;
 
-use Bytes\DiscordBundle\Services\OAuth;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\Fixtures\Providers\AuthorizationCodeGrants;
+use Bytes\DiscordClientBundle\Services\OAuth;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Providers\AuthorizationCodeGrants;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Faker\Factory;
 use Faker\Generator;
@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Class LegacyOAuthTest
- * @package Bytes\DiscordBundle\Services
+ * @package Bytes\DiscordClientBundle\Services
  *
  * @deprecated Since 0.9.0
  */

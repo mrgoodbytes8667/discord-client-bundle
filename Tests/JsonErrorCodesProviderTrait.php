@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests;
+namespace Bytes\DiscordClientBundle\Tests;
 
 
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Trait JsonErrorCodesProviderTrait
- * @package Bytes\DiscordBundle\Tests
+ * @package Bytes\DiscordClientBundle\Tests
  */
 trait JsonErrorCodesProviderTrait
 {

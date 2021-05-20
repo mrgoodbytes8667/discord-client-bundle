@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordTokenClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordTokenClient;
 
 
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenResponse;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
 use Bytes\Tests\Common\TestSerializerTrait;

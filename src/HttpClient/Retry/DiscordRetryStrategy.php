@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Retry;
+namespace Bytes\DiscordClientBundle\HttpClient\Retry;
 
 
 use Bytes\ResponseBundle\HttpClient\Retry\APIRetryStrategy;
@@ -13,7 +13,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class DiscordRetryStrategy
- * @package Bytes\DiscordBundle\HttpClient\Retry
+ * @package Bytes\DiscordClientBundle\HttpClient\Retry
  */
 class DiscordRetryStrategy extends APIRetryStrategy implements RetryStrategyInterface
 {

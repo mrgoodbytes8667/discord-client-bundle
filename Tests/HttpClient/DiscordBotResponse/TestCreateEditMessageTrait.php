@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
 
 use Bytes\DiscordResponseBundle\Objects\Message;
@@ -13,7 +13,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Trait TestCreateEditMessageTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse
  *
  * @method \Bytes\ResponseBundle\HttpClient\Response\Response setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
  * @method assertEquals($expected, $actual, string $message = '')

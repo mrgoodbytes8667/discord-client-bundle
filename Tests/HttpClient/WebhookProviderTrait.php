@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
@@ -14,7 +14,7 @@ use Generator;
 
 /**
  * Trait WebhookProviderTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  */
 trait WebhookProviderTrait
 {

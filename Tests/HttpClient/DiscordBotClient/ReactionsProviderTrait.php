@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
 
 /**
  * Trait ReactionsProviderTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient
  */
 trait ReactionsProviderTrait
 {

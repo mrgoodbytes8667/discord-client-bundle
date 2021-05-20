@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Api;
+namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 
 use Bytes\ResponseBundle\Annotations\Client;
@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordUserClient
- * @package Bytes\DiscordBundle\HttpClient\Api
+ * @package Bytes\DiscordClientBundle\HttpClient\Api
  *
  * @Client(identifier="DISCORD", tokenSource="user")
  */

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Token;
+namespace Bytes\DiscordClientBundle\HttpClient\Token;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
-use Bytes\DiscordBundle\HttpClient\DiscordClientTrait;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientTrait;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\HttpMethods;
@@ -30,7 +30,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class AbstractDiscordTokenClient
- * @package Bytes\DiscordBundle\HttpClient\Token
+ * @package Bytes\DiscordClientBundle\HttpClient\Token
  */
 abstract class AbstractDiscordTokenClient extends AbstractTokenClient
 {

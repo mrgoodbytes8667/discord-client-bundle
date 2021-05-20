@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Handler;
+namespace Bytes\DiscordClientBundle\Handler;
 
-use Bytes\DiscordBundle\Slash\SlashCommandInterface;
+use Bytes\DiscordClientBundle\Slash\SlashCommandInterface;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use InvalidArgumentException;
 
 /**
  * Class SlashCommandsHandlerCollection
- * @package Bytes\DiscordBundle\Handler
+ * @package Bytes\DiscordClientBundle\Handler
  */
 class SlashCommandsHandlerCollection
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class CreateCommandTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse
  */
 class CreateCommandTest extends TestDiscordBotClientCase
 {

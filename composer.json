@@ -1,5 +1,5 @@
 {
-    "name": "mrgoodbytes8667/discord-bundle",
+    "name": "mrgoodbytes8667/discord-client-bundle",
     "type": "symfony-bundle",
     "description": "A Symfony bundle that adds some routes and mechanisms for Discord OAuth",
     "license": "CC-BY-NC-4.0",
@@ -62,8 +62,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bytes\\DiscordBundle\\": "src/",
-            "Bytes\\DiscordBundle\\Tests\\": "Tests/"
+            "Bytes\\DiscordClientBundle\\": "src/",
+            "Bytes\\DiscordClientBundle\\Tests\\": "Tests/"
         }
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Request;
+namespace Bytes\DiscordClientBundle\Request;
 
 
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Converts various discord response objects with a name, id, or guild_id that implements IdInterface, GuildIdInterface,
  * or NameInterface. Parameters must be named name or guild_id for NameInterface or GuildIdInterface, otherwise it will
  * fall back to IdInterface.
- * @package Bytes\DiscordBundle\Request
+ * @package Bytes\DiscordClientBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
  */

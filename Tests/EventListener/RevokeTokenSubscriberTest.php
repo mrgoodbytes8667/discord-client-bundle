@@ -1,10 +1,10 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\EventListener;
+namespace Bytes\DiscordClientBundle\Tests\EventListener;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
-use Bytes\DiscordBundle\EventListener\RevokeTokenSubscriber;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
+use Bytes\DiscordClientBundle\EventListener\RevokeTokenSubscriber;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\DiscordResponseBundle\Objects\Token;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Event\RevokeTokenEvent;
@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class RevokeTokenSubscriberTest
- * @package Bytes\DiscordBundle\Tests\EventListener
+ * @package Bytes\DiscordClientBundle\Tests\EventListener
  */
 class RevokeTokenSubscriberTest extends TestCase
 {

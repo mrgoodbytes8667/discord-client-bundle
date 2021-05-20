@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests;
+namespace Bytes\DiscordClientBundle\Tests;
 
 
-use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\GuildProviderTrait;
+use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\GuildProviderTrait;
 use Bytes\DiscordResponseBundle\Enums\ApplicationCommandOptionType as ACOT;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
@@ -16,7 +16,7 @@ use Generator;
 
 /**
  * Trait CommandProviderTrait
- * @package Bytes\DiscordBundle\Tests
+ * @package Bytes\DiscordClientBundle\Tests
  */
 trait CommandProviderTrait
 {

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\DependencyInjection;
+namespace Bytes\DiscordClientBundle\DependencyInjection;
 
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Enums\Permissions;
@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('bytes_discord');
+        $treeBuilder = new TreeBuilder('bytes_discord_client');
 
         $treeBuilder->getRootNode()
             ->ignoreExtraKeys()

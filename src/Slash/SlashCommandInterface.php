@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Slash;
+namespace Bytes\DiscordClientBundle\Slash;
 
 
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 
 /**
  * Interface SlashCommandInterface
- * @package Bytes\DiscordBundle\Slash
+ * @package Bytes\DiscordClientBundle\Slash
  */
 interface SlashCommandInterface
 {

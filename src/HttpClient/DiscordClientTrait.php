@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient;
+namespace Bytes\DiscordClientBundle\HttpClient;
 
 
 use function Symfony\Component\String\u;
 
 /**
  * Trait DiscordClientTrait
- * @package Bytes\DiscordBundle\HttpClient
+ * @package Bytes\DiscordClientBundle\HttpClient
  */
 trait DiscordClientTrait
 {

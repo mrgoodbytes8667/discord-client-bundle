@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Api;
+namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
-use Bytes\DiscordBundle\HttpClient\DiscordClientTrait;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientTrait;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
@@ -32,7 +32,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordClient
- * @package Bytes\DiscordBundle\HttpClient\Api
+ * @package Bytes\DiscordClientBundle\HttpClient\Api
  *
  * @Client(identifier="DISCORD")
  */

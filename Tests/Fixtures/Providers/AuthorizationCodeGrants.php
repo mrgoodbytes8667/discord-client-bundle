@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Fixtures\Providers;
+namespace Bytes\DiscordClientBundle\Tests\Fixtures\Providers;
 
 
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\Services\OAuth;
+use Bytes\DiscordClientBundle\Services\OAuth;
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Enums\Permissions;
@@ -16,7 +16,7 @@ use Illuminate\Support\Arr;
 
 /**
  * Class AuthorizationCodeGrants
- * @package Bytes\DiscordBundle\Tests\Fixtures\Providers
+ * @package Bytes\DiscordClientBundle\Tests\Fixtures\Providers
  *
  * @property Generator|Internet|MiscProvider $generator
  */

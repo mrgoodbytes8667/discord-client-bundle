@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Routing;
+namespace Bytes\DiscordClientBundle\Routing;
 
 
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
@@ -13,7 +13,7 @@ use Illuminate\Support\Arr;
 
 /**
  * Class DiscordBotOAuth
- * @package Bytes\DiscordBundle\Routing
+ * @package Bytes\DiscordClientBundle\Routing
  */
 class DiscordBotOAuth extends AbstractDiscordOAuth
 {

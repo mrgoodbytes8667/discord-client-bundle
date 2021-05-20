@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
-use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\Tests\DiscordClientSetupTrait;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Bytes\ResponseBundle\HttpClient\Response\Response;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
 use Faker\Factory;
@@ -24,7 +24,7 @@ use function Symfony\Component\String\u;
 
 /**
  * Class DiscordResponseTest
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  */
 class DiscordResponseTest extends TestHttpClientCase
 {

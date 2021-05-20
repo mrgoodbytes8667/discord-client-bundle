@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Request;
+namespace Bytes\DiscordClientBundle\Request;
 
 
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -19,7 +19,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 /**
  * Class DiscordGuildConverter
  * Converts and hydrates a Discord GuildInterface (Guild by default, can also deserialize into PartialGuild)
- * @package Bytes\DiscordBundle\Request
+ * @package Bytes\DiscordClientBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
  *
@@ -30,15 +30,15 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  * // Using a route with a guild param...
  * @Route("/some/route/to/{guild}")
  * // Use the DiscordGuildConverter
- * @ParamConverter("guild", converter="bytes_discord_guild")
+ * @ParamConverter("guild", converter="bytes_discord_client_guild")
  * // Use the DiscordGuildConverter and deserialize into Guild, same result as above
- * @ParamConverter("guild", converter="bytes_discord_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\Guild"})
+ * @ParamConverter("guild", converter="bytes_discord_client_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\Guild"})
  * // Use the DiscordGuildConverter and include counts
- * @ParamConverter("guild", converter="bytes_discord_guild", options={"with_counts" = true})
+ * @ParamConverter("guild", converter="bytes_discord_client_guild", options={"with_counts" = true})
  * // Use the DiscordGuildConverter and deserialize into PartialGuild
- * @ParamConverter("guild", converter="bytes_discord_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild"})
+ * @ParamConverter("guild", converter="bytes_discord_client_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild"})
  * // Use the DiscordGuildConverter and deserialize into PartialGuild and include counts
- * @ParamConverter("guild", converter="bytes_discord_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild", "with_counts" = true})
+ * @ParamConverter("guild", converter="bytes_discord_client_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild", "with_counts" = true})
  * </code>
  */
 class DiscordGuildConverter implements ParamConverterInterface

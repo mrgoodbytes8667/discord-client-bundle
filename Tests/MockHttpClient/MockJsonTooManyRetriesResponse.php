@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
 use DateInterval;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockJsonTooManyRetriesResponse
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  */
 class MockJsonTooManyRetriesResponse extends MockJsonResponse
 {

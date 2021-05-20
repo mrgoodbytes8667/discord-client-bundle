@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Request;
+namespace Bytes\DiscordClientBundle\Tests\Request;
 
 
 use Bytes\Common\Faker\Providers\MiscProvider;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class TestParamConverterCase
- * @package Bytes\DiscordBundle\Tests\Request
+ * @package Bytes\DiscordClientBundle\Tests\Request
  */
 class TestParamConverterCase extends TestCase
 {

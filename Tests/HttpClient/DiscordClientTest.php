@@ -1,9 +1,9 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
-use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\HttpClient\MockClientResponse;
+use Bytes\DiscordClientBundle\Tests\DiscordClientSetupTrait;
+use Bytes\DiscordClientBundle\Tests\Fixtures\HttpClient\MockClientResponse;
 use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Test\AssertClientAnnotationsSameTrait;
@@ -24,7 +24,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class DiscordClientTest
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  */
 class DiscordClientTest extends TestHttpClientCase
 {

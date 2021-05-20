@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Faker\Factory;
 use Faker\Generator as FakerGenerator;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockDiscordResponse
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  *
  * @deprecated v0.0.2 Replace with mrgoodbytes8667/test-common Bytes\Tests\Common\MockHttpClient
  */

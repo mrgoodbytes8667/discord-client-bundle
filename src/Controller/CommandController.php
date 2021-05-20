@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Controller;
+namespace Bytes\DiscordClientBundle\Controller;
 
 
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +20,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class CommandController
- * @package Bytes\DiscordBundle\Controller
+ * @package Bytes\DiscordClientBundle\Controller
  */
 class CommandController
 {

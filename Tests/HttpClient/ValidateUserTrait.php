@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
 
 use Bytes\DiscordResponseBundle\Objects\User;
 
 /**
  * Trait ValidateUserTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  *
  * @method assertInstanceOf(string $expected, $actual, string $message = '')
  * @method assertEquals($expected, $actual, string $message = '')

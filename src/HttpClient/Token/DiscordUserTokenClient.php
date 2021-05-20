@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Token;
+namespace Bytes\DiscordClientBundle\HttpClient\Token;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\User;
@@ -32,7 +32,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordUserTokenClient
- * @package Bytes\DiscordBundle\HttpClient\Token
+ * @package Bytes\DiscordClientBundle\HttpClient\Token
  *
  * @Client(identifier="DISCORD", tokenSource="user")
  */

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Command;
+namespace Bytes\DiscordClientBundle\Tests\Command;
 
 
 use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockServerExceptionCallback
- * @package Bytes\DiscordBundle\Tests\Command
+ * @package Bytes\DiscordClientBundle\Tests\Command
  */
 class MockServerExceptionCallback extends MockClientCallbackIterator
 {

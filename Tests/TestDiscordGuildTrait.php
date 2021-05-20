@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests;
+namespace Bytes\DiscordClientBundle\Tests;
 
 
 use Bytes\DiscordResponseBundle\Objects\Guild;
@@ -11,7 +11,7 @@ use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 
 /**
  * Trait TestDiscordGuildTrait
- * @package Bytes\DiscordBundle\Tests
+ * @package Bytes\DiscordClientBundle\Tests
  *
  * @method assertNotEmpty($actual, string $message = '')
  * @method assertInstanceOf(string $expected, $actual, string $message = '')

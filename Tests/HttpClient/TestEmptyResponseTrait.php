@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
 
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * Trait TestEmptyResponseTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  *
  * @method \Bytes\ResponseBundle\HttpClient\Response\Response setupResponse(?string $fixtureFile = null, $content = null, int $code = Response::HTTP_OK, $type = \stdClass::class, ?string $exception = null)
  * @method assertTrue($condition, string $message = '')

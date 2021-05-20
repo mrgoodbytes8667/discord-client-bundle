@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Routing;
+namespace Bytes\DiscordClientBundle\Routing;
 
 
 use BadMethodCallException;
@@ -11,7 +11,7 @@ use Bytes\ResponseBundle\Routing\OAuthPromptInterface;
 
 /**
  * Class DiscordLoginOAuth
- * @package Bytes\DiscordBundle\Routing
+ * @package Bytes\DiscordClientBundle\Routing
  */
 class DiscordLoginOAuth extends AbstractDiscordOAuth
 {

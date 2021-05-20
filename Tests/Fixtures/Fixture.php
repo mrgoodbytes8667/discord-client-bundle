@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Fixtures;
+namespace Bytes\DiscordClientBundle\Tests\Fixtures;
 
 
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 
 /**
  * Class Fixture
- * @package Bytes\DiscordBundle\Tests\Fixtures
+ * @package Bytes\DiscordClientBundle\Tests\Fixtures
  */
 class Fixture
 {

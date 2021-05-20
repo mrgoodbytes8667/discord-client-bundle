@@ -3,23 +3,23 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Bytes\DiscordBundle\Command\SlashAddCommand;
-use Bytes\DiscordBundle\Command\SlashDeleteCommand;
-use Bytes\DiscordBundle\Controller\CommandController;
-use Bytes\DiscordBundle\EventListener\RevokeTokenSubscriber;
-use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
-use Bytes\DiscordBundle\Request\DiscordConverter;
-use Bytes\DiscordBundle\Request\DiscordGuildConverter;
-use Bytes\DiscordBundle\Routing\DiscordBotOAuth;
-use Bytes\DiscordBundle\Routing\DiscordLoginOAuth;
-use Bytes\DiscordBundle\Routing\DiscordUserOAuth;
+use Bytes\DiscordClientBundle\Command\SlashAddCommand;
+use Bytes\DiscordClientBundle\Command\SlashDeleteCommand;
+use Bytes\DiscordClientBundle\Controller\CommandController;
+use Bytes\DiscordClientBundle\EventListener\RevokeTokenSubscriber;
+use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordUserClient;
+use Bytes\DiscordClientBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordBotTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenResponse;
+use Bytes\DiscordClientBundle\Request\DiscordConverter;
+use Bytes\DiscordClientBundle\Request\DiscordGuildConverter;
+use Bytes\DiscordClientBundle\Routing\DiscordBotOAuth;
+use Bytes\DiscordClientBundle\Routing\DiscordLoginOAuth;
+use Bytes\DiscordClientBundle\Routing\DiscordUserOAuth;
 use Bytes\ResponseBundle\Controller\OAuthController;
 use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\TokenClientInterface;
@@ -35,7 +35,7 @@ return static function (ContainerConfigurator $container) {
     $services = $container->services();
 
     //region Clients
-    $services->set('bytes_discord.httpclient.discord', DiscordClient::class)
+    $services->set('bytes_discord_client.httpclient.discord', DiscordClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('event_dispatcher'),
@@ -49,14 +49,14 @@ return static function (ContainerConfigurator $container) {
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
         ->lazy()
-        ->alias(DiscordClient::class, 'bytes_discord.httpclient.discord')
+        ->alias(DiscordClient::class, 'bytes_discord_client.httpclient.discord')
         ->public();
 
-    $services->set('bytes_discord.httpclient.discord.bot', DiscordBotClient::class)
+    $services->set('bytes_discord_client.httpclient.discord.bot', DiscordBotClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('event_dispatcher'),
-            service('bytes_discord.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
+            service('bytes_discord_client.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['bot_token']
@@ -65,14 +65,14 @@ return static function (ContainerConfigurator $container) {
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
-        ->alias(DiscordBotClient::class, 'bytes_discord.httpclient.discord.bot')
+        ->alias(DiscordBotClient::class, 'bytes_discord_client.httpclient.discord.bot')
         ->public();
 
-    $services->set('bytes_discord.httpclient.discord.user', DiscordUserClient::class)
+    $services->set('bytes_discord_client.httpclient.discord.user', DiscordUserClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('event_dispatcher'),
-            service('bytes_discord.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
+            service('bytes_discord_client.httpclient.retry_strategy.discord'), // Symfony\Component\HttpClient\Retry\RetryStrategyInterface
             '', // $config['client_id']
             '', // $config['client_secret']
             '', // $config['user_agent']
@@ -80,12 +80,12 @@ return static function (ContainerConfigurator $container) {
         ->call('setResponse', [service('bytes_response.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
-        ->alias(DiscordUserClient::class, 'bytes_discord.httpclient.discord.user')
+        ->alias(DiscordUserClient::class, 'bytes_discord_client.httpclient.discord.user')
         ->public();
     //endregion
 
     //region Clients (Tokens)
-    $services->set('bytes_discord.httpclient.discord.token.bot', DiscordBotTokenClient::class)
+    $services->set('bytes_discord_client.httpclient.discord.token.bot', DiscordBotTokenClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('event_dispatcher'),
@@ -96,19 +96,19 @@ return static function (ContainerConfigurator $container) {
             '', // revoke_on_refresh
             '', // fire_revoke_on_refresh
         ])
-        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-        ->call('setOAuth', [service('bytes_discord.oauth.bot')])
+        ->call('setResponse', [service('bytes_discord_client.httpclient.response.token.user')])
+        ->call('setOAuth', [service('bytes_discord_client.oauth.bot')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.token')
         ->lazy()
-        ->alias(DiscordBotTokenClient::class, 'bytes_discord.httpclient.discord.token.bot')
+        ->alias(DiscordBotTokenClient::class, 'bytes_discord_client.httpclient.discord.token.bot')
         ->public();
 
     $services->alias(TokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
     $services->alias(AppTokenClientInterface::class.' $discordTokenClient', DiscordBotTokenClient::class);
     $services->alias(AppTokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
     
-    $services->set('bytes_discord.httpclient.discord.token.user', DiscordUserTokenClient::class)
+    $services->set('bytes_discord_client.httpclient.discord.token.user', DiscordUserTokenClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
             service('event_dispatcher'),
@@ -118,12 +118,12 @@ return static function (ContainerConfigurator $container) {
             '', // revoke_on_refresh
             '', // fire_revoke_on_refresh
         ])
-        ->call('setResponse', [service('bytes_discord.httpclient.response.token.user')])
-        ->call('setOAuth', [service('bytes_discord.oauth.user')])
+        ->call('setResponse', [service('bytes_discord_client.httpclient.response.token.user')])
+        ->call('setOAuth', [service('bytes_discord_client.oauth.user')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.token')
         ->lazy()
-        ->alias(DiscordUserTokenClient::class, 'bytes_discord.httpclient.discord.token.user')
+        ->alias(DiscordUserTokenClient::class, 'bytes_discord_client.httpclient.discord.token.user')
         ->public();
 
     $services->alias(TokenClientInterface::class.' $discordUserTokenClient', DiscordUserTokenClient::class);
@@ -132,24 +132,24 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Response
-    $services->set('bytes_discord.httpclient.response.token.user', DiscordUserTokenResponse::class)
+    $services->set('bytes_discord_client.httpclient.response.token.user', DiscordUserTokenResponse::class)
         ->args([
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             service('event_dispatcher'), // Symfony\Component\Serializer\SerializerInterface
         ])
-        ->alias(DiscordUserTokenResponse::class, 'bytes_discord.httpclient.response.token.user')
+        ->alias(DiscordUserTokenResponse::class, 'bytes_discord_client.httpclient.response.token.user')
         ->public();
     //endregion
 
     //region HttpClient Retry Strategies
-    $services->set('bytes_discord.httpclient.retry_strategy.discord', DiscordRetryStrategy::class)
-        ->alias(DiscordRetryStrategy::class, 'bytes_discord.httpclient.retry_strategy.discord')
+    $services->set('bytes_discord_client.httpclient.retry_strategy.discord', DiscordRetryStrategy::class)
+        ->alias(DiscordRetryStrategy::class, 'bytes_discord_client.httpclient.retry_strategy.discord')
         ->public();
     //endregion
 
     //region Routing
     foreach(['bot' => DiscordBotOAuth::class, 'login' => DiscordLoginOAuth::class, 'user' => DiscordUserOAuth::class] as $tag => $class) {
-        $services->set('bytes_discord.oauth.' . $tag, $class)
+        $services->set('bytes_discord_client.oauth.' . $tag, $class)
             ->args([
                 '', // $config['client_id']
                 [],
@@ -160,7 +160,7 @@ return static function (ContainerConfigurator $container) {
             ->call('setSecurity', [service('security.helper')->ignoreOnInvalid()]) // Symfony\Component\Security\Core\Security
             ->tag('bytes_response.oauth')
             ->lazy()
-            ->alias($class, 'bytes_discord.oauth.' . $tag)
+            ->alias($class, 'bytes_discord_client.oauth.' . $tag)
             ->public();
 
         $alias = u($tag)->title()->prepend(OAuthInterface::class . ' $discord')->append('OAuth')->toString();
@@ -171,67 +171,67 @@ return static function (ContainerConfigurator $container) {
 
     //region Controllers
     foreach (['bot', 'login', 'user'] as $type) {
-        $services->set(sprintf('bytes_discord.oauth_controller.%s', $type), OAuthController::class)
+        $services->set(sprintf('bytes_discord_client.oauth_controller.%s', $type), OAuthController::class)
             ->args([
-                service(sprintf('bytes_discord.oauth.%s', $type)), // Bytes\ResponseBundle\Routing\OAuthInterface
+                service(sprintf('bytes_discord_client.oauth.%s', $type)), // Bytes\ResponseBundle\Routing\OAuthInterface
                 service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
                 '', // destination route
             ])
             ->public();
     }
 
-    $services->set('bytes_discord.command_controller', CommandController::class)
+    $services->set('bytes_discord_client.command_controller', CommandController::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
+            service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
         ])
-        ->alias(CommandController::class, 'bytes_discord.command_controller')
+        ->alias(CommandController::class, 'bytes_discord_client.command_controller')
         ->public();
     //endregion
 
     //region Handlers
-    $services->set('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
-        ->args([tagged_locator('bytes_discord.slashcommand', 'key', 'getDefaultIndexName')])
-        ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord.slashcommands.handler')
+    $services->set('bytes_discord_client.slashcommands.handler', SlashCommandsHandlerCollection::class)
+        ->args([tagged_locator('bytes_discord_client.slashcommand', 'key', 'getDefaultIndexName')])
+        ->alias(SlashCommandsHandlerCollection::class, 'bytes_discord_client.slashcommands.handler')
         ->public();
     //endregion
 
     //region Commands
     $services->set(null, SlashAddCommand::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
+            service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface
-            service('bytes_discord.slashcommands.handler'), // Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection
+            service('bytes_discord_client.slashcommands.handler'), // Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection
         ])
-        ->tag('console.command', ['command' => 'bytes_discord:slash:add']);
+        ->tag('console.command', ['command' => 'bytes_discord_client:slash:add']);
 
     $services->set(null, SlashDeleteCommand::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
+            service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
         ])
-        ->tag('console.command', ['command' => 'bytes_discord:slash:delete']);
+        ->tag('console.command', ['command' => 'bytes_discord_client:slash:delete']);
     //endregion
 
     //region Converters
-    $services->set('bytes_discord.discord_guild_converter', DiscordGuildConverter::class)
+    $services->set('bytes_discord_client.discord_guild_converter', DiscordGuildConverter::class)
         ->args([
-            service('bytes_discord.httpclient.discord.bot'), // Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient
+            service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
         ])
         ->tag('request.param_converter', [
-            'converter' => 'bytes_discord_guild',
+            'converter' => 'bytes_discord_client_guild',
             'priority' => false,
         ]);
 
-    $services->set('bytes_discord.discord_converter', DiscordConverter::class)
+    $services->set('bytes_discord_client.discord_converter', DiscordConverter::class)
         ->tag('request.param_converter', [
-            'converter' => 'bytes_discord'
+            'converter' => 'bytes_discord_client'
         ]);
     //endregion
 
     //region Subscribers
-    $services->set('bytes_discord.subscriber.revoke_token', RevokeTokenSubscriber::class)
+    $services->set('bytes_discord_client.subscriber.revoke_token', RevokeTokenSubscriber::class)
         ->args([
-            service('bytes_discord.httpclient.discord.token.user'),
+            service('bytes_discord_client.httpclient.discord.token.user'),
         ])
         ->tag('kernel.event_subscriber');
     //endregion

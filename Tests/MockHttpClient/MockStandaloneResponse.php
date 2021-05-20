@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Bytes\Tests\Common\MockHttpClient\MockStandaloneResponse as MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockStandaloneResponse
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  */
 class MockStandaloneResponse extends MockResponse
 {

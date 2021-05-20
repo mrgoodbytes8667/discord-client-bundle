@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
-use Bytes\DiscordBundle\Tests\Command\MockTooManyRequestsCallback;
+use Bytes\DiscordClientBundle\Tests\Command\MockTooManyRequestsCallback;
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -13,7 +13,7 @@ use Bytes\Tests\Common\MockHttpClient\MockClient as BaseMockClient;
 
 /**
  * Class MockClient
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  */
 class MockClient extends BaseMockClient
 {

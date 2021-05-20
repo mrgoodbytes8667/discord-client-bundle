@@ -1,21 +1,21 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient;
 
 
 use Bytes\Common\Faker\Providers\Discord;
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordUserClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordBotTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\Tests\Common\ClientExceptionResponseProviderTrait;
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\CommandProviderTrait;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
@@ -39,7 +39,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Trait TestDiscordClientTrait
- * @package Bytes\DiscordBundle\Tests\HttpClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient
  *
  * @method assertInstanceOf(string $expected, $actual, string $message = '')
  * @method assertEquals($expected, $actual, string $message = '')

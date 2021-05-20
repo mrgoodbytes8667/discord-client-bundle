@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\DependencyInjection\Compiler;
+namespace Bytes\DiscordClientBundle\DependencyInjection\Compiler;
 
 
-use Bytes\DiscordBundle\Handler\SlashCommandsHandlerCollection;
-use Bytes\DiscordBundle\Slash\SlashCommandInterface;
+use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
+use Bytes\DiscordClientBundle\Slash\SlashCommandInterface;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 /**
  * Class SlashCommandsPass
- * @package Bytes\DiscordBundle\DependencyInjection\Compiler
+ * @package Bytes\DiscordClientBundle\DependencyInjection\Compiler
  */
 class SlashCommandsPass implements CompilerPassInterface
 {
@@ -24,12 +24,12 @@ class SlashCommandsPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-//        $commands = $container->findTaggedServiceIds('bytes_discord.slashcommand');
+//        $commands = $container->findTaggedServiceIds('bytes_discord_client.slashcommand');
 //
 //        $serializerDefinition = $container->getDefinition(SlashCommandsHandlerCollection::class);
 //        $serializerDefinition->replaceArgument(0, array_keys($commands));
 
-        $commandServices = $container->findTaggedServiceIds('bytes_discord.slashcommand', true);
+        $commandServices = $container->findTaggedServiceIds('bytes_discord_client.slashcommand', true);
         $lazyCommandMap = [];
 
         foreach ($commandServices as $id => $tags) {
@@ -43,7 +43,7 @@ class SlashCommandsPass implements CompilerPassInterface
                     throw new InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $id));
                 }
                 if (!$r->isSubclassOf(SlashCommandInterface::class)) {
-                    throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s" must implement "%s".', $id, 'bytes_discord.slashcommand', SlashCommandInterface::class));
+                    throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s" must implement "%s".', $id, 'bytes_discord_client.slashcommand', SlashCommandInterface::class));
                 }
                 $commandName = $class::getDefaultIndexName();
             }
@@ -58,7 +58,7 @@ class SlashCommandsPass implements CompilerPassInterface
             }
         }
 
-        $container->register('bytes_discord.slashcommands.handler', SlashCommandsHandlerCollection::class)
+        $container->register('bytes_discord_client.slashcommands.handler', SlashCommandsHandlerCollection::class)
             ->setArguments([$lazyCommandMap]);
     }
 }

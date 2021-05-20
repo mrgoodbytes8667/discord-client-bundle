@@ -1,17 +1,17 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
 
-use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\DiscordClientSetupTrait;
-use Bytes\DiscordBundle\Tests\HttpClient\TestHttpClientCase;
-use Bytes\DiscordBundle\Tests\JsonErrorCodesProviderTrait;
+use Bytes\DiscordClientBundle\Tests\CommandProviderTrait;
+use Bytes\DiscordClientBundle\Tests\DiscordClientSetupTrait;
+use Bytes\DiscordClientBundle\Tests\HttpClient\TestHttpClientCase;
+use Bytes\DiscordClientBundle\Tests\JsonErrorCodesProviderTrait;
 
 /**
  * Class TestDiscordBotClientCase
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient
  */
 class TestDiscordBotClientCase extends TestHttpClientCase
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\Command\SlashAddCommand;
+namespace Bytes\DiscordClientBundle\Tests\Command\SlashAddCommand;
 
-use Bytes\DiscordBundle\Tests\Command\MockServerExceptionCallback;
-use Bytes\DiscordBundle\Tests\Command\MockTooManyRequestsCallback;
-use Bytes\DiscordBundle\Tests\Command\MockUnauthorizedCallback;
-use Bytes\DiscordBundle\Tests\Command\TestSlashCommand;
+use Bytes\DiscordClientBundle\Tests\Command\MockServerExceptionCallback;
+use Bytes\DiscordClientBundle\Tests\Command\MockTooManyRequestsCallback;
+use Bytes\DiscordClientBundle\Tests\Command\MockUnauthorizedCallback;
+use Bytes\DiscordClientBundle\Tests\Command\TestSlashCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -13,7 +13,7 @@ use function Symfony\Component\String\u;
 
 /**
  * Class SlashAddCommandTest
- * @package Bytes\DiscordBundle\Tests\Command\SlashAddCommand
+ * @package Bytes\DiscordClientBundle\Tests\Command\SlashAddCommand
  *
  * @todo Add missing tests last present in #fba4167e71255eb871c015754d5fb09969c7ceee
  */
@@ -22,7 +22,7 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @var string
      */
-    protected $command = 'bytes_discord:slash:add';
+    protected $command = 'bytes_discord_client:slash:add';
 
     /**
      * @group success

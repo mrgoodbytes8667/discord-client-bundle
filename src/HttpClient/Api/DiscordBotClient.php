@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Api;
+namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 
-use Bytes\DiscordBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
@@ -39,7 +39,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class DiscordBotClient
- * @package Bytes\DiscordBundle\HttpClient\Api
+ * @package Bytes\DiscordClientBundle\HttpClient\Api
  *
  * @Client(identifier="DISCORD", tokenSource="app")
  */

@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\MockHttpClient;
+namespace Bytes\DiscordClientBundle\Tests\MockHttpClient;
 
 
 use Iterator;
 
 /**
  * Class MockClientCallbackIterator
- * @package Bytes\DiscordBundle\Tests\MockHttpClient
+ * @package Bytes\DiscordClientBundle\Tests\MockHttpClient
  *
  * @deprecated v0.0.2 Replace with mrgoodbytes8667/test-common Bytes\Tests\Common\MockHttpClient
  */

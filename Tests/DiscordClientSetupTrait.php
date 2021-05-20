@@ -1,19 +1,19 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests;
+namespace Bytes\DiscordClientBundle\Tests;
 
 
-use Bytes\DiscordBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordClient;
-use Bytes\DiscordBundle\HttpClient\Api\DiscordUserClient;
-use Bytes\DiscordBundle\HttpClient\Retry\DiscordRetryStrategy;
-use Bytes\DiscordBundle\HttpClient\Token\AbstractDiscordTokenClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordBotTokenClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenClient;
-use Bytes\DiscordBundle\HttpClient\Token\DiscordUserTokenResponse;
-use Bytes\DiscordBundle\Tests\Fixtures\Fixture;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient;
+use Bytes\DiscordClientBundle\HttpClient\Api\DiscordUserClient;
+use Bytes\DiscordClientBundle\HttpClient\Retry\DiscordRetryStrategy;
+use Bytes\DiscordClientBundle\HttpClient\Token\AbstractDiscordTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordBotTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
+use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenResponse;
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
 use Bytes\ResponseBundle\HttpClient\Response\Response;
 use Bytes\ResponseBundle\HttpClient\Response\TokenResponse;
 use Bytes\ResponseBundle\HttpClient\Retry\APIRetryStrategy;
@@ -28,7 +28,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Trait DiscordClientSetupTrait
- * @package Bytes\DiscordBundle\Tests
+ * @package Bytes\DiscordClientBundle\Tests
  *
  * @property UrlGeneratorInterface $urlGenerator
  */
@@ -40,7 +40,7 @@ trait DiscordClientSetupTrait
      * @param HttpClientInterface|null $httpClient
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
-     * @return \Bytes\DiscordBundle\HttpClient\Api\DiscordClient
+     * @return \Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient
      */
     protected function setupBaseClient(HttpClientInterface $httpClient = null, ?EventDispatcher $dispatcher = null, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
@@ -114,7 +114,7 @@ trait DiscordClientSetupTrait
     }
 
     /**
-     * @param \Bytes\DiscordBundle\HttpClient\Api\DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient $client
+     * @param \Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient $client
      * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient
      */
     private function postClientSetup($client, ?EventDispatcher $dispatcher = null, $responseClass = Response::class)

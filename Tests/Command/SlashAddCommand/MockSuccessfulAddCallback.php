@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Command\SlashAddCommand;
+namespace Bytes\DiscordClientBundle\Tests\Command\SlashAddCommand;
 
 
 use Bytes\Tests\Common\MockHttpClient\MockClientCallbackIterator;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MockSuccessfulAddCallback
- * @package Bytes\DiscordBundle\Tests\Command\SlashAddCommand
+ * @package Bytes\DiscordClientBundle\Tests\Command\SlashAddCommand
  */
 class MockSuccessfulAddCallback extends MockClientCallbackIterator
 {

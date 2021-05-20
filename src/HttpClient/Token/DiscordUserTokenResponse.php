@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient\Token;
+namespace Bytes\DiscordClientBundle\HttpClient\Token;
 
 
 use Bytes\ResponseBundle\HttpClient\Response\TokenResponse;
 
 /**
  * Class DiscordUserTokenResponse
- * @package Bytes\DiscordBundle\HttpClient\Token
+ * @package Bytes\DiscordClientBundle\HttpClient\Token
  */
 class DiscordUserTokenResponse extends TokenResponse
 {

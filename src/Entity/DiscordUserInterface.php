@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Entity;
+namespace Bytes\DiscordClientBundle\Entity;
 
 
 /**
  * Interface DiscordUserInterface
- * @package Bytes\DiscordBundle\Entity
+ * @package Bytes\DiscordClientBundle\Entity
  */
 interface DiscordUserInterface
 {

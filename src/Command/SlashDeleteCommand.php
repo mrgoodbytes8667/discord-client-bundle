@@ -1,6 +1,6 @@
 <?php
 
-namespace Bytes\DiscordBundle\Command;
+namespace Bytes\DiscordClientBundle\Command;
 
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
@@ -17,14 +17,14 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class SlashDeleteCommand
- * @package Bytes\DiscordBundle\Command
+ * @package Bytes\DiscordClientBundle\Command
  */
 class SlashDeleteCommand extends AbstractSlashCommand
 {
     /**
      * @var string
      */
-    protected static $defaultName = 'bytes_discord:slash:delete';
+    protected static $defaultName = 'bytes_discord_client:slash:delete';
 
     /**
      * @var string

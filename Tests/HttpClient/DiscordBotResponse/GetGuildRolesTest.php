@@ -1,10 +1,10 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse;
+namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
-use Bytes\DiscordBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockClient;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Bytes\DiscordResponseBundle\Objects\Role;
 use Spatie\Enum\Phpunit\EnumAssertions;
@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class GetGuildRolesTest
- * @package Bytes\DiscordBundle\Tests\HttpClient\DiscordBotResponse
+ * @package Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse
  */
 class GetGuildRolesTest extends TestDiscordBotClientCase
 {

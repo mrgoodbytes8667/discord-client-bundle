@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Entity;
+namespace Bytes\DiscordClientBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Trait DiscordUserTrait
- * @package Bytes\DiscordBundle\Entity
+ * @package Bytes\DiscordClientBundle\Entity
  */
 trait DiscordUserTrait
 {

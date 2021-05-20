@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\Tests\Fixtures\Commands;
+namespace Bytes\DiscordClientBundle\Tests\Fixtures\Commands;
 
-use Bytes\DiscordBundle\Slash\SlashCommandInterface;
+use Bytes\DiscordClientBundle\Slash\SlashCommandInterface;
 use Bytes\DiscordResponseBundle\Enums\ApplicationCommandOptionType as ACOT;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption as Option;

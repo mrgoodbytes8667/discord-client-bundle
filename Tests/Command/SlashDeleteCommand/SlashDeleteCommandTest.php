@@ -1,18 +1,18 @@
 <?php
 
-namespace Bytes\DiscordBundle\Tests\Command\SlashDeleteCommand;
+namespace Bytes\DiscordClientBundle\Tests\Command\SlashDeleteCommand;
 
-use Bytes\DiscordBundle\Tests\Command\MockServerExceptionCallback;
-use Bytes\DiscordBundle\Tests\Command\MockTooManyRequestsCallback;
-use Bytes\DiscordBundle\Tests\Command\MockUnauthorizedCallback;
-use Bytes\DiscordBundle\Tests\Command\TestSlashCommand;
+use Bytes\DiscordClientBundle\Tests\Command\MockServerExceptionCallback;
+use Bytes\DiscordClientBundle\Tests\Command\MockTooManyRequestsCallback;
+use Bytes\DiscordClientBundle\Tests\Command\MockUnauthorizedCallback;
+use Bytes\DiscordClientBundle\Tests\Command\TestSlashCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
 /**
  * Class SlashDeleteCommandTest
- * @package Bytes\DiscordBundle\Tests\Command\SlashDeleteCommand
+ * @package Bytes\DiscordClientBundle\Tests\Command\SlashDeleteCommand
  *
  * @todo Add missing tests last present in #fba4167e71255eb871c015754d5fb09969c7ceee
  */
@@ -21,7 +21,7 @@ class SlashDeleteCommandTest extends TestSlashCommand
     /**
      * @var string
      */
-    protected $command = 'bytes_discord:slash:delete';
+    protected $command = 'bytes_discord_client:slash:delete';
 
     /**
      * @group success

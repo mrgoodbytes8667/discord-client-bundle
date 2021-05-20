@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Bytes\DiscordBundle\HttpClient;
+namespace Bytes\DiscordClientBundle\HttpClient;
 
 
 /**
  * Interface DiscordClientEndpoints
- * @package Bytes\DiscordBundle\HttpClient
+ * @package Bytes\DiscordClientBundle\HttpClient
  */
 interface DiscordClientEndpoints
 {
