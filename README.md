@@ -1,12 +1,15 @@
+# This package/repository has been renamed/moved!
+Please use [![GitHub](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/repo-mrgoodbytes8667_discord--client--bundle-lightgrey.png)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle) / [![Packagist](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/package-mrgoodbytes8667_discord--client--bundle-lightgrey.png)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle) instead!
+
 # discord-bundle
-[![Packagist Version](https://img.shields.io/packagist/v/mrgoodbytes8667/discord-bundle?logo=packagist&logoColor=FFF&style=flat)](https://packagist.org/packages/mrgoodbytes8667/discord-bundle)
-[![PHP from Packagist](https://img.shields.io/packagist/php-v/mrgoodbytes8667/discord-bundle?logo=php&logoColor=FFF&style=flat)](https://packagist.org/packages/mrgoodbytes8667/discord-bundle)
-![Symfony Version](https://img.shields.io/badge/symfony-%5E5.2-blue?logo=symfony&logoColor=FFF&style=flat)
-![Packagist License](https://img.shields.io/packagist/l/mrgoodbytes8667/discord-bundle?logo=creative-commons&logoColor=FFF&style=flat)  
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/discord-bundle/release?label=stable&logo=github&logoColor=FFF&style=flat)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/discord-bundle/tests?logo=github&logoColor=FFF&style=flat)
-[![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/discord-bundle?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/discord-bundle)  
-A Symfony bundle that adds some routes and mechanisms for Discord OAuth
+[![Packagist Version](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/packagist.png)](https://packagist.org/packages/mrgoodbytes8667/discord-bundle)
+[![PHP from Packagist](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/php.png)](https://packagist.org/packages/mrgoodbytes8667/discord-bundle)
+![Symfony Version](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/symfony.png)
+![Packagist License](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/license.png)  
+![GitHub Workflow Status](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/stable.png)
+![GitHub Workflow Status](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/build.png)
+[![codecov](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/coverage.png)](https://codecov.io/gh/mrgoodbytes8667/discord-bundle)  
+A Symfony bundle that adds some of the API calls, along with some routes and mechanisms for Discord OAuth
 
 ## Installation
 
@@ -51,6 +54,6 @@ return [
 The sample Discord API responses are generated using [mrgoodbytes8667/mock-generator](https://github.com/mrgoodbytes8667/mock-generator)
 
 ## License
-[![License](https://i.creativecommons.org/l/by-nc/4.0/88x31.png)]("http://creativecommons.org/licenses/by-nc/4.0/)  
+[![License](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/license-cc.png)]("http://creativecommons.org/licenses/by-nc/4.0/)  
 discord-bundle by [MrGoodBytes](https://www.goodbytes.live) is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/).  
 Based on a work at [https://github.com/mrgoodbytes8667/discord-bundle](https://github.com/mrgoodbytes8667/discord-bundle).

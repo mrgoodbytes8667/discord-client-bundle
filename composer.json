@@ -3,6 +3,7 @@
     "type": "symfony-bundle",
     "description": "A Symfony bundle that adds some routes and mechanisms for Discord OAuth",
     "license": "CC-BY-NC-4.0",
+    "abandoned": "mrgoodbytes8667/discord-client-bundle",
     "require": {
         "php": "^8.0",
         "ext-json": "*",
