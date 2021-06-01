@@ -49,11 +49,10 @@ jobs:
         if: success()
         run: |
           composer update --prefer-stable --prefer-dist --no-interaction --no-progress --optimize-autoloader
-          vendor/bin/simple-phpunit install
 
-      - name: Setup and Run PHPUnit
+      - name: Run PHPUnit
         if: success()
-        run: php vendor/bin/simple-phpunit --coverage-clover=clover.xml
+        run: php vendor/bin/phpunit --coverage-clover=clover.xml
 
       - name: Codecov
         uses: codecov/codecov-action@v1
