@@ -13,18 +13,18 @@
         "mrgoodbytes8667/http-client-common": "^0.2.2",
         "mrgoodbytes8667/response-bundle": "dev-main",
         "sensio/framework-extra-bundle": "^5.1",
-        "symfony/config": "^5.2",
-        "symfony/console": "^5.2",
-        "symfony/dependency-injection": "^5.2",
-        "symfony/framework-bundle": "^5.2",
-        "symfony/http-client": "^5.2",
+        "symfony/config": "^5.2 | ^5.3",
+        "symfony/console": "^5.2 | ^5.3",
+        "symfony/dependency-injection": "^5.2 | ^5.3",
+        "symfony/framework-bundle": "^5.2 | ^5.3",
+        "symfony/http-client": "^5.2 | ^5.3",
         "symfony/polyfill-uuid": "^1.20",
-        "symfony/property-access": "^5.2",
-        "symfony/property-info": "^5.2",
-        "symfony/security-core": "^5.2",
-        "symfony/serializer": "^5.2",
-        "symfony/string": "^5.2",
-        "symfony/validator": "^5.2"
+        "symfony/property-access": "^5.2 | ^5.3",
+        "symfony/property-info": "^5.2 | ^5.3",
+        "symfony/security-core": "^5.2 | ^5.3",
+        "symfony/serializer": "^5.2 | ^5.3",
+        "symfony/string": "^5.2 | ^5.3",
+        "symfony/validator": "^5.2 | ^5.3"
     },
     "require-dev": {
         "doctrine/common": "^3.0",
@@ -33,9 +33,9 @@
         "mrgoodbytes8667/test-common-faker": "^0.3.4",
         "mrgoodbytes8667/test-discord-faker": ">=0.0.7",
         "phpunit/phpunit": "^9.5",
-        "symfony/phpunit-bridge": "^5.2",
-        "symfony/security-bundle": "^5.2",
-        "symfony/var-dumper": "^5.2"
+        "symfony/phpunit-bridge": "^5.2 | ^5.3",
+        "symfony/security-bundle": "^5.2 | ^5.3",
+        "symfony/var-dumper": "^5.2 | ^5.3"
     },
     "authors": [
         {
