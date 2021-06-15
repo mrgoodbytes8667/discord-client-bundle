@@ -1,11 +1,12 @@
 # discord-client-bundle
 [![Packagist Version](https://img.shields.io/packagist/v/mrgoodbytes8667/discord-client-bundle?logo=packagist&logoColor=FFF&style=flat)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle)
 [![PHP from Packagist](https://img.shields.io/packagist/php-v/mrgoodbytes8667/discord-client-bundle?logo=php&logoColor=FFF&style=flat)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle)
-![Symfony Version](https://img.shields.io/endpoint?url=https%3A%2F%2Fshields.goodbytes.live%2Fshield%2Fsymfony%2F%255E5.2%2520%257C%2520%255E5.3&logoColor=FFF&style=flat)
-![Packagist License](https://img.shields.io/packagist/l/mrgoodbytes8667/discord-client-bundle?logo=creative-commons&logoColor=FFF&style=flat)  
+![Symfony Version](https://img.shields.io/endpoint?url=https%3A%2F%2Fshields.goodbytes.live%2Fshield%2Fsymfony%2F%255E5.3&logoColor=FFF&style=flat)
+![Discord API Version](https://img.shields.io/badge/discord-v6%20%26%20v8-lightgrey?logo=discord&logoColor=FFF&style=flat)  
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/discord-client-bundle/release?label=stable&logo=github&logoColor=FFF&style=flat)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/discord-client-bundle/tests?logo=github&logoColor=FFF&style=flat)
-[![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/discord-client-bundle?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/discord-client-bundle)  
+[![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/discord-client-bundle?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/discord-client-bundle)
+![Packagist License](https://img.shields.io/packagist/l/mrgoodbytes8667/discord-client-bundle?logo=creative-commons&logoColor=FFF&style=flat)  
 A Symfony bundle that adds some of the API calls, along with some routes and mechanisms for Discord OAuth
 
 ## Installation
