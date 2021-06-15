@@ -20,7 +20,6 @@ jobs:
         php: [ 8.0 ]
         dependency-version: [ prefer-stable, prefer-lowest ]
         os: [ ubuntu-latest ]
-        phpuniturl: ["https://raw.githubusercontent.com/symfony/recipes/master/symfony/phpunit-bridge/5.3/bin/phpunit"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -72,7 +71,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: ${{ github.ref }}
-          release_name: Discord Client Bundle ${{ github.ref }}
+          release_name: ${{ github.ref }}
           draft: true
           prerelease: false
           body: |
