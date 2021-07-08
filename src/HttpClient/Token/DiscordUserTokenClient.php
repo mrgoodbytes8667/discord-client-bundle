@@ -20,6 +20,8 @@ use Bytes\ResponseBundle\HttpClient\Token\AbstractTokenClient;
 use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Objects\Push;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
+use Bytes\ResponseBundle\Token\Exceptions\TokenRevokeException;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Bytes\ResponseBundle\Token\Interfaces\TokenValidationResponseInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
@@ -29,6 +31,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use UnexpectedValueException;
 
 /**
  * Class DiscordUserTokenClient
@@ -59,16 +62,22 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws UnexpectedValueException
      */
     public function revokeToken(AccessTokenInterface $token): ClientResponseInterface
     {
         $tokenString = static::normalizeAccessToken($token, false, 'The $token argument is required and cannot be empty.');
 
-        return $this->request($this->buildURL('oauth2/revoke'), options: ['body' => [
+        $response = $this->request($this->buildURL('oauth2/revoke'), options: ['body' => [
             'token' => $tokenString
         ]], method: HttpMethods::post(), onSuccessCallable: function ($self, $results) use ($token) {
             $this->dispatch(TokenRevokedEvent::new($token));
-        })->onSuccessCallback();
+        });
+        if(!$response->isSuccess())
+        {
+            throw new TokenRevokeException($response->getResponse(), sprintf('Could not revoke token: %d', $response->getStatusCode()));
+        }
+        return $response->onSuccessCallback();
     }
 
     /**
