@@ -7,9 +7,13 @@ namespace Bytes\DiscordClientBundle\Routing;
 use Bytes\DiscordResponseBundle\Objects\User;
 use function Symfony\Component\String\u;
 
+trigger_deprecation('mrgoodbytes8667/discord-client-bundle', '0.1.3', 'Using "Bytes\DiscordClientBundle\Routing\DiscordImageUrlBuilder" is deprecated, use "Bytes\DiscordResponseBundle\Routing\DiscordImageUrlBuilder" instead.');
+
 /**
  * Class DiscordImageUrlBuilder
  * @package Bytes\DiscordClientBundle\Routing
+ *
+ * @deprecated Since 0.1.3, use "Bytes\DiscordResponseBundle\Routing\DiscordImageUrlBuilder" instead
  */
 class DiscordImageUrlBuilder
 {
