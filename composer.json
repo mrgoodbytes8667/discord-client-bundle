@@ -55,7 +55,7 @@
         "doctrine/inflector": "<1.4.3",
         "doctrine/lexer": "<1.2.1",
         "doctrine/persistence": "<2.1.0",
-        "mrgoodbytes8667/response-bundle": "<2.0.5",
+        "mrgoodbytes8667/response-bundle": "<2.0.8",
         "phpunit/phpunit": "<9.5",
         "symfony/framework-bundle": "<5.2.1"
     },

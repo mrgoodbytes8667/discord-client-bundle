@@ -75,10 +75,10 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
      */
     protected function appendToAuthorizationCodeGrantURLQuery(Push $query, ...$options): Push
     {
-        $permissions = $this->permissions ?? $this->normalizePermissions($options['permissions'] ?? $this->getDefaultPermissions());
+        $permissions = $this->permissions ?: $this->normalizePermissions($options['permissions'] ?? $this->getDefaultPermissions());
         $this->permissions = $permissions;
 
-        $query = $query->push(value: $this->permissions, key: 'permissions')
+        $query = $query->push(value: Permissions::getFlags($this->permissions), key: 'permissions')
             ->push(value: $options['guildId'] ?? null, key: 'guildId')
             ->push(value: ($options['disableGuildSelect'] ?? !empty($options['guildId'])) ? 'true' : 'false', key: 'disableGuildSelect');
 
