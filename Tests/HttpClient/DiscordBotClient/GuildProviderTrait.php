@@ -37,6 +37,14 @@ trait GuildProviderTrait
     /**
      * @return Generator
      */
+    public function provideValidGuild()
+    {
+        yield ['230858112993375816'];
+    }
+
+    /**
+     * @return Generator
+     */
     public function provideValidGuilds()
     {
         $mock = $this

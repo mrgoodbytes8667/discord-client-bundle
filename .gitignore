@@ -38,4 +38,5 @@ bin/phpunit
 
 ###> jetbrains ###
 .idea
+http-client.private.env.json
 ###< jetbrains ###

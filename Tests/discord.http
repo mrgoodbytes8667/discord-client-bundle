@@ -1,0 +1,44 @@
+### Get Guild Application Command Permissions
+GET https://discord.com/api/v9/applications/{{application_id}}/guilds/{{guild_id}}/commands/permissions
+Accept: application/json
+Authorization: Bot {{access_token}}
+
+### Get Application Command Permissions
+GET https://discord.com/api/v9/applications/{{application_id}}/guilds/{{guild_id}}/commands/{{command_id}}/permissions
+Accept: application/json
+Authorization: Bot {{access_token}}
+
+### Edit Application Command Permissions
+PUT https://discord.com/api/v9/applications/{{application_id}}/guilds/{{guild_id}}/commands/{{command_id}}/permissions
+Accept: application/json
+Content-Type: application/json
+Authorization: Bot {{access_token}}
+
+{
+    "permissions": [
+        {
+            "id": {{role_id}},
+            "type": 1,
+            "permission": true
+        }
+    ]
+}
+
+### Batch Edit Application Command Permissions
+PUT https://discord.com/api/v9/applications/{{application_id}}/guilds/{{guild_id}}/commands/permissions
+Accept: application/json
+Content-Type: application/json
+Authorization: Bot {{access_token}}
+
+[
+  {
+    "id": "{{command_id}}",
+    "permissions": [
+      {
+        "id": {{role_id}},
+        "type": 1,
+        "permission": true
+      }
+    ]
+  }
+]
