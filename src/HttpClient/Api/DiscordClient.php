@@ -113,6 +113,8 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @link https://discord.com/developers/docs/resources/user#get-current-user-guilds
      *
      * @Auth(scopes={"guilds"})
+     *
+     * @todo Remove v6
      */
     public function getGuilds(): ClientResponseInterface
     {

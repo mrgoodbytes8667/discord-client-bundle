@@ -434,7 +434,7 @@ class DiscordBotClient extends DiscordClient
     public function getGuild($guild, bool $withCounts = false): ClientResponseInterface
     {
         $id = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument is required and cannot be blank.');
-        $url = $this->buildURL(implode('/', [DiscordClientEndpoints::ENDPOINT_GUILD, $id]), 'v8');
+        $url = $this->buildURL(implode('/', [DiscordClientEndpoints::ENDPOINT_GUILD, $id]), 'v9');
         return $this->request(url: $url, caller: __METHOD__, type: Guild::class, options: [
             'query' => [
                 'with_counts' => $withCounts

@@ -14,27 +14,27 @@ interface DiscordClientEndpoints
     /**
      * Matches Slash Command API routes
      */
-    const SCOPE_SLASH_COMMAND = 'https://discord\.com/api/v8/applications';
+    const SCOPE_SLASH_COMMAND = 'https://discord\.com/api/v9/applications';
 
     /**
      * Matches OAuth token revoke API routes
      */
-    const SCOPE_OAUTH_TOKEN_REVOKE = 'https://discord\.com/api(|/v6|/v8)/oauth2/token/revoke';
+    const SCOPE_OAUTH_TOKEN_REVOKE = 'https://discord\.com/api(|/v6|/v8|/v9)/oauth2/token/revoke';
 
     /**
      * Matches OAuth token API routes
      */
-    const SCOPE_OAUTH_TOKEN = 'https://discord\.com/api(|/v6|/v8)/oauth2/token';
+    const SCOPE_OAUTH_TOKEN = 'https://discord\.com/api(|/v6|/v8|/v9)/oauth2/token';
 
     /**
      * Matches OAuth API routes (though there shouldn't be any...)
      */
-    const SCOPE_OAUTH = 'https://discord\.com/api(|/v6|/v8)/oauth2';
+    const SCOPE_OAUTH = 'https://discord\.com/api(|/v6|/v8|/v9)/oauth2';
 
     /**
      * Matches non-oauth API routes
      */
-    const SCOPE_API = 'https://discord\.com/api(|/v6|/v8)/((?!oauth2).)';
+    const SCOPE_API = 'https://discord\.com/api(|/v6|/v8|/v9)/((?!oauth2).)';
     //endregion
 
     //region Uri

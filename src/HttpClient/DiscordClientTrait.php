@@ -17,7 +17,7 @@ trait DiscordClientTrait
      * @param string $version
      * @return string
      */
-    protected function buildURL(string $path, string $version = 'v8')
+    protected function buildURL(string $path, string $version = 'v9')
     {
         $url = u($path);
         if ($url->startsWith(DiscordClientEndpoints::ENDPOINT_DISCORD_API)) {
