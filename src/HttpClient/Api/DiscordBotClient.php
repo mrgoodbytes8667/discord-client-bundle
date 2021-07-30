@@ -5,6 +5,7 @@ namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 
 use Bytes\DiscordClientBundle\Event\ApplicationCommandCreatedEvent;
+use Bytes\DiscordClientBundle\Event\ApplicationCommandDeleteAllEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
@@ -34,6 +35,7 @@ use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
+use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -140,13 +142,14 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to overwrite commands in. Must be a string, a
      * GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global
      * command.
+     * @param bool $isDelete
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#bulk-overwrite-global-application-commands
      * @link
      */
-    public function bulkOverwriteCommands($applicationCommands, $guild = null)
+    public function bulkOverwriteCommands($applicationCommands, $guild = null, bool $isDelete = false)
     {
         foreach (Arr::wrap($applicationCommands) as $applicationCommand) {
             $errors = $this->validator->validate($applicationCommand);
@@ -154,7 +157,7 @@ class DiscordBotClient extends DiscordClient
                 throw new ValidatorException((string)$errors);
             }
         }
-        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__);
+        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__, isDelete: $isDelete);
     }
 
     /**
@@ -163,10 +166,13 @@ class DiscordBotClient extends DiscordClient
      * @param HttpMethods $method
      * @param string $class
      * @param array $urlAppend
+     * @param ReflectionMethod|string $caller
+     * @param bool $isDelete
      * @return ClientResponseInterface
+     * @throws NoTokenException
      * @throws TransportExceptionInterface
      */
-    protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [], \ReflectionMethod|string $caller = __METHOD__)
+    protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [], ReflectionMethod|string $caller = __METHOD__, bool $isDelete = false): ClientResponseInterface
     {
         $urlParts = ['applications', $this->clientId];
         if (!empty($guild)) {
@@ -188,11 +194,16 @@ class DiscordBotClient extends DiscordClient
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $body,
-            ], method: $method, onSuccessCallable: function ($self, $results) use ($method) {
-                if ($method->equals(HttpMethods::post())) {
-                    $this->dispatch(ApplicationCommandCreatedEvent::new($results));
-                } else {
-                    $this->dispatch(ApplicationCommandUpdatedEvent::new($results));
+            ], method: $method, onSuccessCallable: function ($self, $results) use ($isDelete, $method) {
+                if ($isDelete) {
+                    $this->dispatch(new ApplicationCommandDeleteAllEvent());
+                }
+                foreach (Arr::wrap($results) as $result) {
+                    if ($method->equals(HttpMethods::post())) {
+                        $this->dispatch(ApplicationCommandCreatedEvent::new($result));
+                    } else {
+                        $this->dispatch(ApplicationCommandUpdatedEvent::new($result));
+                    }
                 }
             });
     }
@@ -238,7 +249,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function deleteAllCommands($guild = null): ClientResponseInterface
     {
-        return $this->bulkOverwriteCommands([], $guild);
+        return $this->bulkOverwriteCommands([], $guild, isDelete: true);
     }
 
     /**
@@ -565,8 +576,8 @@ class DiscordBotClient extends DiscordClient
 
         return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE],
             caller: __METHOD__, type: '\Bytes\DiscordResponseBundle\Objects\Message[]', options: [
-            'query' => $query
-        ]);
+                'query' => $query
+            ]);
     }
 
     /**
@@ -612,7 +623,7 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      * @internal
      */
-    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, \ReflectionMethod|string $caller): ClientResponseInterface
+    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
