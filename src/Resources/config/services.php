@@ -200,15 +200,16 @@ return static function (ContainerConfigurator $container) {
     $services->set(null, SlashAddCommand::class)
         ->args([
             service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
-            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
             service('bytes_discord_client.slashcommands.handler'), // Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection
         ])
+        ->call('setEntityManager', [service('doctrine.orm.default_entity_manager')->ignoreOnInvalid()]) // Doctrine\ORM\EntityManagerInterface
         ->tag('console.command', ['command' => 'bytes_discord_client:slash:add']);
 
     $services->set(null, SlashDeleteCommand::class)
         ->args([
             service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
         ])
+        ->call('setEntityManager', [service('doctrine.orm.default_entity_manager')->ignoreOnInvalid()]) // Doctrine\ORM\EntityManagerInterface
         ->tag('console.command', ['command' => 'bytes_discord_client:slash:delete']);
     //endregion
 
