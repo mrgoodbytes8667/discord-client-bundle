@@ -4,7 +4,6 @@ namespace Bytes\DiscordClientBundle\Command;
 
 use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordClientBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Exception;

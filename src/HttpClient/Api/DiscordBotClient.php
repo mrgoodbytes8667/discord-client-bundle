@@ -18,14 +18,17 @@ use Bytes\DiscordResponseBundle\Objects\Message\Content;
 use Bytes\DiscordResponseBundle\Objects\Message\WebhookContent;
 use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandPermission;
+use Bytes\DiscordResponseBundle\Objects\Slash\GuildApplicationCommandPermission;
+use Bytes\DiscordResponseBundle\Objects\Slash\PartialGuildApplicationCommandPermission;
 use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Annotations\Auth;
 use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Enums\HttpMethods;
-use Bytes\ResponseBundle\Enums\TokenSource;
-use Bytes\ResponseBundle\Event\ObtainValidTokenEvent;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
+use Bytes\ResponseBundle\Objects\Push;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -45,6 +48,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotClient extends DiscordClient
 {
+    const NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL = 'The "guildId" argument must be a string or must implement GuildIdInterface/IdInterface.';
+
     /**
      * DiscordBotClient constructor.
      * @param HttpClientInterface $httpClient
@@ -192,6 +197,7 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-guild-application-command
@@ -230,6 +236,7 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to get commands for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-commands
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-commands
@@ -252,8 +259,12 @@ class DiscordBotClient extends DiscordClient
      * Get Global/Guild Application Command
      * Fetch a global/guild command for your application. Returns an ApplicationCommand object.
      * @param ApplicationCommand|IdInterface|string $applicationCommand
-     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param null $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     *
      * @return ClientResponseInterface
+     *
+     * @throws NoTokenException
+     * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command
@@ -272,6 +283,139 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = $commandId;
 
         return $this->request(url: $urlParts, caller: __METHOD__, type: ApplicationCommand::class);
+    }
+
+    /**
+     * Get Guild Application Command Permissions
+     * Fetches command permissions for all commands for your application in a guild. Returns an array of guild application command permissions objects.
+     *
+     * @param GuildIdInterface|IdInterface|string|null $guild Guild id to get commands for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     *
+     * @return ClientResponseInterface
+     *
+     * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command-permissions
+     */
+    public function getCommandsPermissions(GuildIdInterface|IdInterface|string $guild): ClientResponseInterface
+    {
+        $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
+        $urlParts = $this->buildApplicationCommandPermissionsParts($guild);
+
+        return $this->request($urlParts, caller: __METHOD__,
+            type: '\Bytes\DiscordResponseBundle\Objects\Slash\GuildApplicationCommandPermission[]');
+    }
+
+    /**
+     * Get Application Command Permissions
+     * Fetches command permissions for a specific command for your application in a guild. Returns a guild application command permissions object.
+     *
+     * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     *
+     * @return ClientResponseInterface
+     *
+     * @throws NoTokenException
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#get-application-command-permissions
+     */
+    public function getCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommand|IdInterface|string $applicationCommand): ClientResponseInterface
+    {
+        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
+        $urlParts = $this->buildApplicationCommandPermissionsParts($guild, $commandId);
+
+        return $this->request($urlParts, caller: __METHOD__, type: GuildApplicationCommandPermission::class);
+    }
+
+    /**
+     * Edit Application Command Permissions
+     * Edits command permissions for a specific command for your application in a guild. You can only add up to 10 permission overwrites for a command. Returns a GuildApplicationCommandPermissions object.
+     * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandPermission[] $permissions
+     *
+     * @return ClientResponseInterface
+     *
+     * @throws NoTokenException
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#edit-application-command-permissions
+     */
+    public function editCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommand|IdInterface|string $applicationCommand, array $permissions = []): ClientResponseInterface
+    {
+        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
+        $urlParts = $this->buildApplicationCommandPermissionsParts($guild, $commandId);
+
+        $body = $this->serializer->serialize(['permissions' => $permissions], 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
+
+        return $this->request($urlParts, caller: __METHOD__, type: GuildApplicationCommandPermission::class, options: [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'body' => $body,
+        ], method: HttpMethods::put());
+    }
+
+    /**
+     * Batch Edit Application Command Permissions
+     * Batch edits permissions for all commands in a guild. Takes an array of partial guild application command permissions objects including id and permissions. You can only add up to 10 permission overwrites for a command. Returns an array of GuildApplicationCommandPermissions objects.
+     * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
+     * @param PartialGuildApplicationCommandPermission[] $permissions
+     *
+     * @return ClientResponseInterface
+     *
+     * @throws NoTokenException
+     * @throws TransportExceptionInterface
+     *
+     * @link https://discord.com/developers/docs/interactions/slash-commands#batch-edit-application-command-permissions
+     */
+    public function bulkEditCommandsPermissions(GuildIdInterface|IdInterface|string $guild, array $permissions): ClientResponseInterface
+    {
+        $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
+
+        $errors = $this->validator->validate($permissions, new Assert\All([
+            'constraints' => [
+                new Assert\Type(PartialGuildApplicationCommandPermission::class)
+            ],
+        ]));
+        if (count($errors) > 0) {
+            throw new ValidatorException((string)$errors);
+        }
+
+        $body = $this->serializer->serialize($permissions, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]);
+
+        return $this->request($this->buildApplicationCommandPermissionsParts($guild),
+            caller: __METHOD__,
+            type: '\Bytes\DiscordResponseBundle\Objects\Slash\GuildApplicationCommandPermission[]',
+            options: [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $body,
+            ], method: HttpMethods::put());
+    }
+
+    /**
+     * @param string $guild
+     * @param string|null $commandId
+     * @return string[]
+     */
+    protected function buildApplicationCommandPermissionsParts(string $guild, ?string $commandId = null): array
+    {
+        $urlParts = Push::create(['applications', $this->clientId])
+            ->push(DiscordClientEndpoints::ENDPOINT_GUILD)
+            ->push($guild)
+            ->push('commands');
+        if (!empty($commandId)) {
+            $urlParts = $urlParts->push($commandId);
+        }
+        $urlParts = $urlParts->push('permissions');
+
+        return $urlParts->value();
     }
 
     /**
