@@ -18,6 +18,15 @@ abstract class AbstractApplicationCommandEvent extends Event
     }
 
     /**
+     * @param ApplicationCommandInterface|null $applicationCommand
+     * @return static
+     */
+    public static function new(?ApplicationCommandInterface $applicationCommand = null): static
+    {
+        return new static($applicationCommand);
+    }
+
+    /**
      * @return ApplicationCommandInterface|null
      */
     public function getApplicationCommand(): ?ApplicationCommandInterface

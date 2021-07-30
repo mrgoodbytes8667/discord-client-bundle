@@ -4,6 +4,9 @@
 namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 
+use Bytes\DiscordClientBundle\Event\ApplicationCommandCreatedEvent;
+use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
+use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
@@ -172,7 +175,7 @@ class DiscordBotClient extends DiscordClient
             $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
-        if(!empty($urlAppend)) {
+        if (!empty($urlAppend)) {
             $urlParts = array_merge($urlParts, Arr::wrap($urlAppend));
         }
 
@@ -185,7 +188,13 @@ class DiscordBotClient extends DiscordClient
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $body,
-            ], method: $method);
+            ], method: $method, onSuccessCallable: function ($self, $results) use ($method) {
+                if ($method->equals(HttpMethods::post())) {
+                    $this->dispatch(ApplicationCommandCreatedEvent::new($results));
+                } else {
+                    $this->dispatch(ApplicationCommandUpdatedEvent::new($results));
+                }
+            });
     }
 
     /**
@@ -215,7 +224,10 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
 
-        return $this->request(url: $urlParts, caller: __METHOD__, method: HttpMethods::delete());
+        return $this->request(url: $urlParts, caller: __METHOD__, method: HttpMethods::delete(),
+            onSuccessCallable: function ($self, $results) use ($commandId) {
+                $this->dispatch(ApplicationCommandDeletedEvent::setCommandId($commandId));
+            });
     }
 
     /**
