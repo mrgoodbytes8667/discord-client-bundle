@@ -12,6 +12,11 @@ interface DiscordClientEndpoints
 {
     //region Scopes
     /**
+     * Matches Webhook Send/Edit API routes
+     */
+    const SCOPE_WEBHOOKS_SEND_EDIT = 'https://discord\.com/api(|/v6|/v8|/v9)/webhooks';
+
+    /**
      * Matches Slash Command API routes
      */
     const SCOPE_SLASH_COMMAND = 'https://discord\.com/api/v9/applications';
