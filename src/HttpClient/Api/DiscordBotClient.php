@@ -13,6 +13,7 @@ use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Guild;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\ApplicationCommandInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Member;
@@ -213,7 +214,7 @@ class DiscordBotClient extends DiscordClient
      * Deletes a global/guild command. Returns 204.
      *
      * Not deserializable
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
@@ -224,7 +225,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function deleteCommand($applicationCommand, $guild = null)
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -281,7 +282,7 @@ class DiscordBotClient extends DiscordClient
     /**
      * Get Global/Guild Application Command
      * Fetch a global/guild command for your application. Returns an ApplicationCommand object.
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      * @param null $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      *
      * @return ClientResponseInterface
@@ -294,7 +295,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function getCommand($applicationCommand, $guild = null): ClientResponseInterface
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -335,7 +336,7 @@ class DiscordBotClient extends DiscordClient
      * Fetches command permissions for a specific command for your application in a guild. Returns a guild application command permissions object.
      *
      * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      *
      * @return ClientResponseInterface
      *
@@ -344,9 +345,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-application-command-permissions
      */
-    public function getCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommand|IdInterface|string $applicationCommand): ClientResponseInterface
+    public function getCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommandInterface|IdInterface|string $applicationCommand): ClientResponseInterface
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
         $urlParts = $this->buildApplicationCommandPermissionsParts($guild, $commandId);
 
@@ -357,7 +358,7 @@ class DiscordBotClient extends DiscordClient
      * Edit Application Command Permissions
      * Edits command permissions for a specific command for your application in a guild. You can only add up to 10 permission overwrites for a command. Returns a GuildApplicationCommandPermissions object.
      * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      * @param ApplicationCommandPermission[] $permissions
      *
      * @return ClientResponseInterface
@@ -367,9 +368,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-application-command-permissions
      */
-    public function editCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommand|IdInterface|string $applicationCommand, array $permissions = []): ClientResponseInterface
+    public function editCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommandInterface|IdInterface|string $applicationCommand, array $permissions = []): ClientResponseInterface
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
         $urlParts = $this->buildApplicationCommandPermissionsParts($guild, $commandId);
 

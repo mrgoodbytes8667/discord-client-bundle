@@ -4,8 +4,10 @@ namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
 use Bytes\DiscordClientBundle\Tests\Fixtures\Commands\Sample;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\ApplicationCommandInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandPermission;
+use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Generator;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Enums\ApplicationCommandPermissionType;
@@ -28,6 +30,20 @@ trait CommandPermissionsProviderTrait
         foreach ($this->provideValidGuilds() as $guild) {
             $command = Sample::createCommand();
             $command->setId($this->faker->snowflake());
+            yield ['command' => $command, 'guild' => $guild[0]];
+
+            $command = $this
+                ->getMockBuilder(ApplicationCommandInterface::class)
+                ->getMock();
+            $command->method('getCommandId')
+                ->willReturn($this->faker->snowflake());
+            yield ['command' => $command, 'guild' => $guild[0]];
+
+            $command = $this
+                ->getMockBuilder(IdInterface::class)
+                ->getMock();
+            $command->method('getId')
+                ->willReturn($this->faker->snowflake());
             yield ['command' => $command, 'guild' => $guild[0]];
         }
     }
