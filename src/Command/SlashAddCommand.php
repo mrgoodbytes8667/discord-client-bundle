@@ -75,7 +75,7 @@ class SlashAddCommand extends AbstractSlashCommand
         $command = $this->input->getArgument('cmd');
         /** @var PartialGuild $guild */
         $guild = $this->input->getArgument('guild');
-        if ($guild->getId() === '-1') {
+        if ($guild?->getId() === '-1') {
             $guild = null;
         }
 
