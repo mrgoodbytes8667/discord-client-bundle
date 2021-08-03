@@ -6,6 +6,9 @@ use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,8 +23,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * Class SlashAddCommand
- * @package Bytes\DiscordClientBundle\Command
+ *
  */
 class SlashAddCommand extends AbstractSlashCommand
 {
@@ -36,12 +38,10 @@ class SlashAddCommand extends AbstractSlashCommand
     protected static $defaultDescription = 'Add a slash command to a server or globally';
 
     /**
-     * SlashAddCommand constructor.
      * @param DiscordBotClient $client
-     * @param SerializerInterface $serializer
      * @param SlashCommandsHandlerCollection $commandsCollection
      */
-    public function __construct(DiscordBotClient $client, private SerializerInterface $serializer, private SlashCommandsHandlerCollection $commandsCollection)
+    public function __construct(DiscordBotClient $client, private SlashCommandsHandlerCollection $commandsCollection)
     {
         parent::__construct($client);
     }
@@ -66,6 +66,8 @@ class SlashAddCommand extends AbstractSlashCommand
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     protected function executeCommand(): int
     {
@@ -73,7 +75,7 @@ class SlashAddCommand extends AbstractSlashCommand
         $command = $this->input->getArgument('cmd');
         /** @var PartialGuild $guild */
         $guild = $this->input->getArgument('guild');
-        if ($guild->getId() === '-1') {
+        if ($guild?->getId() === '-1') {
             $guild = null;
         }
 
@@ -92,15 +94,11 @@ class SlashAddCommand extends AbstractSlashCommand
             } else {
                 throw new Exception(sprintf("There was an error adding command '%s' for %s", $command->getName(), $guild ?? 'global'));
             }
-
-            //dump($response->getStatusCode(), $response->getContent());
-        } catch (ClientException $exception) {
-            $this->io->error($exception->getMessage());
-            //dump($exception->getResponse()->getContent(false));
-            return self::FAILURE;
-        } catch (Exception $exception) {
+        } catch (ClientException | Exception $exception) {
             $this->io->error($exception->getMessage());
             return self::FAILURE;
+        } finally {
+            $this->flush();
         }
 
         return self::SUCCESS;

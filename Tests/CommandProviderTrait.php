@@ -28,7 +28,7 @@ trait CommandProviderTrait
     public function provideInvalidCommandAndValidGuild()
     {
         foreach ($this->provideValidGuilds() as $guild) {
-            foreach ([0, '', null, new DateTime(), []] as $cmd) {
+            foreach (['', null, new DateTime(), []] as $cmd) {
                 yield ['command' => $cmd, 'guild' => $guild[0]];
                 yield ['command' => $cmd, 'guild' => null];
             }

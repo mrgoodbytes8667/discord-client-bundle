@@ -6,8 +6,8 @@ namespace Bytes\DiscordClientBundle\Command;
 
 use Bytes\CommandBundle\Command\BaseCommand;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
-use Bytes\DiscordClientBundle\Services\Client\DiscordBot;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,8 +20,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * Class AbstractSlashCommand
- * @package Bytes\DiscordClientBundle\Command
+ *
  */
 abstract class AbstractSlashCommand extends BaseCommand
 {
@@ -29,6 +28,11 @@ abstract class AbstractSlashCommand extends BaseCommand
      * @var PartialGuild[]
      */
     protected $guilds;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
 
     /**
      * @return PartialGuild[]|null
@@ -46,7 +50,6 @@ abstract class AbstractSlashCommand extends BaseCommand
     }
 
     /**
-     * AbstractSlashCommand constructor.
      * @param DiscordBotClient $client
      */
     public function __construct(protected DiscordBotClient $client)
@@ -69,8 +72,8 @@ abstract class AbstractSlashCommand extends BaseCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        parent::interact($input,$output);
-        if($input->getOption('global') && $input->hasArgument('guild')) {
+        parent::interact($input, $output);
+        if ($input->getOption('global') && $input->hasArgument('guild')) {
             $input->setArgument('guild', null);
         }
     }
@@ -91,7 +94,7 @@ abstract class AbstractSlashCommand extends BaseCommand
     protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null): ?PartialGuild
     {
         if (!$input->getOption('global') && !$input->getArgument('guild')) {
-            if(is_null($helper)) {
+            if (is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
             $empty = new PartialGuild();
@@ -99,8 +102,7 @@ abstract class AbstractSlashCommand extends BaseCommand
             $empty->setId('-1');
             $guilds = [$empty];
             $retrievedGuilds = $this->getGuilds();
-            if(!empty($retrievedGuilds))
-            {
+            if (!empty($retrievedGuilds)) {
                 $guilds = array_merge($guilds, $retrievedGuilds);
             }
             $question = new ChoiceQuestion(
@@ -111,7 +113,7 @@ abstract class AbstractSlashCommand extends BaseCommand
             );
 
             $answer = $helper->ask($input, $output, $question);
-            if($answer->getId() == '-1') {
+            if ($answer->getId() == '-1') {
                 $answer = null;
             }
         } else {
@@ -123,7 +125,6 @@ abstract class AbstractSlashCommand extends BaseCommand
         return $answer;
     }
 
-
     /**
      * Initializes the command after the input has been bound and before the input
      * is validated.
@@ -131,22 +132,43 @@ abstract class AbstractSlashCommand extends BaseCommand
      * This is mainly useful when a lot of commands extends one main command
      * where some things need to be initialized based on the input arguments and options.
      *
-     * @see InputInterface::validate()
-     * @see InputInterface::bind()
-     *
      * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int
+     * @see InputInterface::bind()
+     *
+     * @see InputInterface::validate()
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        if(!$input->hasArgument('guild')) {
+        if (!$input->hasArgument('guild')) {
             throw new LogicException('The guild argument must be added for commands inheriting from AbstractSlashCommand.');
         }
 
-        if(!$input->hasOption('global')) {
+        if (!$input->hasOption('global')) {
             throw new LogicException('The global option must be added for commands inheriting from AbstractSlashCommand.');
         }
+    }
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     */
+    public function setEntityManager(EntityManagerInterface $entityManager): void
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @return bool True if flush was called
+     */
+    protected function flush(): bool
+    {
+        if(!is_null($this->entityManager))
+        {
+            $this->entityManager->flush();
+            return true;
+        }
+        return false;
     }
 }

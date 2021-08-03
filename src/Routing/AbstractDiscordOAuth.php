@@ -50,8 +50,7 @@ abstract class AbstractDiscordOAuth extends AbstractOAuth
      */
     public function getAuthorizationUrl(?string $state = null, ...$options): string
     {
-        $options = Push::createPush($options, OAuthPrompts::none(), 'prompt')
-            ->value();
+        $options = Push::createPush($options, OAuthPrompts::none(), 'prompt')->toArray();
         return parent::getAuthorizationUrl($state, ...$options);
     }
 
@@ -68,7 +67,7 @@ abstract class AbstractDiscordOAuth extends AbstractOAuth
         if ($prompt instanceof OAuthPrompts) {
             return $prompt->prompt();
         } elseif (is_string($prompt) && OAuthPrompts::isValid($prompt)) {
-            return OAuthPrompts::make($prompt)->prompt();
+            return OAuthPrompts::from($prompt)->prompt();
         } else {
             return OAuthPrompts::none()->prompt();
         }

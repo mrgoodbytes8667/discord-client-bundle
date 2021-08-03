@@ -4,12 +4,14 @@ namespace Bytes\DiscordClientBundle\Command;
 
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -45,7 +47,10 @@ class SlashDeleteCommand extends AbstractSlashCommand
 
     /**
      * @return int
+     *
      * @throws TransportExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     protected function executeCommand(): int
     {
@@ -56,7 +61,9 @@ class SlashDeleteCommand extends AbstractSlashCommand
 
 
         try {
-            if ($this->client->deleteCommand($command, $guild)->isSuccess()) {
+            $response = $this->client->deleteCommand($command, $guild);
+            if ($response->isSuccess()) {
+                $response->onSuccessCallback();
                 $this->io->success(sprintf("The command '%s' (ID: %s) for %s has been deleted successfully.", $command->getName(), $command->getId(), $guild ?? 'global'));
             } else {
                 throw new Exception(sprintf("There was an error deleting command '%s' (ID: %s) for %s", $command->getName(), $command->getId(), $guild ?? 'global'));
@@ -64,6 +71,8 @@ class SlashDeleteCommand extends AbstractSlashCommand
         } catch (Exception $exception) {
             $this->io->error($exception->getMessage());
             return self::FAILURE;
+        } finally {
+            $this->flush();
         }
 
         return self::SUCCESS;
@@ -72,11 +81,11 @@ class SlashDeleteCommand extends AbstractSlashCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     *
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
      *
      * @todo This logic doesn't actually work if arguments are provided
      */

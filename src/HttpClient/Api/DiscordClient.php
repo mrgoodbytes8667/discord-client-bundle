@@ -15,7 +15,6 @@ use Bytes\DiscordResponseBundle\Services\IdNormalizer;
 use Bytes\ResponseBundle\Annotations\Auth;
 use Bytes\ResponseBundle\Annotations\Client;
 use Bytes\ResponseBundle\Enums\HttpMethods;
-use Bytes\ResponseBundle\Enums\TokenSource;
 use Bytes\ResponseBundle\HttpClient\Api\AbstractApiClient;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
@@ -60,11 +59,16 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      */
     public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null, bool $retryAuth = false)
     {
-        $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
+        $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->toArray();
         parent::__construct($httpClient, $dispatcher, $strategy, $clientId, $userAgent,
             array_merge_recursive([
                 // the options defined as values apply only to the URLs matching
                 // the regular expressions defined as keys
+
+                // Matches webhook send/edit API routes
+                DiscordClientEndpoints::SCOPE_WEBHOOKS_SEND_EDIT => [
+                    'headers' => array_merge($headers, ['Content-Type' => 'application/json']),
+                ],
 
                 // Matches Slash Command API routes
                 DiscordClientEndpoints::SCOPE_SLASH_COMMAND => [
@@ -113,6 +117,8 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @link https://discord.com/developers/docs/resources/user#get-current-user-guilds
      *
      * @Auth(scopes={"guilds"})
+     *
+     * @todo Remove v6
      */
     public function getGuilds(): ClientResponseInterface
     {

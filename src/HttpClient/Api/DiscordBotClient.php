@@ -4,11 +4,16 @@
 namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 
+use Bytes\DiscordClientBundle\Event\ApplicationCommandCreatedEvent;
+use Bytes\DiscordClientBundle\Event\ApplicationCommandDeleteAllEvent;
+use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
+use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Guild;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\ApplicationCommandInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Member;
@@ -31,6 +36,7 @@ use Bytes\ResponseBundle\Objects\Push;
 use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
+use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -137,13 +143,14 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to overwrite commands in. Must be a string, a
      * GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global
      * command.
+     * @param bool $isDelete
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#bulk-overwrite-global-application-commands
      * @link
      */
-    public function bulkOverwriteCommands($applicationCommands, $guild = null)
+    public function bulkOverwriteCommands($applicationCommands, $guild = null, bool $isDelete = false)
     {
         foreach (Arr::wrap($applicationCommands) as $applicationCommand) {
             $errors = $this->validator->validate($applicationCommand);
@@ -151,7 +158,7 @@ class DiscordBotClient extends DiscordClient
                 throw new ValidatorException((string)$errors);
             }
         }
-        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__);
+        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__, isDelete: $isDelete);
     }
 
     /**
@@ -160,10 +167,13 @@ class DiscordBotClient extends DiscordClient
      * @param HttpMethods $method
      * @param string $class
      * @param array $urlAppend
+     * @param ReflectionMethod|string $caller
+     * @param bool $isDelete
      * @return ClientResponseInterface
+     * @throws NoTokenException
      * @throws TransportExceptionInterface
      */
-    protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [], \ReflectionMethod|string $caller = __METHOD__)
+    protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [], ReflectionMethod|string $caller = __METHOD__, bool $isDelete = false): ClientResponseInterface
     {
         $urlParts = ['applications', $this->clientId];
         if (!empty($guild)) {
@@ -172,7 +182,7 @@ class DiscordBotClient extends DiscordClient
             $urlParts[] = $guild;
         }
         $urlParts[] = 'commands';
-        if(!empty($urlAppend)) {
+        if (!empty($urlAppend)) {
             $urlParts = array_merge($urlParts, Arr::wrap($urlAppend));
         }
 
@@ -185,7 +195,18 @@ class DiscordBotClient extends DiscordClient
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $body,
-            ], method: $method);
+            ], method: $method, onSuccessCallable: function ($self, $results) use ($isDelete, $method) {
+                if ($isDelete) {
+                    $this->dispatch(new ApplicationCommandDeleteAllEvent());
+                }
+                foreach (Arr::wrap($results) as $result) {
+                    if ($method->equals(HttpMethods::post())) {
+                        $this->dispatch(ApplicationCommandCreatedEvent::new($result));
+                    } else {
+                        $this->dispatch(ApplicationCommandUpdatedEvent::new($result));
+                    }
+                }
+            });
     }
 
     /**
@@ -193,7 +214,7 @@ class DiscordBotClient extends DiscordClient
      * Deletes a global/guild command. Returns 204.
      *
      * Not deserializable
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
@@ -204,7 +225,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function deleteCommand($applicationCommand, $guild = null)
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -215,7 +236,10 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
 
-        return $this->request(url: $urlParts, caller: __METHOD__, method: HttpMethods::delete());
+        return $this->request(url: $urlParts, caller: __METHOD__, method: HttpMethods::delete(),
+            onSuccessCallable: function ($self, $results) use ($commandId) {
+                $this->dispatch(ApplicationCommandDeletedEvent::setCommandId($commandId));
+            });
     }
 
     /**
@@ -226,7 +250,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function deleteAllCommands($guild = null): ClientResponseInterface
     {
-        return $this->bulkOverwriteCommands([], $guild);
+        return $this->bulkOverwriteCommands([], $guild, isDelete: true);
     }
 
     /**
@@ -258,7 +282,7 @@ class DiscordBotClient extends DiscordClient
     /**
      * Get Global/Guild Application Command
      * Fetch a global/guild command for your application. Returns an ApplicationCommand object.
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      * @param null $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      *
      * @return ClientResponseInterface
@@ -271,7 +295,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function getCommand($applicationCommand, $guild = null): ClientResponseInterface
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $urlParts = ['applications', $this->clientId];
 
         if (!empty($guild)) {
@@ -312,7 +336,7 @@ class DiscordBotClient extends DiscordClient
      * Fetches command permissions for a specific command for your application in a guild. Returns a guild application command permissions object.
      *
      * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      *
      * @return ClientResponseInterface
      *
@@ -321,9 +345,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-application-command-permissions
      */
-    public function getCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommand|IdInterface|string $applicationCommand): ClientResponseInterface
+    public function getCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommandInterface|IdInterface|string $applicationCommand): ClientResponseInterface
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
         $urlParts = $this->buildApplicationCommandPermissionsParts($guild, $commandId);
 
@@ -334,7 +358,7 @@ class DiscordBotClient extends DiscordClient
      * Edit Application Command Permissions
      * Edits command permissions for a specific command for your application in a guild. You can only add up to 10 permission overwrites for a command. Returns a GuildApplicationCommandPermissions object.
      * @param GuildIdInterface|IdInterface|string $guild Guild id to get command for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
-     * @param ApplicationCommand|IdInterface|string $applicationCommand
+     * @param ApplicationCommandInterface|IdInterface|string $applicationCommand
      * @param ApplicationCommandPermission[] $permissions
      *
      * @return ClientResponseInterface
@@ -344,9 +368,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-application-command-permissions
      */
-    public function editCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommand|IdInterface|string $applicationCommand, array $permissions = []): ClientResponseInterface
+    public function editCommandPermissions(GuildIdInterface|IdInterface|string $guild, ApplicationCommandInterface|IdInterface|string $applicationCommand, array $permissions = []): ClientResponseInterface
     {
-        $commandId = IdNormalizer::normalizeIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
+        $commandId = IdNormalizer::normalizeCommandIdArgument($applicationCommand, 'The "applicationCommand" argument is required and cannot be blank.');
         $guild = IdNormalizer::normalizeGuildIdArgument($guild, self::NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL);
         $urlParts = $this->buildApplicationCommandPermissionsParts($guild, $commandId);
 
@@ -415,7 +439,7 @@ class DiscordBotClient extends DiscordClient
         }
         $urlParts = $urlParts->push('permissions');
 
-        return $urlParts->value();
+        return $urlParts->toArray();
     }
 
     /**
@@ -434,7 +458,7 @@ class DiscordBotClient extends DiscordClient
     public function getGuild($guild, bool $withCounts = false): ClientResponseInterface
     {
         $id = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument is required and cannot be blank.');
-        $url = $this->buildURL(implode('/', [DiscordClientEndpoints::ENDPOINT_GUILD, $id]), 'v8');
+        $url = $this->buildURL(implode('/', [DiscordClientEndpoints::ENDPOINT_GUILD, $id]), 'v9');
         return $this->request(url: $url, caller: __METHOD__, type: Guild::class, options: [
             'query' => [
                 'with_counts' => $withCounts
@@ -553,8 +577,8 @@ class DiscordBotClient extends DiscordClient
 
         return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE],
             caller: __METHOD__, type: '\Bytes\DiscordResponseBundle\Objects\Message[]', options: [
-            'query' => $query
-        ]);
+                'query' => $query
+            ]);
     }
 
     /**
@@ -600,7 +624,7 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      * @internal
      */
-    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, \ReflectionMethod|string $caller): ClientResponseInterface
+    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
