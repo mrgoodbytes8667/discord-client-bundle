@@ -7,6 +7,7 @@ namespace Bytes\DiscordClientBundle\Services;
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Enums\Permissions;
+use Bytes\ResponseBundle\HttpClient\Token\AbstractTokenClient;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use LogicException;
@@ -250,7 +251,7 @@ class OAuth
             'permissions' => Permissions::getFlags($permissions),
             'redirect_uri' => $redirect,
             'response_type' => $responseType,
-            'scope' => OAuthScopes::buildOAuthString($scopes),
+            'scope' => AbstractTokenClient::buildOAuthString($scopes),
             'state' => $state ?? $this->getState($endpoint),
             'prompt' => $prompt->value,
         ];
