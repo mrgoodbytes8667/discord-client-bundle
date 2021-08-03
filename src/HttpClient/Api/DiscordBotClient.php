@@ -438,7 +438,7 @@ class DiscordBotClient extends DiscordClient
         }
         $urlParts = $urlParts->push('permissions');
 
-        return $urlParts->value();
+        return $urlParts->toArray();
     }
 
     /**

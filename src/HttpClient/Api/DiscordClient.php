@@ -59,7 +59,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      */
     public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, ?RetryStrategyInterface $strategy, string $clientId, string $clientSecret, string $botToken, ?string $userAgent, array $defaultOptionsByRegexp = [], string $defaultRegexp = null, bool $retryAuth = false)
     {
-        $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->value();
+        $headers = Push::createPush(value: $userAgent, key: 'User-Agent')->toArray();
         parent::__construct($httpClient, $dispatcher, $strategy, $clientId, $userAgent,
             array_merge_recursive([
                 // the options defined as values apply only to the URLs matching
