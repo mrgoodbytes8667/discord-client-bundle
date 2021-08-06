@@ -2,8 +2,12 @@
 
 namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
+use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Objects\Message;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -43,5 +47,23 @@ class GetChannelMessagesTest extends TestDiscordBotClientCase
             '297773459887947789', "landen.wuckert", "a_8269209c66e5686f529a0b6ba304b574",
             "2166", 6, null, 0, 0, true,
             false, false, true);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testGetChannelMessagesViaClient()
+    {
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/get-channel-messages-x100-success.json'),
+            MockJsonResponse::makeFixture('HttpClient/get-channel-messages-success.json'),
+            MockJsonResponse::makeFixture('HttpClient/get-channel-messages-x0-success.json'),
+        ]));
+
+        $response = $client->getChannelMessages(channelId: '1987455', limit: 150)->deserialize();
+        $this->assertCount(103, $response);
     }
 }
