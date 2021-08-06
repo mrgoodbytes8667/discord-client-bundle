@@ -641,7 +641,10 @@ class DiscordBotClient extends DiscordClient
             $urlParts[] = $messageId;
         }
 
-        if (!($content instanceof Content)) {
+        if($content instanceof Embed)
+        {
+            $data = Content::new($content);
+        } elseif (!($content instanceof Content)) {
             $data = new Content();
 
             if (is_string($content)) {
