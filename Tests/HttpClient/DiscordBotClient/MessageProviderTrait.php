@@ -73,12 +73,12 @@ trait MessageProviderTrait
         $contents[] = $content;
 
         $content = new Content();
-        $content->setEmbed($this->faker->embed());
+        $content->addEmbed($this->faker->embed());
         $contents[] = $content;
 
         $content = new Content();
         $content->setContent($this->faker->sentence());
-        $content->setEmbed($this->faker->embed());
+        $content->addEmbed($this->faker->embed());
         $contents[] = $content;
 
         foreach ($this->provideValidChannelMessagesInternal() as $cm) {
