@@ -606,7 +606,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
+     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws ValidatorException
      */
     public function createMessage($channelId, $content, bool $tts = false): ClientResponseInterface
     {
@@ -614,15 +616,19 @@ class DiscordBotClient extends DiscordClient
     }
 
     /**
-     * @param ChannelIdInterface|IdInterface|string $channelId
+     * @param $channelId
      * @param IdInterface|string|null $messageId
      * @param Content|Embed|string|array $content the message contents (up to 2000 characters), an array of content, or an Embed
      * @param bool $tts true if this is a TTS message
      * @param HttpMethods $method
+     * @param ReflectionMethod|string $caller
      *
      * @return ClientResponseInterface
      *
+     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws ValidatorException
+     *
      * @internal
      */
     protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller): ClientResponseInterface
@@ -638,17 +644,26 @@ class DiscordBotClient extends DiscordClient
         if (!($content instanceof Content)) {
             $data = new Content();
 
-            if (is_string($content) && !empty($content)) {
-                $data->setContent($content);
+            if (is_string($content)) {
+                if(!empty($content)) {
+                    $data->setContent($content);
+                } else {
+                    throw new ValidatorException('Content must be populated.');
+                }
             }
 
-            if (!is_string($content) && !is_array($content)) {
-                $data->setEmbed($content);
+            if (is_array($content)) {
+                $data->setEmbeds($content);
             }
 
             $data->setTts($tts);
         } else {
             $data = $content;
+        }
+
+        $errors = $this->validator->validate($data);
+        if (count($errors) > 0) {
+            throw new ValidatorException((string)$errors);
         }
 
         $body = $this->serializer->serialize($data, 'json', [
@@ -675,7 +690,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
+     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws ValidatorException
      */
     public function editMessage($channelId, $messageId, $content): ClientResponseInterface
     {
