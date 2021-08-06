@@ -75,6 +75,7 @@ class DiscordBotClient extends DiscordClient
             DiscordClientEndpoints::SCOPE_API => [
                 'headers' => [
                     'Authorization' => 'Bot ' . $botToken,
+                    'Content-Type' => 'application/json',
                 ],
             ],
         ], $defaultOptionsByRegexp);
