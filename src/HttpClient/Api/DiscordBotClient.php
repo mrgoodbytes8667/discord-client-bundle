@@ -558,7 +558,7 @@ class DiscordBotClient extends DiscordClient
      *
      * @link https://discord.com/developers/docs/resources/channel#get-channel-messages
      */
-    public function getChannelMessages($channelId, ?string $filter = null, $messageId = null, ?int $limit = 50): ClientResponseInterface
+    public function getChannelMessages($channelId, ?string $filter = null, $messageId = null, ?int $limit = 50, bool $followPagination = true): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $limit = self::normalizeLimit($limit, 50, max: null);
@@ -582,7 +582,7 @@ class DiscordBotClient extends DiscordClient
         return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE], caller: __METHOD__,
             type: '\Bytes\DiscordResponseBundle\Objects\Message[]', options: [
                 'query' => $query->toArray()
-            ], responseClass: GetChannelMessagesResponse::class, params: ['channelId' => $channelId, 'client' => $this, 'limit' => $limit, 'followPagination' => ($limit > $normalizedLimit)]);
+            ], responseClass: GetChannelMessagesResponse::class, params: ['channelId' => $channelId, 'client' => $this, 'limit' => $limit, 'followPagination' => $followPagination]);
     }
 
     /**

@@ -38,14 +38,14 @@ class GetChannelMessagesResponse extends Response
             return $origResults;
         }
         $results = $origResults; // To get past the count check for the first iteration
-        while (count($origResults) <= $this->getLimit() && count($results) > 0) {
+        while (count($origResults) < $this->getLimit() && count($results) > 0) {
             $results = new ArrayCollection($origResults);
             $remainingLimit = $this->getLimit() - count($origResults);
             $results = $this->getClient()
-                ->getChannelMessages(channelId: $this->getChannelId(), filter: 'before', messageId: $results->last()->getId(), limit: $remainingLimit)
+                ->getChannelMessages(channelId: $this->getChannelId(), filter: 'before', messageId: $results->last()->getId(), limit: $remainingLimit, followPagination: false)
                 ->deserialize(throw: $throw, context: $context, type: $type);
 
-            $origResults = array_merge($results, $origResults);
+            $origResults = array_merge($origResults, $results);
         }
         return $origResults;
     }
