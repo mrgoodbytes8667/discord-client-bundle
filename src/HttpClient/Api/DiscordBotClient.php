@@ -9,6 +9,7 @@ use Bytes\DiscordClientBundle\Event\ApplicationCommandDeleteAllEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
+use Bytes\DiscordClientBundle\HttpClient\Response\GetChannelMessagesResponse;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
@@ -557,11 +558,13 @@ class DiscordBotClient extends DiscordClient
      *
      * @link https://discord.com/developers/docs/resources/channel#get-channel-messages
      */
-    public function getChannelMessages($channelId, ?string $filter = null, $messageId = null, ?int $limit = 50): ClientResponseInterface
+    public function getChannelMessages($channelId, ?string $filter = null, $messageId = null, ?int $limit = 50, bool $followPagination = true): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
-        $limit = self::normalizeLimit($limit, 50);
-        $query['limit'] = $limit;
+        $limit = self::normalizeLimit($limit, 50, max: null);
+        $normalizedLimit = self::normalizeLimit($limit, 50);
+        $query = Push::create()
+            ->push($normalizedLimit, 'limit');
 
         if (!empty($filter)) {
             $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
@@ -570,16 +573,16 @@ class DiscordBotClient extends DiscordClient
                     case 'around':
                     case 'before':
                     case 'after':
-                        $query[$filter] = $messageId;
+                        $query = $query->push($messageId, $filter);
                         break;
                 }
             }
         }
 
-        return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE],
-            caller: __METHOD__, type: '\Bytes\DiscordResponseBundle\Objects\Message[]', options: [
-                'query' => $query
-            ]);
+        return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE], caller: __METHOD__,
+            type: '\Bytes\DiscordResponseBundle\Objects\Message[]', options: [
+                'query' => $query->toArray()
+            ], responseClass: GetChannelMessagesResponse::class, params: ['channelId' => $channelId, 'client' => $this, 'limit' => $limit, 'followPagination' => $followPagination]);
     }
 
     /**
@@ -978,18 +981,19 @@ class DiscordBotClient extends DiscordClient
     /**
      * @param int|null $limit
      * @param int $default
-     * @param int $max
-     * @return int|null
+     * @param int|null $max Skips normalization if null
+     * @param int|null $min Skips normalization if null
+     * @return int
      */
-    protected static function normalizeLimit(?int $limit, int $default, int $max = 100)
+    protected static function normalizeLimit(?int $limit, int $default, ?int $max = 100, ?int $min = 1): int
     {
-        if (empty($limit)) {
+        if (is_null($limit)) {
             $limit = $default;
         }
-        if ($limit < 1) {
-            $limit = 1;
+        if (!is_null($min) && $limit < $min) {
+            $limit = $min;
         }
-        if ($limit > $max) {
+        if (!is_null($max) && $limit > $max) {
             $limit = $max;
         }
         return $limit;
