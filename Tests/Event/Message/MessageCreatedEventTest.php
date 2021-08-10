@@ -4,7 +4,9 @@ namespace Bytes\DiscordClientBundle\Tests\Event\Message;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
 use Bytes\DiscordClientBundle\Event\Message\MessageCreatedEvent;
+use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\Tests\Common\DataProvider\NullProviderTrait;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -71,5 +73,105 @@ class MessageCreatedEventTest extends TestCase
         $this->assertNull($message->getEntityId());
         $this->assertInstanceOf(MessageCreatedEvent::class, $message->setEntityId($entityId));
         $this->assertEquals($entityId, $message->getEntityId());
+    }
+
+    /**
+     * @dataProvider provideFullCreateMessage
+     * @param $guild_id
+     * @param $id
+     * @param $channelID
+     * @param $author
+     * @param $member
+     * @param $content
+     * @param $timestamp
+     * @param $editedTimestamp
+     * @param $tts
+     * @param $mentionEveryone
+     * @param $mentions
+     * @param $mentionRoles
+     * @param $mentionChannels
+     * @param $attachments
+     * @param $embeds
+     * @param $reactions
+     * @param $nonce
+     * @param $pinned
+     * @param $webhookId
+     * @param $type
+     * @param $activity
+     * @param $application
+     * @param $messageReference
+     * @param $flags
+     * @param $referencedMessage
+     * @param $interaction
+     * @param $thread
+     * @param $components
+     * @param $stickerItems
+     * @throws Exception
+     */
+    public function testCreateFromMessage($guild_id, $id, $channelID, $author, $member, $content, $timestamp, $editedTimestamp, $tts, $mentionEveryone, $mentions, $mentionRoles, $mentionChannels, $attachments, $embeds, $reactions, $nonce, $pinned, $webhookId, $type, $activity, $application, $messageReference, $flags, $referencedMessage, $interaction, $thread, $components, $stickerItems)
+    {
+        $message = new Message();
+        $message->setAuthor($author)
+            ->setMember($member)
+            ->setContent($content)
+            ->setTimestamp($timestamp)
+            ->setEditedTimestamp($editedTimestamp)
+            ->setTts($tts)
+            ->setMentionEveryone($mentionEveryone)
+            ->setMentionRoles($mentionRoles)
+            ->setMentionChannels($mentionChannels)
+            ->setEmbeds($embeds)
+            ->setReactions($reactions)
+            ->setNonce($nonce)
+            ->setPinned($pinned)
+            ->setWebhookId($webhookId)
+            ->setType($type)
+            ->setMessageReference($messageReference)
+            ->setFlags($flags)
+            ->setReferencedMessage($referencedMessage)
+            ->setInteraction($interaction)
+            ->setThread($thread)
+            ->setComponents($components)
+            ->setStickerItems($stickerItems)
+            ->setId($id)
+            ->setGuildId($guild_id)
+            ->setChannelID($channelID);
+        $event = MessageCreatedEvent::createFromMessage($message);
+
+        $this->assertEquals($author, $event->getAuthor());
+        $this->assertEquals($member, $event->getMember());
+        $this->assertEquals($content, $event->getContent());
+        $this->assertEquals($timestamp, $event->getTimestamp());
+        $this->assertEquals($editedTimestamp, $event->getEditedTimestamp());
+        $this->assertEquals($tts, $event->getTts());
+        $this->assertEquals($mentionEveryone, $event->getMentionEveryone());
+        $this->assertEquals($mentionRoles, $event->getMentionRoles());
+        $this->assertEquals($mentionChannels, $event->getMentionChannels());
+        $this->assertEquals($embeds, $event->getEmbeds());
+        $this->assertEquals($reactions, $event->getReactions());
+        $this->assertEquals($nonce, $event->getNonce());
+        $this->assertEquals($pinned, $event->getPinned());
+        $this->assertEquals($webhookId, $event->getWebhookId());
+        $this->assertEquals($type, $event->getType());
+        $this->assertEquals($messageReference, $event->getMessageReference());
+        $this->assertEquals($flags, $event->getFlags());
+        $this->assertEquals($referencedMessage, $event->getReferencedMessage());
+        $this->assertEquals($interaction, $event->getInteraction());
+        $this->assertEquals($thread, $event->getThread());
+        $this->assertEquals($components, $event->getComponents());
+        $this->assertEquals($stickerItems, $event->getStickerItems());
+        $this->assertEquals($id, $event->getId());
+        $this->assertEquals($guild_id, $event->getGuildId());
+        $this->assertEquals($channelID, $event->getChannelID());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCreateWithNoMessage()
+    {
+        $event = MessageCreatedEvent::createFromMessage(null);
+
+        $this->assertNull($event->getGuildId());
     }
 }
