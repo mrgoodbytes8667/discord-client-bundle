@@ -16,7 +16,7 @@ use Symfony\Component\Uid\Uuid;
 trait MessageEventProviderTrait
 {
     use TestDiscordFakerTrait;
-    
+
     /**
      * @return Generator
      */
