@@ -608,6 +608,7 @@ class DiscordBotClient extends DiscordClient
      * @param ChannelIdInterface|IdInterface|string $channelId
      * @param Content|Embed|string|array $content the message contents (up to 2000 characters), an array of content, or an Embed
      * @param bool $tts true if this is a TTS message
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      *
      * @return ClientResponseInterface
      *
@@ -615,9 +616,9 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      * @throws ValidatorException
      */
-    public function createMessage($channelId, $content, bool $tts = false): ClientResponseInterface
+    public function createMessage($channelId, $content, bool $tts = false, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__, onSuccessCallable: function ($self, $results) {
+        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__, onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
             /** @var ClientResponseInterface $self */
             /** @var Message|null $results */
 
@@ -704,6 +705,7 @@ class DiscordBotClient extends DiscordClient
      * @param ChannelIdInterface|IdInterface|string $channelId
      * @param IdInterface|string $messageId
      * @param Content|Embed|string|array $content the message contents (up to 2000 characters), an array of content, or an Embed
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      *
      * @return ClientResponseInterface
      *
@@ -711,9 +713,9 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      * @throws ValidatorException
      */
-    public function editMessage($channelId, $messageId, $content): ClientResponseInterface
+    public function editMessage($channelId, $messageId, $content, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__, onSuccessCallable: function ($self, $results) {
+        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__, onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
             /** @var ClientResponseInterface $self */
             /** @var Message|null $results */
 
