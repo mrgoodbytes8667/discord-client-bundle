@@ -29,7 +29,7 @@
         "fakerphp/faker": "^1.13",
         "mrgoodbytes8667/test-common": ">=0.0.18",
         "mrgoodbytes8667/test-common-faker": "^0.3.4",
-        "mrgoodbytes8667/test-discord-faker": ">=0.0.8",
+        "mrgoodbytes8667/test-discord-faker": ">=0.0.9",
         "symfony/security-bundle": "^5.3",
         "symfony/test-pack": "^1.0.8",
         "symfony/var-dumper": "^5.3"
