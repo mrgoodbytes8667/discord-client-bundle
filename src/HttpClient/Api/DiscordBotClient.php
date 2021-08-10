@@ -720,6 +720,7 @@ class DiscordBotClient extends DiscordClient
             /** @var Message|null $results */
 
             $event = MessageEditedEvent::createFromMessage($results);
+            $event->setPersist(false);
 
             $this->dispatcher->dispatch($event);
             return $event;
