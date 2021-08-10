@@ -8,6 +8,8 @@ use Bytes\DiscordClientBundle\Event\ApplicationCommandCreatedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeleteAllEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
+use Bytes\DiscordClientBundle\Event\Message\MessageCreatedEvent;
+use Bytes\DiscordClientBundle\Event\Message\MessageEditedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordClientBundle\HttpClient\Response\GetChannelMessagesResponse;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
@@ -615,7 +617,15 @@ class DiscordBotClient extends DiscordClient
      */
     public function createMessage($channelId, $content, bool $tts = false): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__);
+        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__, onSuccessCallable: function ($self, $results) {
+            /** @var ClientResponseInterface $self */
+            /** @var Message|null $results */
+
+            $event = MessageCreatedEvent::createFromMessage($results);
+
+            $this->dispatcher->dispatch($event);
+            return $event;
+        });
     }
 
     /**
@@ -625,6 +635,7 @@ class DiscordBotClient extends DiscordClient
      * @param bool $tts true if this is a TTS message
      * @param HttpMethods $method
      * @param ReflectionMethod|string $caller
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      *
      * @return ClientResponseInterface
      *
@@ -634,7 +645,7 @@ class DiscordBotClient extends DiscordClient
      *
      * @internal
      */
-    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller): ClientResponseInterface
+    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller, ?callable $onSuccessCallable): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
@@ -678,7 +689,7 @@ class DiscordBotClient extends DiscordClient
 
         return $this->request($urlParts, caller: $caller, type: Message::class, options: [
             'body' => $body
-        ], method: $method);
+        ], method: $method, onSuccessCallable: $onSuccessCallable);
     }
 
     /**
@@ -702,7 +713,15 @@ class DiscordBotClient extends DiscordClient
      */
     public function editMessage($channelId, $messageId, $content): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__);
+        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__, onSuccessCallable: function ($self, $results) {
+            /** @var ClientResponseInterface $self */
+            /** @var Message|null $results */
+
+            $event = MessageEditedEvent::createFromMessage($results);
+
+            $this->dispatcher->dispatch($event);
+            return $event;
+        });
     }
 
     /**
