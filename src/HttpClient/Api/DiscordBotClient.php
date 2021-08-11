@@ -523,7 +523,7 @@ class DiscordBotClient extends DiscordClient
      * Returns a specific message in the channel. If operating on a guild channel, this endpoint requires the
      * 'READ_MESSAGE_HISTORY' permission to be present on the current user. Returns a message object on success.
      * @param MessageInterface|IdInterface|string $messageId
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      *
      * @return ClientResponseInterface
      *
@@ -703,9 +703,9 @@ class DiscordBotClient extends DiscordClient
      * changes are currently ignored without error).
      * Returns a message object. Fires a Message Update Gateway event.
      * All parameters to this endpoint are optional and nullable.
-     * @param ChannelIdInterface|IdInterface|string $channelId
-     * @param IdInterface|string $messageId
+     * @param MessageInterface|IdInterface|string $messageId
      * @param Content|Embed|string|array $content the message contents (up to 2000 characters), an array of content, or an Embed
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      *
      * @return ClientResponseInterface
@@ -714,8 +714,18 @@ class DiscordBotClient extends DiscordClient
      * @throws TransportExceptionInterface
      * @throws ValidatorException
      */
-    public function editMessage($channelId, $messageId, $content, ?callable $onSuccessCallable = null): ClientResponseInterface
+    public function editMessage($messageId, $content, $channelId = null, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
+        // If a Message object is passed through, get the message and channel Id from it
+        if ($messageId instanceof MessageInterface) {
+            $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
+            $channelId = $ids['channelId'];
+            $messageId = $ids['messageId'];
+        } else {
+            $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
+            $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
+        }
+
         return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__, onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
             /** @var ClientResponseInterface $self */
             /** @var Message|null $results */
@@ -735,8 +745,8 @@ class DiscordBotClient extends DiscordClient
      * Message Delete Gateway event.
      *
      * Not deserializable
-     * @param Message|IdInterface|string $messageId
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param MessageInterface|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      *
      * @return ClientResponseInterface
      *
@@ -747,7 +757,7 @@ class DiscordBotClient extends DiscordClient
     public function deleteMessage($messageId, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -764,8 +774,8 @@ class DiscordBotClient extends DiscordClient
      * Crosspost a message in a News Channel to following channels. This endpoint requires the 'SEND_MESSAGES'
      * permission, if the current user sent the message, or additionally the 'MANAGE_MESSAGES' permission, for all other
      * messages, to be present for the current user.
-     * @param Message|IdInterface|string $messageId
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param MessageInterface|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      *
@@ -774,7 +784,7 @@ class DiscordBotClient extends DiscordClient
     public function crosspostMessage($messageId, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -918,9 +928,9 @@ class DiscordBotClient extends DiscordClient
      * success. The emoji must be URL Encoded or the request will fail with 10014: Unknown Emoji.
      *
      * Not deserializable
-     * @param Message|IdInterface|string $messageId
+     * @param MessageInterface|IdInterface|string $messageId
      * @param string $emoji
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      *
      * @return ClientResponseInterface
      *
@@ -931,7 +941,7 @@ class DiscordBotClient extends DiscordClient
     public function createReaction($messageId, string $emoji, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
