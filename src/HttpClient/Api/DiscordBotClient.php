@@ -19,6 +19,7 @@ use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ApplicationCommandInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\MessageInterface;
 use Bytes\DiscordResponseBundle\Objects\Member;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
@@ -521,7 +522,7 @@ class DiscordBotClient extends DiscordClient
      * Get Channel Message
      * Returns a specific message in the channel. If operating on a guild channel, this endpoint requires the
      * 'READ_MESSAGE_HISTORY' permission to be present on the current user. Returns a message object on success.
-     * @param Message|IdInterface|string $messageId
+     * @param MessageInterface|IdInterface|string $messageId
      * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
      *
      * @return ClientResponseInterface
@@ -532,7 +533,7 @@ class DiscordBotClient extends DiscordClient
     public function getChannelMessage($messageId, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
