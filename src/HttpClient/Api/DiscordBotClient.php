@@ -47,6 +47,9 @@ use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidatorException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -763,7 +766,11 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
+     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/channel#delete-message
      */
@@ -778,11 +785,13 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
-        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
+        $response = $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
             caller: __METHOD__, method: HttpMethods::delete(),
             onSuccessCallable: function ($self, $results) use ($messageId) {
                 $this->dispatch(MessageDeletedEvent::setMessageId($messageId));
             });
+        $response->getContent(); // Ensures any exceptions will be thrown
+        return $response->onSuccessCallback();
     }
 
     /**
