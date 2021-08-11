@@ -638,6 +638,7 @@ class DiscordBotClient extends DiscordClient
      * @param HttpMethods $method
      * @param ReflectionMethod|string $caller
      * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
+     * @param callable|null $normalizeContentCallable Performs normalization on the [generated] Content class
      *
      * @return ClientResponseInterface
      *
@@ -647,7 +648,7 @@ class DiscordBotClient extends DiscordClient
      *
      * @internal
      */
-    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller, ?callable $onSuccessCallable): ClientResponseInterface
+    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller, ?callable $onSuccessCallable, ?callable $normalizeContentCallable = null): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
@@ -678,6 +679,11 @@ class DiscordBotClient extends DiscordClient
             $data->setTts($tts);
         } else {
             $data = $content;
+        }
+
+        if(!is_null($normalizeContentCallable))
+        {
+            $data = $normalizeContentCallable($data);
         }
 
         $errors = $this->validator->validate($data);
@@ -735,6 +741,12 @@ class DiscordBotClient extends DiscordClient
 
             $this->dispatcher->dispatch($event);
             return $event;
+        }, normalizeContentCallable: function ($content) {
+            // tts, message reference, and Sticker IDs cannot be included in edits
+            /** @var Content $content */
+            return $content->setTts(null)
+                ->setMessageReference(null)
+                ->setStickerIds(null);
         });
     }
 
