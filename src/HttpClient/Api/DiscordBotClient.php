@@ -9,6 +9,7 @@ use Bytes\DiscordClientBundle\Event\ApplicationCommandDeleteAllEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
 use Bytes\DiscordClientBundle\Event\Message\MessageCreatedEvent;
+use Bytes\DiscordClientBundle\Event\Message\MessageDeletedEvent;
 use Bytes\DiscordClientBundle\Event\Message\MessageEditedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordClientBundle\HttpClient\Response\GetChannelMessagesResponse;
@@ -778,7 +779,10 @@ class DiscordBotClient extends DiscordClient
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
         return $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
-            caller: __METHOD__, method: HttpMethods::delete());
+            caller: __METHOD__, method: HttpMethods::delete(),
+            onSuccessCallable: function ($self, $results) use ($messageId) {
+                $this->dispatch(MessageDeletedEvent::setMessageId($messageId));
+            });
     }
 
     /**
