@@ -533,6 +533,7 @@ class DiscordBotClient extends DiscordClient
      *
      * @throws UnknownObjectException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
      */
     public function getChannelMessage($messageId, $channelId = null): ClientResponseInterface
     {

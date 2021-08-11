@@ -11,6 +11,7 @@ use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordUserClient;
+use Bytes\DiscordClientBundle\HttpClient\Response\DiscordResponse;
 use Bytes\DiscordClientBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordClientBundle\HttpClient\Token\DiscordBotTokenClient;
 use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
@@ -25,6 +26,7 @@ use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\TokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
 use Bytes\ResponseBundle\Routing\OAuthInterface;
+use Bytes\TwitchClientBundle\HttpClient\Response\TwitchResponse;
 use function Symfony\Component\String\u;
 
 /**
@@ -132,6 +134,14 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Response
+    $services->set('bytes_discord_client.httpclient.response', DiscordResponse::class)
+        ->args([
+            service('serializer'), // Symfony\Component\Serializer\SerializerInterface
+            service('event_dispatcher'), // Symfony\Component\Serializer\SerializerInterface
+        ])
+        ->alias(DiscordResponse::class, 'bytes_discord_client.httpclient.response')
+        ->public();
+
     $services->set('bytes_discord_client.httpclient.response.token.user', DiscordUserTokenResponse::class)
         ->args([
             service('serializer'), // Symfony\Component\Serializer\SerializerInterface

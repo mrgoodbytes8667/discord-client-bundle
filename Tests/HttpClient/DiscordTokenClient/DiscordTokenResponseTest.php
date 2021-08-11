@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class DiscordTokenResponseTest
- * @package Bytes\TwitchClientBundle\Tests\HttpClient\TwitchResponse
+ * @package Bytes\TwitchClientBundle\Tests\HttpClient\DiscordResponse
  */
 class DiscordTokenResponseTest extends TestCase
 {
