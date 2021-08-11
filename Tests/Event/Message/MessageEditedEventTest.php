@@ -3,7 +3,6 @@
 namespace Bytes\DiscordClientBundle\Tests\Event\Message;
 
 use Bytes\Common\Faker\Discord\TestDiscordFakerTrait;
-use Bytes\DiscordClientBundle\Event\Message\MessageCreatedEvent;
 use Bytes\DiscordClientBundle\Event\Message\MessageEditedEvent;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\Tests\Common\DataProvider\NullProviderTrait;
@@ -68,11 +67,11 @@ class MessageEditedEventTest extends TestCase
      */
     public function testGetSetEntityId($entityId)
     {
-        $message = new MessageCreatedEvent();
+        $message = new MessageEditedEvent();
         $this->assertNull($message->getEntityId());
-        $this->assertInstanceOf(MessageCreatedEvent::class, $message->setEntityId(null));
+        $this->assertInstanceOf(MessageEditedEvent::class, $message->setEntityId(null));
         $this->assertNull($message->getEntityId());
-        $this->assertInstanceOf(MessageCreatedEvent::class, $message->setEntityId($entityId));
+        $this->assertInstanceOf(MessageEditedEvent::class, $message->setEntityId($entityId));
         $this->assertEquals($entityId, $message->getEntityId());
     }
 
@@ -137,7 +136,7 @@ class MessageEditedEventTest extends TestCase
             ->setId($id)
             ->setGuildId($guild_id)
             ->setChannelID($channelID);
-        $event = MessageCreatedEvent::createFromMessage($message);
+        $event = MessageEditedEvent::createFromMessage($message);
 
         $this->assertEquals($author, $event->getAuthor());
         $this->assertEquals($member, $event->getMember());
@@ -171,7 +170,7 @@ class MessageEditedEventTest extends TestCase
      */
     public function testCreateWithNoMessage()
     {
-        $event = MessageCreatedEvent::createFromMessage(null);
+        $event = MessageEditedEvent::createFromMessage(null);
 
         $this->assertNull($event->getGuildId());
     }
