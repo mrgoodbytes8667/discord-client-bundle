@@ -624,15 +624,16 @@ class DiscordBotClient extends DiscordClient
      */
     public function createMessage($channelId, $content, bool $tts = false, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__, onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
-            /** @var ClientResponseInterface $self */
-            /** @var Message|null $results */
+        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__,
+            onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
+                /** @var ClientResponseInterface $self */
+                /** @var Message|null $results */
 
-            $event = MessageCreatedEvent::createFromMessage($results);
+                $event = MessageCreatedEvent::createFromMessage($results);
 
-            $this->dispatcher->dispatch($event);
-            return $event;
-        });
+                $this->dispatcher->dispatch($event);
+                return $event;
+            });
     }
 
     /**
@@ -737,22 +738,23 @@ class DiscordBotClient extends DiscordClient
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
 
-        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__, onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
-            /** @var ClientResponseInterface $self */
-            /** @var Message|null $results */
+        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__,
+            onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
+                /** @var ClientResponseInterface $self */
+                /** @var Message|null $results */
 
-            $event = MessageEditedEvent::createFromMessage($results);
-            $event->setPersist(false);
+                $event = MessageEditedEvent::createFromMessage($results);
+                $event->setPersist(false);
 
-            $this->dispatcher->dispatch($event);
-            return $event;
-        }, normalizeContentCallable: function ($content) {
-            // tts, message reference, and Sticker IDs cannot be included in edits
-            /** @var Content $content */
-            return $content->setTts(null)
-                ->setMessageReference(null)
-                ->setStickerIds(null);
-        });
+                $this->dispatcher->dispatch($event);
+                return $event;
+            }, normalizeContentCallable: function ($content) {
+                // tts, message reference, and Sticker IDs cannot be included in edits
+                /** @var Content $content */
+                return $content->setTts(null)
+                    ->setMessageReference(null)
+                    ->setStickerIds(null);
+            });
     }
 
     /**
@@ -787,11 +789,13 @@ class DiscordBotClient extends DiscordClient
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
         $response = $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
-            caller: __METHOD__, method: HttpMethods::delete(),
-            onSuccessCallable: function ($self, $results) use ($messageId) {
+            caller: __METHOD__, type: Message::class,
+            method: HttpMethods::delete(), onSuccessCallable: function ($self, $results) use ($messageId) {
                 $this->dispatch(MessageDeletedEvent::setMessageId($messageId));
             });
-        $response->getContent(); // Ensures any exceptions will be thrown
+        if (!$response->isSuccess()) {
+            $response->deserialize(); // Ensures any exceptions will be thrown
+        }
         return $response->onSuccessCallback();
     }
 

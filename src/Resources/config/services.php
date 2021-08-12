@@ -47,7 +47,7 @@ return static function (ContainerConfigurator $container) {
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
-        ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->call('setResponse', [service('bytes_discord_client.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
         ->lazy()
@@ -64,7 +64,7 @@ return static function (ContainerConfigurator $container) {
             '', // $config['bot_token']
             '', // $config['user_agent']
         ])
-        ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->call('setResponse', [service('bytes_discord_client.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
         ->alias(DiscordBotClient::class, 'bytes_discord_client.httpclient.discord.bot')
@@ -79,7 +79,7 @@ return static function (ContainerConfigurator $container) {
             '', // $config['client_secret']
             '', // $config['user_agent']
         ])
-        ->call('setResponse', [service('bytes_response.httpclient.response')])
+        ->call('setResponse', [service('bytes_discord_client.httpclient.response')])
         ->tag('bytes_response.http_client')
         ->tag('bytes_response.http_client.api')
         ->alias(DiscordUserClient::class, 'bytes_discord_client.httpclient.discord.user')
