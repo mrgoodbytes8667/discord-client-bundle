@@ -6,6 +6,8 @@ namespace Bytes\DiscordClientBundle\HttpClient\Token;
 
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
+use Bytes\DiscordResponseBundle\Exceptions\MissingAccessException;
+use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\Bot;
 use Bytes\DiscordResponseBundle\Objects\OAuth\Validate\User;
 use Bytes\ResponseBundle\Annotations\Client;
@@ -148,6 +150,8 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function validateToken(AccessTokenInterface $token, bool $fireCallback = false): ?TokenValidationResponseInterface
     {

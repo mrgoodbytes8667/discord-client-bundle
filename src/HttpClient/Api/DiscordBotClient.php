@@ -13,6 +13,7 @@ use Bytes\DiscordClientBundle\Event\Message\MessageDeletedEvent;
 use Bytes\DiscordClientBundle\Event\Message\MessageEditedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordClientBundle\HttpClient\Response\GetChannelMessagesResponse;
+use Bytes\DiscordResponseBundle\Exceptions\MissingAccessException;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
@@ -113,6 +114,9 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-global-application-command
@@ -155,6 +159,9 @@ class DiscordBotClient extends DiscordClient
      * @param bool $isDelete
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#bulk-overwrite-global-application-commands
      * @link
@@ -179,8 +186,10 @@ class DiscordBotClient extends DiscordClient
      * @param ReflectionMethod|string $caller
      * @param bool $isDelete
      * @return ClientResponseInterface
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [], ReflectionMethod|string $caller = __METHOD__, bool $isDelete = false): ClientResponseInterface
     {
@@ -228,6 +237,8 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-guild-application-command
@@ -256,6 +267,9 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete commands for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function deleteAllCommands($guild = null): ClientResponseInterface
     {
@@ -270,6 +284,8 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-commands
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-commands
@@ -296,8 +312,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command
@@ -328,6 +346,8 @@ class DiscordBotClient extends DiscordClient
      *
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command-permissions
      */
@@ -349,8 +369,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-application-command-permissions
      */
@@ -372,8 +394,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-application-command-permissions
      */
@@ -401,8 +425,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#batch-edit-application-command-permissions
      */
@@ -461,6 +487,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild
      */
@@ -481,6 +510,9 @@ class DiscordBotClient extends DiscordClient
      * @param IdInterface|string $userId
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/user#get-user
      */
@@ -497,6 +529,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-channels
      */
@@ -515,6 +550,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function getChannel($channelId): ClientResponseInterface
     {
@@ -531,9 +569,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws UnknownObjectException
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function getChannelMessage($messageId, $channelId = null): ClientResponseInterface
     {
@@ -559,10 +598,14 @@ class DiscordBotClient extends DiscordClient
      * @param string|null $filter = ['around','before','after'][$any]
      * @param IdInterface|string|null $messageId
      * @param int|null $limit 1 - 100
+     * @param bool $followPagination
      *
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/channel#get-channel-messages
      */
@@ -618,8 +661,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ValidatorException
      */
     public function createMessage($channelId, $content, bool $tts = false, ?callable $onSuccessCallable = null): ClientResponseInterface
@@ -648,8 +693,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ValidatorException
      *
      * @internal
@@ -722,8 +769,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ValidatorException
      */
     public function editMessage($messageId, $content, $channelId = null, ?callable $onSuccessCallable = null): ClientResponseInterface
@@ -769,8 +818,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
@@ -808,6 +859,9 @@ class DiscordBotClient extends DiscordClient
      * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/channel#crosspost-message
      */
@@ -835,6 +889,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/user#leave-guild
      */
@@ -857,6 +914,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-member
      */
@@ -879,6 +939,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-roles
      */
@@ -905,6 +968,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#create-guild-role
      */
@@ -965,6 +1031,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/channel#create-reaction
      */
@@ -1008,6 +1077,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function getReactions($messageId, string $emoji, $channelId = null, ?string $before = null, ?string $after = null, ?int $limit = 25): ClientResponseInterface
     {
@@ -1071,7 +1143,10 @@ class DiscordBotClient extends DiscordClient
      * @param AllowedMentions|null $allowedMentions
      * @param bool|null $tts true if this is a TTS message
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-original-interaction-response
      */
@@ -1084,8 +1159,12 @@ class DiscordBotClient extends DiscordClient
      * Delete Original Interaction Response
      * Deletes the initial Interaction response. Returns 204 on success.
      * @param string $token Interaction token
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-original-interaction-response
      */
@@ -1102,8 +1181,12 @@ class DiscordBotClient extends DiscordClient
      * @param Embed[]|Embed|null $embeds
      * @param AllowedMentions|null $allowedMentions
      * @param bool|null $tts
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-followup-message
      */
@@ -1121,8 +1204,12 @@ class DiscordBotClient extends DiscordClient
      * @param Embed[]|Embed|null $embeds
      * @param AllowedMentions|null $allowedMentions
      * @param bool|null $tts true if this is a TTS message
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-followup-message
      */
@@ -1136,8 +1223,12 @@ class DiscordBotClient extends DiscordClient
      * Deletes a followup message for an Interaction. Returns 204 on success.
      * @param string $token Interaction token
      * @param IdInterface|string $messageId Message Id to delete
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-followup-message
      */
