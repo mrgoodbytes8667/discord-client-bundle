@@ -44,6 +44,7 @@ use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
 use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -846,6 +847,8 @@ class DiscordBotClient extends DiscordClient
             });
         if (!$response->isSuccess()) {
             $response->deserialize(); // Ensures any exceptions will be thrown
+            // If we still haven't failed due to malformed data...
+            throw new ClientException($response->getResponse());
         }
         return $response->onSuccessCallback();
     }
