@@ -63,7 +63,7 @@ class GetGuildRolesTest extends TestDiscordBotClientCase
         $this->assertCount(1, $roles);
         $role = array_shift($roles);
 
-        $this->assertSameEnumValue(JsonErrorCodes::UNKNOWN_GUILD(), $role->getCode());
+        $this->assertSameEnumValue(JsonErrorCodes::unknownGuild(), $role->getCode());
         $this->assertEquals(10004, $role->getCode());
         $this->assertEquals("Unknown Guild", $role->getMessage());
     }

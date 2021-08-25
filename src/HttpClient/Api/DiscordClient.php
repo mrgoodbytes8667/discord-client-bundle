@@ -6,6 +6,8 @@ namespace Bytes\DiscordClientBundle\HttpClient\Api;
 
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientTrait;
+use Bytes\DiscordResponseBundle\Exceptions\MissingAccessException;
+use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
@@ -19,6 +21,7 @@ use Bytes\ResponseBundle\HttpClient\Api\AbstractApiClient;
 use Bytes\ResponseBundle\Interfaces\ClientResponseInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\ResponseBundle\Objects\Push;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Bytes\ResponseBundle\Validator\ValidatorTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
@@ -113,6 +116,9 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/user#get-current-user-guilds
      *

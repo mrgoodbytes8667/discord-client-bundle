@@ -9,7 +9,7 @@
         "doctrine/annotations": "^1.12",
         "doctrine/collections": "^1.6",
         "mrgoodbytes8667/command-bundle": "^1.0",
-        "mrgoodbytes8667/discord-response-bundle": "^0.10.1",
+        "mrgoodbytes8667/discord-response-bundle": "^0.10.4",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/config": "^5.3",
         "symfony/console": "^5.3",
@@ -27,9 +27,9 @@
     "require-dev": {
         "doctrine/common": "^3.0",
         "fakerphp/faker": "^1.13",
-        "mrgoodbytes8667/test-common": ">=0.0.17",
+        "mrgoodbytes8667/test-common": ">=0.0.18",
         "mrgoodbytes8667/test-common-faker": "^0.3.4",
-        "mrgoodbytes8667/test-discord-faker": ">=0.0.8",
+        "mrgoodbytes8667/test-discord-faker": ">=0.0.9",
         "symfony/security-bundle": "^5.3",
         "symfony/test-pack": "^1.0.8",
         "symfony/var-dumper": "^5.3"
@@ -55,7 +55,7 @@
         "doctrine/inflector": "<1.4.3",
         "doctrine/lexer": "<1.2.1",
         "doctrine/persistence": "<2.1.0",
-        "mrgoodbytes8667/response-bundle": "<2.0.13",
+        "mrgoodbytes8667/response-bundle": "<2.0.17",
         "phpunit/phpunit": "<9.5",
         "symfony/framework-bundle": "<5.2.1"
     },

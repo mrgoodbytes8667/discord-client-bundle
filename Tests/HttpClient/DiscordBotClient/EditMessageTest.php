@@ -23,11 +23,14 @@ class EditMessageTest extends TestDiscordBotClientCase
      */
     public function testEditMessage($channel, $message, $content, $tts)
     {
+        if(is_null($message)) {
+            $this->expectException(InvalidArgumentException::class);
+        }
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/get-channel-messages-success.json'),
         ]));
 
-        $response = $client->editMessage($channel, $message, $content);
+        $response = $client->editMessage(messageId: $message, content: $content, channelId: $channel);
 
         $this->assertResponseIsSuccessful($response);
         $this->assertResponseStatusCodeSame($response, Response::HTTP_OK);
@@ -47,7 +50,7 @@ class EditMessageTest extends TestDiscordBotClientCase
 
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
-        $client->editMessage($channel, '456', $content);
+        $client->editMessage(messageId: '456', content: $content, channelId: $channel);
     }
 
     /**
@@ -62,7 +65,7 @@ class EditMessageTest extends TestDiscordBotClientCase
 
         $client = $this->setupClient(MockClient::emptyError($code));
 
-        $client->editMessage('123', '456', 'content');
+        $client->editMessage(messageId: '456', content: 'content', channelId: '123');
     }
 }
 

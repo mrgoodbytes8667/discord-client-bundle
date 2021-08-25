@@ -5,8 +5,10 @@ namespace Bytes\DiscordClientBundle\Tests\Request;
 use Bytes\DiscordClientBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordClientBundle\Services\Client\DiscordBot;
 use Bytes\DiscordClientBundle\Tests\DiscordClientSetupTrait;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordClientBundle\Tests\TestDiscordGuildTrait;
+use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -170,7 +172,21 @@ class DiscordGuildConverterTest extends TestParamConverterCase
     public function testApplyApiError()
     {
         $request = new Request([], [], ['guild' => 737645596567095093]);
-        $client = $this->setupClient(new MockHttpClient(MockJsonResponse::make('', Response::HTTP_BAD_REQUEST)));
+        $client = $this->setupClient(MockClient::emptyBadRequest());
+        $converter = new DiscordGuildConverter($client);
+
+        $config = $this->createConfiguration(Guild::class, 'guild');
+
+        $this->assertFalse($converter->apply($request, $config));
+    }
+
+    /**
+     *
+     */
+    public function testApplyApiErrorUnknownGuild()
+    {
+        $request = new Request([], [], ['guild' => 737645596567095093]);
+        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::unknownGuild(), '', Response::HTTP_NOT_FOUND));
         $converter = new DiscordGuildConverter($client);
 
         $config = $this->createConfiguration(Guild::class, 'guild');
