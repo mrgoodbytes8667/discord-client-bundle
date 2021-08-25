@@ -7,6 +7,7 @@ namespace Bytes\DiscordClientBundle\Tests;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordUserClient;
+use Bytes\DiscordClientBundle\HttpClient\Response\DiscordResponse;
 use Bytes\DiscordClientBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordClientBundle\HttpClient\Token\AbstractDiscordTokenClient;
 use Bytes\DiscordClientBundle\HttpClient\Token\DiscordBotTokenClient;
@@ -117,7 +118,7 @@ trait DiscordClientSetupTrait
      * @param \Bytes\DiscordClientBundle\HttpClient\Api\DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient $client
      * @return DiscordClient|DiscordBotClient|DiscordUserClient|DiscordBotTokenClient|DiscordUserTokenClient
      */
-    private function postClientSetup($client, ?EventDispatcher $dispatcher = null, $responseClass = Response::class)
+    private function postClientSetup($client, ?EventDispatcher $dispatcher = null, $responseClass = DiscordResponse::class)
     {
         $client->setSerializer($this->serializer);
         $client->setValidator($this->validator);

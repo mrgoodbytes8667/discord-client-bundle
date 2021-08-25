@@ -4,7 +4,6 @@ namespace Bytes\DiscordClientBundle\HttpClient\Response;
 
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\Message;
-use Bytes\ResponseBundle\HttpClient\Response\Response;
 use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -17,7 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  * @method DiscordBotClient|null getClient()
  * @method int|null getLimit()
  */
-class GetChannelMessagesResponse extends Response
+class GetChannelMessagesResponse extends DiscordResponse
 {
     /**
      * @param bool $throw

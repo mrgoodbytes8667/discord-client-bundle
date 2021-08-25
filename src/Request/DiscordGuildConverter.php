@@ -5,6 +5,7 @@ namespace Bytes\DiscordClientBundle\Request;
 
 
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
+use Bytes\DiscordResponseBundle\Exceptions\DiscordClientException;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -100,7 +101,12 @@ class DiscordGuildConverter implements ParamConverterInterface
         $instance->setId($value);
 
         try {
-            $guild = $this->client->getGuild($instance, $withCounts)
+            $response = $this->client->getGuild($instance, $withCounts);
+            if(!$response->isSuccess())
+            {
+                return false;
+            }
+            $guild = $response
                 ->deserialize(type: $deserializeInto);
         } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface | BadRequestHttpException $exception) {
             return false;

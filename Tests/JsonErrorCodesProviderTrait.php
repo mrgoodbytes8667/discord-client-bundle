@@ -31,7 +31,7 @@ trait JsonErrorCodesProviderTrait
      */
     public function provideMissingAccess()
     {
-        yield ['jsonCode' => JsonErrorCodes::MISSING_ACCESS(), 'message' => 'Missing Access', 'httpCode' => Response::HTTP_FORBIDDEN];
+        yield ['jsonCode' => JsonErrorCodes::missingAccess(), 'message' => 'Missing Access', 'httpCode' => Response::HTTP_FORBIDDEN];
     }
 
     /**
@@ -39,7 +39,7 @@ trait JsonErrorCodesProviderTrait
      */
     public function provideUnknownGuild()
     {
-        yield ['jsonCode' => JsonErrorCodes::UNKNOWN_GUILD(), 'message' => 'Unknown Guild', 'httpCode' => Response::HTTP_NOT_FOUND];
+        yield ['jsonCode' => JsonErrorCodes::unknownGuild(), 'message' => 'Unknown Guild', 'httpCode' => Response::HTTP_NOT_FOUND];
     }
 
     /**
@@ -47,7 +47,7 @@ trait JsonErrorCodesProviderTrait
      */
     public function provideGeneralErrorUnauthorized()
     {
-        yield ['jsonCode' => JsonErrorCodes::GENERAL_ERROR(), 'message' => '401: Unauthorized', 'httpCode' => Response::HTTP_UNAUTHORIZED];
+        yield ['jsonCode' => JsonErrorCodes::generalError(), 'message' => '401: Unauthorized', 'httpCode' => Response::HTTP_UNAUTHORIZED];
     }
 
     /**
@@ -55,6 +55,6 @@ trait JsonErrorCodesProviderTrait
      */
     public function provideUnknownEmoji()
     {
-        yield ['jsonCode' => JsonErrorCodes::UNKNOWN_EMOJI(), 'message' => 'Unknown Emoji', 'httpCode' => Response::HTTP_BAD_REQUEST];
+        yield ['jsonCode' => JsonErrorCodes::unknownEmoji(), 'message' => 'Unknown Emoji', 'httpCode' => Response::HTTP_BAD_REQUEST];
     }
 }

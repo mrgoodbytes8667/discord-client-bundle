@@ -8,8 +8,12 @@ use Bytes\DiscordClientBundle\Event\ApplicationCommandCreatedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeleteAllEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandDeletedEvent;
 use Bytes\DiscordClientBundle\Event\ApplicationCommandUpdatedEvent;
+use Bytes\DiscordClientBundle\Event\Message\MessageCreatedEvent;
+use Bytes\DiscordClientBundle\Event\Message\MessageDeletedEvent;
+use Bytes\DiscordClientBundle\Event\Message\MessageEditedEvent;
 use Bytes\DiscordClientBundle\HttpClient\DiscordClientEndpoints;
 use Bytes\DiscordClientBundle\HttpClient\Response\GetChannelMessagesResponse;
+use Bytes\DiscordResponseBundle\Exceptions\MissingAccessException;
 use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\Embed\Embed;
@@ -17,6 +21,7 @@ use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ApplicationCommandInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
+use Bytes\DiscordResponseBundle\Objects\Interfaces\MessageInterface;
 use Bytes\DiscordResponseBundle\Objects\Member;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\Message\AllowedMentions;
@@ -39,10 +44,14 @@ use Bytes\ResponseBundle\Token\Interfaces\AccessTokenInterface;
 use Illuminate\Support\Arr;
 use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Retry\RetryStrategyInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidatorException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -106,6 +115,9 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to create command in. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-global-application-command
@@ -148,6 +160,9 @@ class DiscordBotClient extends DiscordClient
      * @param bool $isDelete
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#bulk-overwrite-global-application-commands
      * @link
@@ -172,8 +187,10 @@ class DiscordBotClient extends DiscordClient
      * @param ReflectionMethod|string $caller
      * @param bool $isDelete
      * @return ClientResponseInterface
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     protected function createEditOverwriteCommands($applicationCommand, $guild, HttpMethods $method, string $class, $urlAppend = [], ReflectionMethod|string $caller = __METHOD__, bool $isDelete = false): ClientResponseInterface
     {
@@ -221,6 +238,8 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-guild-application-command
@@ -249,6 +268,9 @@ class DiscordBotClient extends DiscordClient
      * @param GuildIdInterface|IdInterface|string|null $guild Guild id to delete commands for. Must be a string, a GuildIdInterface object (returns `getGuildId()`), an IdInterface object (return `getId()`), or null for a global command.
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function deleteAllCommands($guild = null): ClientResponseInterface
     {
@@ -263,6 +285,8 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-commands
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-commands
@@ -289,8 +313,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-global-application-command
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command
@@ -321,6 +347,8 @@ class DiscordBotClient extends DiscordClient
      *
      * @throws TransportExceptionInterface
      * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-guild-application-command-permissions
      */
@@ -342,8 +370,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#get-application-command-permissions
      */
@@ -365,8 +395,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-application-command-permissions
      */
@@ -394,8 +426,10 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#batch-edit-application-command-permissions
      */
@@ -454,6 +488,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild
      */
@@ -474,6 +511,9 @@ class DiscordBotClient extends DiscordClient
      * @param IdInterface|string $userId
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/user#get-user
      */
@@ -490,6 +530,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-channels
      */
@@ -508,6 +551,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function getChannel($channelId): ClientResponseInterface
     {
@@ -519,18 +565,20 @@ class DiscordBotClient extends DiscordClient
      * Get Channel Message
      * Returns a specific message in the channel. If operating on a guild channel, this endpoint requires the
      * 'READ_MESSAGE_HISTORY' permission to be present on the current user. Returns a message object on success.
-     * @param Message|IdInterface|string $messageId
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param MessageInterface|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      *
      * @return ClientResponseInterface
      *
-     * @throws UnknownObjectException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function getChannelMessage($messageId, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -561,6 +609,7 @@ class DiscordBotClient extends DiscordClient
      *
      * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * 
      * @link https://discord.com/developers/docs/resources/channel#get-channel-messages
      */
     public function getChannelMessages($channelId, $aroundMessageId = null, $beforeMessageId = null, $afterMessageId = null, ?int $limit = 50, bool $followPagination = true): ClientResponseInterface
@@ -624,16 +673,28 @@ class DiscordBotClient extends DiscordClient
      * @param ChannelIdInterface|IdInterface|string $channelId
      * @param Content|Embed|string|array $content the message contents (up to 2000 characters), an array of content, or an Embed
      * @param bool $tts true if this is a TTS message
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ValidatorException
      */
-    public function createMessage($channelId, $content, bool $tts = false): ClientResponseInterface
+    public function createMessage($channelId, $content, bool $tts = false, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__);
+        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__,
+            onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
+                /** @var ClientResponseInterface $self */
+                /** @var Message|null $results */
+
+                $event = MessageCreatedEvent::createFromMessage($results);
+
+                $this->dispatcher->dispatch($event);
+                return $event;
+            });
     }
 
     /**
@@ -643,16 +704,20 @@ class DiscordBotClient extends DiscordClient
      * @param bool $tts true if this is a TTS message
      * @param HttpMethods $method
      * @param ReflectionMethod|string $caller
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
+     * @param callable|null $normalizeContentCallable Performs normalization on the [generated] Content class
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ValidatorException
      *
      * @internal
      */
-    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller): ClientResponseInterface
+    protected function sendMessage($channelId, $messageId, $content, bool $tts, HttpMethods $method, ReflectionMethod|string $caller, ?callable $onSuccessCallable, ?callable $normalizeContentCallable = null): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
@@ -685,6 +750,11 @@ class DiscordBotClient extends DiscordClient
             $data = $content;
         }
 
+        if(!is_null($normalizeContentCallable))
+        {
+            $data = $normalizeContentCallable($data);
+        }
+
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             throw new ValidatorException((string)$errors);
@@ -696,7 +766,7 @@ class DiscordBotClient extends DiscordClient
 
         return $this->request($urlParts, caller: $caller, type: Message::class, options: [
             'body' => $body
-        ], method: $method);
+        ], method: $method, onSuccessCallable: $onSuccessCallable);
     }
 
     /**
@@ -708,19 +778,48 @@ class DiscordBotClient extends DiscordClient
      * changes are currently ignored without error).
      * Returns a message object. Fires a Message Update Gateway event.
      * All parameters to this endpoint are optional and nullable.
-     * @param ChannelIdInterface|IdInterface|string $channelId
-     * @param IdInterface|string $messageId
+     * @param MessageInterface|IdInterface|string $messageId
      * @param Content|Embed|string|array $content the message contents (up to 2000 characters), an array of content, or an Embed
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
+     * @param callable|null $onSuccessCallable If set, should be triggered by deserialize() on success
      *
      * @return ClientResponseInterface
      *
-     * @throws NoTokenException
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      * @throws ValidatorException
      */
-    public function editMessage($channelId, $messageId, $content): ClientResponseInterface
+    public function editMessage($messageId, $content, $channelId = null, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__);
+        // If a Message object is passed through, get the message and channel Id from it
+        if ($messageId instanceof MessageInterface) {
+            $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
+            $channelId = $ids['channelId'];
+            $messageId = $ids['messageId'];
+        } else {
+            $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
+            $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
+        }
+
+        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__,
+            onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
+                /** @var ClientResponseInterface $self */
+                /** @var Message|null $results */
+
+                $event = MessageEditedEvent::createFromMessage($results);
+                $event->setPersist(false);
+
+                $this->dispatcher->dispatch($event);
+                return $event;
+            }, normalizeContentCallable: function ($content) {
+                // tts, message reference, and Sticker IDs cannot be included in edits
+                /** @var Content $content */
+                return $content->setTts(null)
+                    ->setMessageReference(null)
+                    ->setStickerIds(null);
+            });
     }
 
     /**
@@ -730,19 +829,25 @@ class DiscordBotClient extends DiscordClient
      * Message Delete Gateway event.
      *
      * Not deserializable
-     * @param Message|IdInterface|string $messageId
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param MessageInterface|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      *
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
      *
      * @link https://discord.com/developers/docs/resources/channel#delete-message
      */
     public function deleteMessage($messageId, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -750,8 +855,17 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
-        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
-            caller: __METHOD__, method: HttpMethods::delete());
+        $response = $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
+            caller: __METHOD__, type: Message::class,
+            method: HttpMethods::delete(), onSuccessCallable: function ($self, $results) use ($messageId) {
+                $this->dispatch(MessageDeletedEvent::setMessageId($messageId));
+            });
+        if (!$response->isSuccess()) {
+            $response->deserialize(); // Ensures any exceptions will be thrown
+            // If we still haven't failed due to malformed data...
+            throw new ClientException($response->getResponse());
+        }
+        return $response->onSuccessCallback();
     }
 
     /**
@@ -759,17 +873,20 @@ class DiscordBotClient extends DiscordClient
      * Crosspost a message in a News Channel to following channels. This endpoint requires the 'SEND_MESSAGES'
      * permission, if the current user sent the message, or additionally the 'MANAGE_MESSAGES' permission, for all other
      * messages, to be present for the current user.
-     * @param Message|IdInterface|string $messageId
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param MessageInterface|IdInterface|string $messageId
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/channel#crosspost-message
      */
     public function crosspostMessage($messageId, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -790,6 +907,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/user#leave-guild
      */
@@ -812,6 +932,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-member
      */
@@ -834,6 +957,9 @@ class DiscordBotClient extends DiscordClient
      *
      * @return ClientResponseInterface
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#get-guild-roles
      */
@@ -860,6 +986,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/guild#create-guild-role
      */
@@ -913,20 +1042,23 @@ class DiscordBotClient extends DiscordClient
      * success. The emoji must be URL Encoded or the request will fail with 10014: Unknown Emoji.
      *
      * Not deserializable
-     * @param Message|IdInterface|string $messageId
+     * @param MessageInterface|IdInterface|string $messageId
      * @param string $emoji
-     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a Message object
+     * @param ChannelIdInterface|IdInterface|string $channelId Optional if $messageId is a MessageInterface object
      *
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/resources/channel#create-reaction
      */
     public function createReaction($messageId, string $emoji, $channelId = null): ClientResponseInterface
     {
         // If a Message object is passed through, get the message and channel Id from it
-        if ($messageId instanceof Message) {
+        if ($messageId instanceof MessageInterface) {
             $ids = IdNormalizer::normalizeMessageIntoIds($messageId, 'The "channelId" argument is required and cannot be blank.', 'The "messageId" argument is required and cannot be blank.');
             $channelId = $ids['channelId'];
             $messageId = $ids['messageId'];
@@ -963,6 +1095,9 @@ class DiscordBotClient extends DiscordClient
      * @return ClientResponseInterface
      *
      * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      */
     public function getReactions($messageId, string $emoji, $channelId = null, ?string $before = null, ?string $after = null, ?int $limit = 25): ClientResponseInterface
     {
@@ -1026,7 +1161,10 @@ class DiscordBotClient extends DiscordClient
      * @param AllowedMentions|null $allowedMentions
      * @param bool|null $tts true if this is a TTS message
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-original-interaction-response
      */
@@ -1039,8 +1177,12 @@ class DiscordBotClient extends DiscordClient
      * Delete Original Interaction Response
      * Deletes the initial Interaction response. Returns 204 on success.
      * @param string $token Interaction token
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-original-interaction-response
      */
@@ -1057,8 +1199,12 @@ class DiscordBotClient extends DiscordClient
      * @param Embed[]|Embed|null $embeds
      * @param AllowedMentions|null $allowedMentions
      * @param bool|null $tts
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#create-followup-message
      */
@@ -1076,8 +1222,12 @@ class DiscordBotClient extends DiscordClient
      * @param Embed[]|Embed|null $embeds
      * @param AllowedMentions|null $allowedMentions
      * @param bool|null $tts true if this is a TTS message
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#edit-followup-message
      */
@@ -1091,8 +1241,12 @@ class DiscordBotClient extends DiscordClient
      * Deletes a followup message for an Interaction. Returns 204 on success.
      * @param string $token Interaction token
      * @param IdInterface|string $messageId Message Id to delete
+     *
      * @return ClientResponseInterface
+     *
      * @throws TransportExceptionInterface
+     * @throws UnknownObjectException
+     * @throws MissingAccessException
      *
      * @link https://discord.com/developers/docs/interactions/slash-commands#delete-followup-message
      */

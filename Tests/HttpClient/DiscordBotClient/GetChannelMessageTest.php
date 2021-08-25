@@ -5,14 +5,18 @@ namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient;
 use Bytes\DiscordClientBundle\Tests\Fixtures\Fixture;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordResponseBundle\Exceptions\UnknownObjectException;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\ChannelIdInterface;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Faker\Generator;
 use InvalidArgumentException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
@@ -102,5 +106,23 @@ class GetChannelMessageTest extends TestDiscordBotClientCase
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
         $client->getChannelMessage($message, $channel);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws NoTokenException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     */
+    public function testGetChannelMessageUnknownMessage()
+    {
+        $this->expectException(UnknownObjectException::class);
+
+        $client = $this->setupClient(new MockHttpClient([
+            MockJsonResponse::makeFixture('HttpClient/unknown-message.json', Response::HTTP_NOT_FOUND),
+        ]));
+
+        $client->getChannelMessage('245963893292923965', '737645596567095093')->deserialize();
     }
 }
