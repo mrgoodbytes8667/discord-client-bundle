@@ -595,22 +595,24 @@ class DiscordBotClient extends DiscordClient
      * permission to be present on the current user. If the current user is missing the 'READ_MESSAGE_HISTORY'
      * permission in the channel then this will return no messages (since they cannot read the message history).
      * Returns an array of message objects on success.
+     *
+     * Provide at most one of $aroundMessageId, $beforeMessageId, or $afterMessageId
+     *
      * @param IdInterface|string $channelId
-     * @param string|null $filter = ['around','before','after'][$any]
-     * @param IdInterface|string|null $messageId
+     * @param IdInterface|string|null $aroundMessageId
+     * @param IdInterface|string|null $beforeMessageId
+     * @param IdInterface|string|null $afterMessageId
      * @param int|null $limit 1 - 100
      * @param bool $followPagination
      *
      * @return ClientResponseInterface
      *
-     * @throws TransportExceptionInterface
      * @throws NoTokenException
-     * @throws UnknownObjectException
-     * @throws MissingAccessException
-     *
+     * @throws TransportExceptionInterface
+     * 
      * @link https://discord.com/developers/docs/resources/channel#get-channel-messages
      */
-    public function getChannelMessages($channelId, ?string $filter = null, $messageId = null, ?int $limit = 50, bool $followPagination = true): ClientResponseInterface
+    public function getChannelMessages($channelId, $aroundMessageId = null, $beforeMessageId = null, $afterMessageId = null, ?int $limit = 50, bool $followPagination = true): ClientResponseInterface
     {
         $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
         $limit = self::normalizeLimit($limit, 50, max: null);
@@ -618,17 +620,13 @@ class DiscordBotClient extends DiscordClient
         $query = Push::create()
             ->push($normalizedLimit, 'limit');
 
-        if (!empty($filter)) {
-            $messageId = IdNormalizer::normalizeIdArgument($messageId, '', true);
-            if (!empty($messageId)) {
-                switch (strtolower($filter)) {
-                    case 'around':
-                    case 'before':
-                    case 'after':
-                        $query = $query->push($messageId, $filter);
-                        break;
-                }
-            }
+        if (!empty($aroundMessageId)) {
+            $query = $this->channelMessageFilter($aroundMessageId, 'around', $query);
+        } elseif (!empty($beforeMessageId)) {
+            $query = $this->channelMessageFilter($beforeMessageId, 'before', $query);
+        } elseif (!empty($afterMessageId))
+        {
+            $query = $this->channelMessageFilter($afterMessageId, 'after', $query);
         }
 
         return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE], caller: __METHOD__,
@@ -636,6 +634,23 @@ class DiscordBotClient extends DiscordClient
                 'query' => $query->toArray()
             ], responseClass: GetChannelMessagesResponse::class, params: ['channelId' => $channelId, 'client' => $this, 'limit' => $limit, 'followPagination' => $followPagination]);
     }
+
+    /**
+     * @param $messageId
+     * @param string|null $filter
+     * @param Push $query
+     * @return Push
+     */
+    protected function channelMessageFilter($messageId, ?string $filter, Push $query): Push
+    {
+            $messageId = IdNormalizer::normalizeIdArgument($messageId, '');
+            if (!empty($messageId)) {
+                $query = match (strtolower($filter)) {
+                    'around', 'before', 'after' => $query->push($messageId, $filter),
+                };
+            }
+        return $query;
+    }    
 
     /**
      * Create Message

@@ -41,7 +41,7 @@ class GetChannelMessagesResponse extends DiscordResponse
             $results = new ArrayCollection($origResults);
             $remainingLimit = $this->getLimit() - count($origResults);
             $results = $this->getClient()
-                ->getChannelMessages(channelId: $this->getChannelId(), filter: 'before', messageId: $results->last()->getId(), limit: $remainingLimit, followPagination: false)
+                ->getChannelMessages(channelId: $this->getChannelId(), beforeMessageId: $results->last()->getId(), limit: $remainingLimit, followPagination: false)
                 ->deserialize(throw: $throw, context: $context, type: $type);
 
             $origResults = array_merge($origResults, $results);
