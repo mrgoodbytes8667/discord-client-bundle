@@ -585,18 +585,20 @@ class DiscordBotClient extends DiscordClient
                 'query' => $query->toArray()
             ], responseClass: GetChannelMessagesResponse::class, params: ['channelId' => $channelId, 'client' => $this, 'limit' => $limit, 'followPagination' => $followPagination]);
     }
-    
+
+    /**
+     * @param $messageId
+     * @param string|null $filter
+     * @param Push $query
+     * @return Push
+     */
     protected function channelMessageFilter($messageId, ?string $filter, Push $query): Push
     {
             $messageId = IdNormalizer::normalizeIdArgument($messageId, '');
             if (!empty($messageId)) {
-                switch (strtolower($filter)) {
-                    case 'around':
-                    case 'before':
-                    case 'after':
-                        $query = $query->push($messageId, $filter);
-                        break;
-                }
+                $query = match (strtolower($filter)) {
+                    'around', 'before', 'after' => $query->push($messageId, $filter),
+                };
             }
         return $query;
     }    
