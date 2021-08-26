@@ -8,6 +8,8 @@ use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Exceptions\DiscordClientException;
 use Bytes\DiscordResponseBundle\Objects\Guild;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildInterface;
+use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +21,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class DiscordGuildConverter
- * Converts and hydrates a Discord GuildInterface (Guild by default, can also deserialize into PartialGuild)
+ * Converts and hydrates a Discord GuildInterface (Guild by default, can also deserialize into PartialGuild though
+ * the permission field will always be null due to this hydrating via the bot endpoint)
  * @package Bytes\DiscordClientBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
@@ -62,6 +65,7 @@ class DiscordGuildConverter implements ParamConverterInterface
      * @param ParamConverter $configuration Contains the name, class and options of the object
      *
      * @return bool True if the object has been successfully set, else false
+     * @throws NoTokenException
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
@@ -93,11 +97,11 @@ class DiscordGuildConverter implements ParamConverterInterface
 
         $class = $configuration->getClass();
 
-        /** @var Guild $instance */
         $instance = new $class();
-        if (!$instance instanceof Guild) {
+        if (!($instance instanceof Guild || $instance instanceof PartialGuild)) {
             return false;
         }
+        /** @var PartialGuild|Guild $instance */
         $instance->setId($value);
 
         try {
@@ -129,6 +133,6 @@ class DiscordGuildConverter implements ParamConverterInterface
             return false;
         }
 
-        return $configuration->getClass() === Guild::class;
+        return in_array($configuration->getClass(), [Guild::class, PartialGuild::class]);
     }
 }
