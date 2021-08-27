@@ -276,10 +276,16 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
 
         if ($method === HttpMethods::patch() && !empty($messageId)) {
             return $this->request($urlParts, caller: $caller, type: Message::class, options: [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
                 'body' => $body
             ], method: $method);
         } elseif ($wait) {
             return $this->request($urlParts, caller: $caller, type: Message::class, options: [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
                 'body' => $body,
                 'query' => [
                     'wait' => $wait
@@ -287,6 +293,9 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
             ], method: $method);
         } else {
             return $this->request($urlParts, caller: $caller, options: [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
                 'body' => $body,
                 'query' => [
                     'wait' => $wait
