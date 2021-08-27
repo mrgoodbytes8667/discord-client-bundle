@@ -85,7 +85,6 @@ class DiscordBotClient extends DiscordClient
             DiscordClientEndpoints::SCOPE_API => [
                 'headers' => [
                     'Authorization' => 'Bot ' . $botToken,
-                    'Content-Type' => 'application/json',
                 ],
             ],
         ], $defaultOptionsByRegexp);
@@ -765,6 +764,9 @@ class DiscordBotClient extends DiscordClient
         ]);
 
         return $this->request($urlParts, caller: $caller, type: Message::class, options: [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
             'body' => $body
         ], method: $method, onSuccessCallable: $onSuccessCallable);
     }
