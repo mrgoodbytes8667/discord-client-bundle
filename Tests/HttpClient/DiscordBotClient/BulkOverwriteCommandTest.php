@@ -7,6 +7,7 @@ use Bytes\DiscordClientBundle\Tests\CommandProviderTrait;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordResponseBundle\Enums\ApplicationCommandOptionType as ACOT;
+use Bytes\DiscordResponseBundle\Objects\Application\Command\ChatInputCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption as Option;
 use Faker\Factory;
@@ -67,7 +68,7 @@ class BulkOverwriteCommandTest extends TestDiscordBotClientCase
 
         yield [
             [
-                ApplicationCommand::create('ducimus', $description, [
+                ChatInputCommand::createChatCommand('ducimus', $description, [
                     Option::create(ACOT::integer(), 'aut', 'dicta ipsam suscipit'),
                     Option::create(ACOT::role(), 'fugit', 'quisquam quas dolor')
                 ])

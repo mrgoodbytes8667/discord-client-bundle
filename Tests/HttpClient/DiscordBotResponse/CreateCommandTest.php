@@ -3,6 +3,7 @@
 namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 
 use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
+use Bytes\DiscordResponseBundle\Objects\Application\Command\ChatInputCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -25,14 +26,14 @@ class CreateCommandTest extends TestDiscordBotClientCase
     public function testCreateCommand()
     {
         $command = $this
-            ->setupResponse('HttpClient/add-command-success.json', type: ApplicationCommand::class)
+            ->setupResponse('HttpClient/add-command-success.json', type: ChatInputCommand::class)
             ->deserialize();
 
         $this->validateCommand($command);
     }
 
     /**
-     * @param $command
+     * @param ApplicationCommand|ChatInputCommand $command
      */
     protected function validateCommand($command)
     {
