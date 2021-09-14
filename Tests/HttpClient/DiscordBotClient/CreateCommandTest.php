@@ -7,6 +7,7 @@ use Bytes\DiscordClientBundle\Tests\Fixtures\Commands\Sample;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockClient;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonTooManyRetriesResponse;
+use Bytes\DiscordResponseBundle\Objects\Application\Command\ChatInputCommand;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption;
@@ -114,7 +115,7 @@ class CreateCommandTest extends TestDiscordBotClientCase
             MockJsonResponse::makeFixture('HttpClient/add-command-failure-description-too-long.json', Response::HTTP_BAD_REQUEST),
         ]));
 
-        $response = $client->createCommand(ApplicationCommand::create('invalid', 'I am valid input that will be treated as being over 100 characters'));
+        $response = $client->createCommand(ChatInputCommand::createChatCommand('invalid', 'I am valid input that will be treated as being over 100 characters'));
         $this->assertResponseStatusCodeSame($response, Response::HTTP_BAD_REQUEST);
     }
 
@@ -130,7 +131,7 @@ class CreateCommandTest extends TestDiscordBotClientCase
         ]));
 
         $this->expectException(ValidatorException::class);
-        $client->createCommand(ApplicationCommand::create('invalid', $description));
+        $client->createCommand(ChatInputCommand::createChatCommand('invalid', $description));
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Bytes\DiscordClientBundle\Tests;
 
 use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\GuildProviderTrait;
 use Bytes\DiscordResponseBundle\Enums\ApplicationCommandOptionType as ACOT;
+use Bytes\DiscordResponseBundle\Objects\Application\Command\ChatInputCommand;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommandOption as Option;
@@ -55,7 +56,7 @@ trait CommandProviderTrait
      */
     public function provideCommandId()
     {
-        $ac = new ApplicationCommand();
+        $ac = new ChatInputCommand();
         $ac->setId('846542216677566910');
 
         foreach ([$ac, '846542216677566910'] as $cmd) {
@@ -80,7 +81,7 @@ trait CommandProviderTrait
      */
     public function provideCommandAndGuild()
     {
-        $ac = new ApplicationCommand();
+        $ac = new ChatInputCommand();
         $ac->setId('846542216677566910');
 
         $g = new PartialGuild();
@@ -100,11 +101,11 @@ trait CommandProviderTrait
     {
         yield [
             [
-                ApplicationCommand::create('ducimus', 'harum et sunt', [
+                ChatInputCommand::createChatCommand('ducimus', 'harum et sunt', [
                     Option::create(ACOT::integer(), 'aut', 'dicta ipsam suscipit'),
                     Option::create(ACOT::role(), 'fugit', 'quisquam quas dolor')
                 ]),
-                ApplicationCommand::create('quae', 'iusto sint quos', [
+                ChatInputCommand::createChatCommand('quae', 'iusto sint quos', [
                     Option::create(ACOT::string(), 'molestias', 'debitis cum error', false, [
                         ApplicationCommandOptionChoice::create('dolore', 'ut'),
                         ApplicationCommandOptionChoice::create('vel', 'quod'),
@@ -116,11 +117,11 @@ trait CommandProviderTrait
                     ]),
                     Option::create(ACOT::boolean(), 'iure', 'quia dolor ab')
                 ]),
-                ApplicationCommand::create('debitis', 'sapiente error quis', [
+                ChatInputCommand::createChatCommand('debitis', 'sapiente error quis', [
                     Option::create(ACOT::boolean(), 'consequuntur', 'omnis dolore debitis'),
                     Option::create(ACOT::boolean(), 'amet', 'cupiditate et beatae'),
                 ]),
-                ApplicationCommand::create('quibusdam', 'vitae totam similique', [
+                ChatInputCommand::createChatCommand('quibusdam', 'vitae totam similique', [
                     Option::create(ACOT::user(), 'illum', 'necessitatibus eligendi nemo', true),
                     Option::create(ACOT::integer(), 'aspernatur', 'voluptatem explicabo nisi', false, [
                         ApplicationCommandOptionChoice::create('praesentium', 4),
@@ -129,7 +130,7 @@ trait CommandProviderTrait
                         ApplicationCommandOptionChoice::create('qui', 6)
                     ]),
                 ]),
-                ApplicationCommand::create('ab', 'odit nisi ex', [
+                ChatInputCommand::createChatCommand('ab', 'odit nisi ex', [
                     Option::create(ACOT::role(), 'voluptate', 'perferendis neque maxime', true),
                     Option::create(ACOT::channel(), 'quam', 'eum esse facere'),
                     Option::create(ACOT::integer(), 'consectetur', 'assumenda tempore voluptatibus'),
