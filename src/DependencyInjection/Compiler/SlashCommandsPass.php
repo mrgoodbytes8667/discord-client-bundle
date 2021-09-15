@@ -46,6 +46,11 @@ class SlashCommandsPass implements CompilerPassInterface
                     throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s" must implement "%s".', $id, 'bytes_discord_client.slashcommand', SlashCommandInterface::class));
                 }
                 $commandName = $class::getDefaultIndexName();
+                $parsedCommandName = $class::createCommand()->getName();
+                if($commandName !== $parsedCommandName)
+                {
+                    throw new InvalidArgumentException(sprintf('The command name "%s" does not match the "getDefaultIndexName()" value of "%s".', $parsedCommandName, $commandName));
+                }
             }
 
             unset($tags[0]);
