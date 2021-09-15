@@ -110,23 +110,25 @@ class SlashPermissionsCommand extends AbstractSlashCommand
      */
     private function outputPermissionsTable(GuildApplicationCommandPermission $existingPermissions, array $roles, string $title)
     {
-        $table = new Table($this->output);
-        $table->setHeaders(['Type', 'Snowflake', 'Permission']);
-        $table->setHeaderTitle($title);
+        if (!empty($existingPermissions) && !empty($existingPermissions->getPermissions())) {
+            $table = new Table($this->output);
+            $table->setHeaders(['Type', 'Snowflake', 'Permission']);
+            $table->setHeaderTitle($title);
 
-        foreach ($existingPermissions->getPermissions() as $existingPermission) {
-            $permissionType = ApplicationCommandPermissionType::tryFrom($existingPermission->getType());
-            $roleOrUserId = $existingPermission->getId();
-            $roleOrUserName = $roleOrUserId;
-            if ($permissionType->equals(ApplicationCommandPermissionType::role())) {
-                $foundRole = Arr::first($roles, function ($value) use ($roleOrUserId) {
-                    return $value->getId() === $roleOrUserId;
-                });
-                $roleOrUserName = $foundRole?->getName() ?? $roleOrUserId;
+            foreach ($existingPermissions->getPermissions() as $existingPermission) {
+                $permissionType = ApplicationCommandPermissionType::tryFrom($existingPermission->getType());
+                $roleOrUserId = $existingPermission->getId();
+                $roleOrUserName = $roleOrUserId;
+                if ($permissionType->equals(ApplicationCommandPermissionType::role())) {
+                    $foundRole = Arr::first($roles, function ($value) use ($roleOrUserId) {
+                        return $value->getId() === $roleOrUserId;
+                    });
+                    $roleOrUserName = $foundRole?->getName() ?? $roleOrUserId;
+                }
+                $table->addRow([$permissionType->label, $roleOrUserName, $existingPermission->getPermission()]);
             }
-            $table->addRow([$permissionType->label, $roleOrUserName, $existingPermission->getPermission()]);
+            $table->render();
         }
-        $table->render();
     }
 
     /**
@@ -182,7 +184,12 @@ class SlashPermissionsCommand extends AbstractSlashCommand
                 }
             }
 
-            $this->outputPermissionsTable($this->client->getCommandPermissions($guild, $command)->deserialize(), $roles, 'Existing Permissions');
+            try {
+                $existingPermissions = $this->client->getCommandPermissions($guild, $command)->deserialize();
+            } catch (ClientExceptionInterface) {
+                $existingPermissions = new GuildApplicationCommandPermission();
+            }
+            $this->outputPermissionsTable($existingPermissions, $roles, 'Existing Permissions');
 
             if (empty($roles)) {
                 throw new Exception("There are no roles for " . $guild->getName());
