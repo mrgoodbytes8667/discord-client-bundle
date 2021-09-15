@@ -7,6 +7,8 @@ namespace Bytes\DiscordClientBundle\Command;
 use Bytes\CommandBundle\Command\BaseCommand;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
+use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -83,6 +85,8 @@ abstract class AbstractSlashCommand extends BaseCommand
      * @param InputInterface $input
      * @param OutputInterface $output
      * @param QuestionHelper|null $helper
+     * @param string $questionText
+     * @param bool $includePlaceholderGuild
      *
      * @return PartialGuild|null
      *
@@ -91,22 +95,25 @@ abstract class AbstractSlashCommand extends BaseCommand
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null): ?PartialGuild
+    protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null, string $questionText = 'Pick a server', bool $includePlaceholderGuild = true): ?PartialGuild
     {
         if (!$input->getOption('global') && !$input->getArgument('guild')) {
             if (is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
-            $empty = new PartialGuild();
-            $empty->setName('None');
-            $empty->setId('-1');
-            $guilds = [$empty];
+            $guilds = [];
+            if($includePlaceholderGuild) {
+                $empty = new PartialGuild();
+                $empty->setName('None');
+                $empty->setId('-1');
+                $guilds = [$empty];
+            }
             $retrievedGuilds = $this->getGuilds();
             if (!empty($retrievedGuilds)) {
                 $guilds = array_merge($guilds, $retrievedGuilds);
             }
             $question = new ChoiceQuestion(
-                'Pick a guild',
+                $questionText,
                 // choices can also be PHP objects that implement __toString() method
                 $guilds,
                 0
@@ -121,6 +128,50 @@ abstract class AbstractSlashCommand extends BaseCommand
         }
 
         $input->setArgument('guild', $answer);
+
+        return $answer;
+    }
+
+    /**
+     * Ask which command to operate on
+     * @param PartialGuild|null $guild
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param QuestionHelper|null $helper
+     * @param string $questionText
+     *
+     * @return ApplicationCommand|null
+     *
+     * @throws ClientExceptionInterface
+     * @throws NoTokenException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    protected function interactForExistingCommandsArgument(?PartialGuild $guild, InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null, string $questionText = 'Pick a command'): ?ApplicationCommand
+    {
+        if (!$input->getArgument('cmd')) {
+            if (is_null($helper)) {
+                $helper = $this->getHelper('question');
+            }
+            $commands = $this->client->getCommands($guild)->deserialize();
+
+            if (empty($commands)) {
+                $this->io->warning("There are no " . (!is_null($guild) ? "" : "global ") . "commands" . (is_null($guild) ? "" : " for " . $guild->getName()));
+                return $input->getArgument('cmd') ?: null;
+            }
+            $question = new ChoiceQuestion(
+                $questionText,
+                // choices can also be PHP objects that implement __toString() method
+                $commands,
+            );
+
+            $answer = $helper->ask($input, $output, $question);
+        } else {
+            $answer = $input->getArgument('cmd') ?: null;
+        }
+
+        $input->setArgument('cmd', $answer);
 
         return $answer;
     }
