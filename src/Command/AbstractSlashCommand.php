@@ -83,6 +83,8 @@ abstract class AbstractSlashCommand extends BaseCommand
      * @param InputInterface $input
      * @param OutputInterface $output
      * @param QuestionHelper|null $helper
+     * @param string $questionText
+     * @param bool $includePlaceholderGuild
      *
      * @return PartialGuild|null
      *
@@ -91,22 +93,25 @@ abstract class AbstractSlashCommand extends BaseCommand
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null): ?PartialGuild
+    protected function interactForGuildArgument(InputInterface $input, OutputInterface $output, ?QuestionHelper $helper = null, string $questionText = 'Pick a server', bool $includePlaceholderGuild = true): ?PartialGuild
     {
         if (!$input->getOption('global') && !$input->getArgument('guild')) {
             if (is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
-            $empty = new PartialGuild();
-            $empty->setName('None');
-            $empty->setId('-1');
-            $guilds = [$empty];
+            $guilds = [];
+            if($includePlaceholderGuild) {
+                $empty = new PartialGuild();
+                $empty->setName('None');
+                $empty->setId('-1');
+                $guilds = [$empty];
+            }
             $retrievedGuilds = $this->getGuilds();
             if (!empty($retrievedGuilds)) {
                 $guilds = array_merge($guilds, $retrievedGuilds);
             }
             $question = new ChoiceQuestion(
-                'Pick a guild',
+                $questionText,
                 // choices can also be PHP objects that implement __toString() method
                 $guilds,
                 0
