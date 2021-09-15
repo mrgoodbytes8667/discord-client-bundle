@@ -92,8 +92,11 @@ class SlashPermissionsCommand extends AbstractSlashCommand
             /** @var GuildApplicationCommandPermission|null $deserialize */
             $deserialize = $this->client->editCommandPermissions($guild, $command, $permissions->toArray())->deserialize(false);
         } catch (ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface | NoTokenException) {
-
+            $this->io->error('There was an error updating the permissions.');
+            return self::FAILURE;
         }
+
+        $this->io->success('Permissions updated.');
 
         $this->outputPermissionsTable($deserialize, $roles, 'New Permissions');
 

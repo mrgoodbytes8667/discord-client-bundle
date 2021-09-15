@@ -1,0 +1,24 @@
+[
+  {
+    "id": "806676745524858296",
+    "name": "@everyone",
+    "permissions": "1071661515776",
+    "position": 0,
+    "color": 0,
+    "hoist": false,
+    "managed": false,
+    "mentionable": false,
+    "icon": null
+  },
+  {
+    "id": "121492726233657129",
+    "name": "Admin",
+    "permissions": "6546775625",
+    "position": 20,
+    "color": 3066993,
+    "hoist": true,
+    "managed": false,
+    "mentionable": true,
+    "icon": null
+  }
+]
