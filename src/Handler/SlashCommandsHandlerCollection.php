@@ -96,7 +96,7 @@ class SlashCommandsHandlerCollection
      * @param string[] $commands
      * @return $this
      */
-    private function setCommands(array $commands = []): self
+    private function setCommands(array $commands = []): static
     {
         if (empty($commands) && !empty($this->list)) {
             $commands = $this->list;
