@@ -43,11 +43,6 @@ class SlashPermissionsCommand extends AbstractSlashCommand
     protected static $defaultDescription = 'Update ';
 
     /**
-     * @var bool
-     */
-    protected $needsOutput = true;
-
-    /**
      * @param DiscordBotClient $client
      * @param SlashCommandsHandlerCollection $commandsCollection
      */
