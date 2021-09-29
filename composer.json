@@ -58,8 +58,8 @@
     },
     "minimum-stability": "dev",
     "extra": {
-    "branch-alias": {
-        "dev-symfony5.4": "0.4.x-dev"
+        "branch-alias": {
+            "dev-symfony5.4": "0.4.x-dev"
+        }
     }
-}
 }
