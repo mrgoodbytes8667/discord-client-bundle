@@ -57,7 +57,7 @@ class BytesDiscordClientExtension extends Extension implements ExtensionInterfac
 
         $configuration = $this->getConfiguration($configs, $container);
 
-        /** @var array $config = ['client_id' => '', 'client_secret' => '', 'client_public_key' => '', 'bot_token' => '', 'user' => false, 'redirects' => ['bot' => ['method' => '', 'route_name' => '', 'url' => '']], 'user' => ['method' => '', 'route_name' => '', 'url' => '']], 'slash' => ['method' => '', 'route_name' => '', 'url' => '']], 'login' => ['method' => '', 'route_name' => '', 'url' => '']]]*/
+        /** @var array $config = ['client_id' => '', 'client_secret' => '', 'bot_token' => '', 'user' => false, 'redirects' => ['bot' => ['method' => '', 'route_name' => '', 'url' => '']], 'user' => ['method' => '', 'route_name' => '', 'url' => '']], 'slash' => ['method' => '', 'route_name' => '', 'url' => '']], 'login' => ['method' => '', 'route_name' => '', 'url' => '']]]*/
         $config = $this->processConfiguration($configuration, $configs);
 
         $config = ConfigNormalizer::normalizeEndpoints($config, static::$endpoints, static::$addRemoveParents);
