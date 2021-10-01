@@ -31,7 +31,7 @@ abstract class TestSlashCommand extends TestCase
     /**
      * @param string $callback
      * @param array $inputs
-     * @param array $config = ['client_id' => '', 'client_secret' => '', 'client_public_key' => '', 'bot_token' => '', 'user_agent' => '']
+     * @param array $config = ['client_id' => '', 'client_secret' => '', 'bot_token' => '', 'user_agent' => '']
      * @param bool $registerSlashCommands
      *
      * @return CommandTester
