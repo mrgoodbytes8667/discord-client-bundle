@@ -25,7 +25,7 @@ class SlashCommandKernel extends Kernel
      * @param bool $registerSlashCommands
      * @return $this
      */
-    public function setRegisterSlashCommands(bool $registerSlashCommands): self
+    public function setRegisterSlashCommands(bool $registerSlashCommands): static
     {
         $this->registerSlashCommands = $registerSlashCommands;
         return $this;
