@@ -72,7 +72,7 @@ class Kernel extends BaseKernel
     /**
      * @return BundleInterface[]
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [
             new FrameworkBundle(),
@@ -151,7 +151,7 @@ class Kernel extends BaseKernel
      *
      * @return string The cache directory
      */
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return parent::getCacheDir() . '/' . spl_object_hash($this);
     }
@@ -168,7 +168,7 @@ class Kernel extends BaseKernel
      * @param string $callback
      * @return $this
      */
-    public function setCallback(string $callback): self
+    public function setCallback(string $callback): static
     {
         $this->callback = $callback;
         return $this;
@@ -186,7 +186,7 @@ class Kernel extends BaseKernel
      * @param array $config
      * @return $this
      */
-    public function setConfig(array $config): self
+    public function setConfig(array $config): static
     {
         $this->config = $config;
         return $this;
@@ -196,7 +196,7 @@ class Kernel extends BaseKernel
      * @param array $config
      * @return $this
      */
-    public function mergeConfig(array $config): self
+    public function mergeConfig(array $config): static
     {
         $this->config = array_merge($this->config, $config);
         return $this;
@@ -214,7 +214,7 @@ class Kernel extends BaseKernel
      * @param array $classes
      * @return $this
      */
-    public function setClasses(array $classes): self
+    public function setClasses(array $classes): static
     {
         $this->classes = $classes;
         return $this;
@@ -224,7 +224,7 @@ class Kernel extends BaseKernel
      * @param string|array $class
      * @return $this
      */
-    public function addClass($class): self
+    public function addClass($class): static
     {
         $this->classes[] = $class;
         return $this;

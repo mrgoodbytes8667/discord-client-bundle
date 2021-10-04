@@ -45,7 +45,7 @@ class GetReactionsTest extends TestDiscordBotClientCase
     /**
      * @return Generator
      */
-    public function provideValidGetReaction()
+    public function provideValidGetReaction(): Generator
     {
         $this->setupFaker();
 
