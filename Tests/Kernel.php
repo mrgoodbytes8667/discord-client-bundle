@@ -42,7 +42,7 @@ class Kernel extends BaseKernel
     /**
      * Kernel constructor.
      * @param string $callback
-     * @param array $config = ['client_id' => '', 'client_secret' => '', 'client_public_key' => '', 'bot_token' => '', 'user_agent' => '']
+     * @param array $config = ['client_id' => '', 'client_secret' => '', 'bot_token' => '', 'user_agent' => '']
      *
      * All configured values are randomly generated using the same character sets and lengths as actual Discord values
      */
@@ -52,7 +52,6 @@ class Kernel extends BaseKernel
         $this->config = array_merge([
             'client_id' => Fixture::CLIENT_ID,
             'client_secret' => Fixture::CLIENT_SECRET,
-            'client_public_key' => Fixture::CLIENT_PUBLIC_KEY,
             'bot_token' => Fixture::BOT_TOKEN,
             'user_agent' => Fixture::USER_AGENT,
             'endpoints' => [
