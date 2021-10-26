@@ -71,7 +71,9 @@ class DiscordConverter implements ParamConverterInterface
         $class = $configuration->getClass();
 
         $instance = new $class();
-        if (is_subclass_of($instance, Role::class) || $instance instanceof Role) {
+        if (is_subclass_of($class, NameInterface::class) && $param === 'name') {
+            $instance->setName($value);
+        } elseif (is_subclass_of($instance, Role::class) || $instance instanceof Role) {
             $instance->setId($value);
             $this->copyArray($request->attributes->all(), $instance, prefix: 'role', mappings: ['role_id' => 'id', 'roleId' => 'id', 'guild_id' => 'guild', 'guild' => 'guild'], skips: ['id']);
             $this->copyArray($request->query->all(), $instance, prefix: 'role', mappings: ['role_id' => 'id', 'roleId' => 'id', 'guild_id' => 'guild', 'guild' => 'guild'], skips: ['id']);
@@ -83,8 +85,6 @@ class DiscordConverter implements ParamConverterInterface
             $this->copyArray($request->attributes->all(), $instance, prefix: 'guild', mappings: ['guild_id' => 'id', 'guildId' => 'id', 'guild' => 'id'], skips: ['id']);
         } elseif (is_subclass_of($class, GuildIdInterface::class) && in_array($param, ['guild_id', 'guildId'])) {
             $instance->setGuildId($value);
-        } elseif (is_subclass_of($class, NameInterface::class) && $param === 'name') {
-            $instance->setName($value);
         } elseif (is_subclass_of($class, IdInterface::class)) {
             $instance->setId($value);
         } else {
