@@ -110,7 +110,7 @@ return static function (ContainerConfigurator $container) {
     $services->alias(TokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
     $services->alias(AppTokenClientInterface::class.' $discordTokenClient', DiscordBotTokenClient::class);
     $services->alias(AppTokenClientInterface::class.' $discordBotTokenClient', DiscordBotTokenClient::class);
-    
+
     $services->set('bytes_discord_client.httpclient.discord.token.user', DiscordUserTokenClient::class)
         ->args([
             service('http_client'), // Symfony\Contracts\HttpClient\HttpClientInterface
@@ -243,6 +243,10 @@ return static function (ContainerConfigurator $container) {
         ]);
 
     $services->set('bytes_discord_client.discord_converter', DiscordConverter::class)
+        ->args([
+            service('property_info'),
+            service('property_accessor'),
+        ])
         ->tag('request.param_converter', [
             'converter' => 'bytes_discord_client'
         ]);
