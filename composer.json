@@ -16,7 +16,7 @@
     "require-dev": {
         "doctrine/common": "^3.0",
         "fakerphp/faker": "^1.13",
-        "mrgoodbytes8667/test-common": ">=0.0.19",
+        "mrgoodbytes8667/test-common": ">=0.0.21",
         "mrgoodbytes8667/test-common-faker": "^0.3.5",
         "mrgoodbytes8667/test-discord-faker": ">=0.0.9",
         "symfony/security-bundle": "^5.3 | ^6.0",

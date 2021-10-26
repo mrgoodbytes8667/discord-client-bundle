@@ -3,12 +3,17 @@
 namespace Bytes\DiscordClientBundle\Tests\Request;
 
 use Bytes\DiscordClientBundle\Request\DiscordConverter;
+use Bytes\DiscordResponseBundle\Objects\Channel;
 use Bytes\DiscordResponseBundle\Objects\ChannelMention;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\GuildIdInterface;
+use Bytes\DiscordResponseBundle\Objects\Role;
 use Bytes\ResponseBundle\Interfaces\IdInterface;
 use Bytes\DiscordResponseBundle\Objects\Interfaces\NameInterface;
 use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
+use Bytes\Tests\Common\TestExtractorTrait;
+use Bytes\Tests\Common\TestFullSerializerTrait;
+use Bytes\Tests\Common\TestSerializerTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -18,6 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class DiscordConverterTest extends TestParamConverterCase
 {
+    use TestExtractorTrait;
+
     /**
      * @var DiscordConverter
      */
@@ -130,6 +137,8 @@ class DiscordConverterTest extends TestParamConverterCase
         yield ['class' => $this->gm(IdInterface::class), 'className' => IdInterface::class, 'name' => $this->faker->camelWords(), 'value' => $this->faker->camelWords(), 'responseClass' => Message::class, 'responseMethod' => 'getId'];
         yield ['class' => $this->gm(IdInterface::class), 'className' => IdInterface::class, 'name' => $this->faker->snakeWords(), 'value' => $this->faker->camelWords(), 'responseClass' => PartialGuild::class, 'responseMethod' => 'getId'];
         yield ['class' => $this->gm(IdInterface::class), 'className' => IdInterface::class, 'name' => 'guildId', 'value' => $this->faker->camelWords(), 'responseClass' => PartialGuild::class, 'responseMethod' => 'getId'];
+        yield ['class' => $this->gm(Role::class), 'className' => Role::class, 'name' => 'roleId', 'value' => $this->faker->snowflake(), 'responseClass' => Role::class, 'responseMethod' => 'getId'];
+        yield ['class' => $this->gm(Channel::class), 'className' => Channel::class, 'name' => 'channelId', 'value' => $this->faker->snowflake(), 'responseClass' => Channel::class, 'responseMethod' => 'getId'];
         // responseMethod is getName despite this being an IdInterface: PartialGuild implements IdInterface and NameInterface, and our rules state that NameInterface will take precedence over IdInterface when the name is 'name'
         yield ['class' => $this->gm(IdInterface::class), 'className' => IdInterface::class, 'name' => 'name', 'value' => $this->faker->camelWords(), 'responseClass' => PartialGuild::class, 'responseMethod' => 'getName'];
     }
@@ -167,7 +176,8 @@ class DiscordConverterTest extends TestParamConverterCase
      */
     protected function setUp(): void
     {
-        $this->converter = new DiscordConverter();
+        $this->setupExtractorParts();
+        $this->converter = new DiscordConverter($this->propertyInfo, $this->propertyAccessor);
     }
 
     /**
