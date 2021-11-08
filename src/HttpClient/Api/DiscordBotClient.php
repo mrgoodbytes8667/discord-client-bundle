@@ -728,7 +728,7 @@ class DiscordBotClient extends DiscordClient
 
         if($content instanceof Embed)
         {
-            $data = Content::new($content);
+            $data = Content::create($content);
         } elseif (!($content instanceof Content)) {
             $data = new Content();
 
