@@ -18,7 +18,6 @@ use Bytes\DiscordResponseBundle\Objects\PartialGuild;
  * @method assertEquals($expected, $actual, string $message = '')
  * @method assertEmpty($actual, string $message = '')
  * @method assertCount(int $expectedCount, $haystack, string $message = '')
- * @method assertClassNotHasAttribute(string $attributeName, string $className, string $message = '')
  * @method assertNull($actual, string $message = '')
  * @method assertNotInstanceOf(string $expected, $actual, string $message = '')
  */
@@ -89,11 +88,5 @@ trait TestDiscordGuildTrait
         // Items only present in PartialGuild, still won't be present if we convert down
         $this->assertEmpty($guild->getOwner());
         $this->assertEmpty($guild->getPermissions());
-
-        // Items only present in Guild
-        $this->assertClassNotHasAttribute('roles', get_class($guild));
-        $this->assertClassNotHasAttribute('ownerId', get_class($guild));
-        $this->assertClassNotHasAttribute('approximateMemberCount', get_class($guild));
-        $this->assertClassNotHasAttribute('approximatePresenceCount', get_class($guild));
     }
 }
