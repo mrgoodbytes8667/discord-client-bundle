@@ -2,6 +2,7 @@
 
 namespace Bytes\DiscordClientBundle\Command;
 
+use Bytes\CommandBundle\Exception\CommandRuntimeException;
 use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
@@ -52,10 +53,15 @@ class SlashAddCommand extends AbstractSlashCommand
     public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
     {
         if ($input->mustSuggestArgumentValuesFor('cmd')) {
-            $suggestions->suggestValues(array_values(array_map(function ($value) {
-                return $value->getName();
-            }, $this->commandsCollection->getCommands())));
+            $suggestions->suggestValues(array_keys($this->commandsCollection->getList()));
         }
+        if ($input->mustSuggestArgumentValuesFor('guild')) {
+            $guilds = $this->getGuildsInteractive(true);
+            $suggestions->suggestValues(array_map(function ($value) {
+                return $value->getName();
+            }, $guilds));
+        }
+
     }
 
     /**
@@ -87,6 +93,7 @@ class SlashAddCommand extends AbstractSlashCommand
         $command = $this->input->getArgument('cmd');
         /** @var PartialGuild $guild */
         $guild = $this->input->getArgument('guild');
+
         if ($guild?->getId() === '-1') {
             $guild = null;
         }
@@ -142,6 +149,17 @@ class SlashAddCommand extends AbstractSlashCommand
                 array_values($this->commandsCollection->getCommands()),
             );
             $questions['cmd'] = $question;
+        } else {
+            $key = $input->getArgument('cmd');
+            if(is_string($key))
+            {
+                $command = $this->commandsCollection->getCommand($key);
+                if(empty($command))
+                {
+                    throw new CommandRuntimeException(sprintf('The command with tag "%s" does not exist.', $key), true);
+                }
+                $input->setArgument('cmd', $command);
+            }
         }
 
         $helper = $this->getHelper('question');

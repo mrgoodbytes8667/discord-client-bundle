@@ -5,11 +5,13 @@ namespace Bytes\DiscordClientBundle\Command;
 
 
 use Bytes\CommandBundle\Command\BaseCommand;
+use Bytes\CommandBundle\Exception\CommandRuntimeException;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Support\Arr;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -101,17 +103,7 @@ abstract class AbstractSlashCommand extends BaseCommand
             if (is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
-            $guilds = [];
-            if($includePlaceholderGuild) {
-                $empty = new PartialGuild();
-                $empty->setName('None');
-                $empty->setId('-1');
-                $guilds = [$empty];
-            }
-            $retrievedGuilds = $this->getGuilds();
-            if (!empty($retrievedGuilds)) {
-                $guilds = array_merge($guilds, $retrievedGuilds);
-            }
+            $guilds = $this->getGuildsInteractive($includePlaceholderGuild);
             $question = new ChoiceQuestion(
                 $questionText,
                 // choices can also be PHP objects that implement __toString() method
@@ -124,7 +116,21 @@ abstract class AbstractSlashCommand extends BaseCommand
                 $answer = null;
             }
         } else {
-            $answer = $input->getArgument('guild') ?: null;
+            $guild = $input->getArgument('guild') ?: null;
+            $answer = $guild;
+
+            if(is_numeric($answer) || is_string($answer))
+            {
+                $guilds = $this->getGuildsInteractive($includePlaceholderGuild);
+                /** @var PartialGuild|null $found */
+                $answer = Arr::first($guilds, function ($value) use ($answer) {
+                    /** @var PartialGuild $value */
+                    return $value->getName() === $answer || $value->getId() === $answer;
+                });
+                if(empty($found)) {
+                    throw new CommandRuntimeException(sprintf('The guild "%s" cannot be found. Please enter the exact guild name or the guild Id.', $guild), true);
+                }
+            }
         }
 
         $input->setArgument('guild', $answer);
@@ -221,5 +227,29 @@ abstract class AbstractSlashCommand extends BaseCommand
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param bool $includePlaceholderGuild
+     * @return array|PartialGuild[]|null
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    protected function getGuildsInteractive(bool $includePlaceholderGuild): ?array
+    {
+        $guilds = [];
+        if ($includePlaceholderGuild) {
+            $empty = new PartialGuild();
+            $empty->setName('None');
+            $empty->setId('-1');
+            $guilds = [$empty];
+        }
+        $retrievedGuilds = $this->getGuilds();
+        if (!empty($retrievedGuilds)) {
+            $guilds = array_merge($guilds, $retrievedGuilds);
+        }
+        return $guilds;
     }
 }

@@ -6,6 +6,7 @@ use Bytes\DiscordClientBundle\Tests\Command\MockServerExceptionCallback;
 use Bytes\DiscordClientBundle\Tests\Command\MockTooManyRequestsCallback;
 use Bytes\DiscordClientBundle\Tests\Command\MockUnauthorizedCallback;
 use Bytes\DiscordClientBundle\Tests\Command\TestSlashCommand;
+use Bytes\DiscordClientBundle\Tests\MockHttpClient\MockJsonResponse;
 use Exception;
 use Generator;
 use Symfony\Component\Console\Command\Command;
@@ -127,7 +128,7 @@ class SlashAddCommandTest extends TestSlashCommand
      */
     public function testComplete(array $input, array $expectedSuggestions)
     {
-        $command = $this->setupCommand(null);
+        $command = $this->setupCommand(MockSuccessfulGetGuildsCallback::class);
 
         $tester = new CommandCompletionTester($command);
 
@@ -145,5 +146,7 @@ class SlashAddCommandTest extends TestSlashCommand
     {
         yield 'search' => [[''], ['sample', 'bar', 'foo']];
         yield 'search s' => [[''], ['sample']];
+        yield 'guild' => [['sample', ''], ['Sample Server Alpha']];
+        yield 'guild Sample Ser' => [['sample', 'Sample Ser'], ['Sample Server Alpha']];
     }
 }
