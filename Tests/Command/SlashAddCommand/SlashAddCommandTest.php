@@ -49,11 +49,53 @@ class SlashAddCommandTest extends TestSlashCommand
     /**
      * @group success
      */
+    public function testSuccessfulAdd()
+    {
+        $commandTester = $this->setupCommandTester(MockSuccessfulAddCallback::class, array('1', '1'));
+
+        $commandTester->execute(['sample', 'Sample Server Alpha']);
+
+        // the output of the command in the console
+        $output = $commandTester->getDisplay();
+
+        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
+        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'created', 'successfully', '846542216677566910']);
+        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
+
+        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+    }
+
+    /**
+     * @group success
+     */
     public function testSuccessfulEditInteractive()
     {
         $commandTester = $this->setupCommandTester(MockSuccessfulEditCallback::class, array('1', '1'));
 
         $commandTester->execute([
+            '--commandId' => '846542216677566910'
+        ]);
+
+        // the output of the command in the console
+        $output = $commandTester->getDisplay();
+
+        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
+        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'edited', 'successfully', '846542216677566910']);
+        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
+
+        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+    }
+
+    /**
+     * @group success
+     */
+    public function testSuccessfulEdit()
+    {
+        $commandTester = $this->setupCommandTester(MockSuccessfulEditCallback::class, array('1', '1'));
+
+        $commandTester->execute([
+            'sample',
+            'Sample Server Alpha',
             '--commandId' => '846542216677566910'
         ]);
 
