@@ -6,10 +6,12 @@ use Bytes\DiscordClientBundle\Tests\Command\MockServerExceptionCallback;
 use Bytes\DiscordClientBundle\Tests\Command\MockTooManyRequestsCallback;
 use Bytes\DiscordClientBundle\Tests\Command\MockUnauthorizedCallback;
 use Bytes\DiscordClientBundle\Tests\Command\TestSlashCommand;
+use Exception;
+use Generator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Tester\CommandCompletionTester;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use function Symfony\Component\String\u;
 
 /**
  * Class SlashAddCommandTest
@@ -101,7 +103,7 @@ class SlashAddCommandTest extends TestSlashCommand
     {
         $commandTester = $this->setupCommandTester('', [], [], false);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('There are no registered commands.');
 
         $commandTester->execute([]);
@@ -119,5 +121,29 @@ class SlashAddCommandTest extends TestSlashCommand
 
         $commandTester->execute([]);
     }
-}
 
+    /**
+     * @dataProvider provideCompletionSuggestions
+     */
+    public function testComplete(array $input, array $expectedSuggestions)
+    {
+        $command = $this->setupCommand(null);
+
+        $tester = new CommandCompletionTester($command);
+
+        $suggestions = $tester->complete($input);
+
+        foreach ($expectedSuggestions as $expectedSuggestion) {
+            $this->assertContains($expectedSuggestion, $suggestions);
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideCompletionSuggestions(): Generator
+    {
+        yield 'search' => [[''], ['sample', 'bar', 'foo']];
+        yield 'search s' => [[''], ['sample']];
+    }
+}

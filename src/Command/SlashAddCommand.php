@@ -9,6 +9,8 @@ use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Exception;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,6 +44,18 @@ class SlashAddCommand extends AbstractSlashCommand
     public function __construct(DiscordBotClient $client, private SlashCommandsHandlerCollection $commandsCollection)
     {
         parent::__construct($client);
+    }
+
+    /**
+     * Adds suggestions to $suggestions for the current completion input (e.g. option or argument).
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        if ($input->mustSuggestArgumentValuesFor('cmd')) {
+            $suggestions->suggestValues(array_values(array_map(function ($value) {
+                return $value->getName();
+            }, $this->commandsCollection->getCommands())));
+        }
     }
 
     /**
@@ -114,12 +128,12 @@ class SlashAddCommand extends AbstractSlashCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        parent::interact($input,$output);
+        parent::interact($input, $output);
         $questions = [];
 
         if (!$input->getArgument('cmd')) {
             $commands = array_values($this->commandsCollection->getCommands());
-            if(empty($commands)) {
+            if (empty($commands)) {
                 throw new Exception('There are no registered commands.');
             }
             $question = new ChoiceQuestion(
@@ -139,5 +153,4 @@ class SlashAddCommand extends AbstractSlashCommand
 
         $this->interactForGuildArgument($input, $output, $helper);
     }
-
 }
