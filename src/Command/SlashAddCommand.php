@@ -2,6 +2,7 @@
 
 namespace Bytes\DiscordClientBundle\Command;
 
+use Bytes\CommandBundle\Exception\CommandRuntimeException;
 use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
 use Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
@@ -9,6 +10,8 @@ use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Exception;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -45,6 +48,22 @@ class SlashAddCommand extends AbstractSlashCommand
     }
 
     /**
+     * Adds suggestions to $suggestions for the current completion input (e.g. option or argument).
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        if ($input->mustSuggestArgumentValuesFor('cmd')) {
+            $suggestions->suggestValues(array_keys($this->commandsCollection->getList()));
+        }
+        if ($input->mustSuggestArgumentValuesFor('guild')) {
+            $guilds = $this->getGuildsInteractive(true);
+            $suggestions->suggestValues(array_map(function ($value) {
+                return $value->getName();
+            }, $guilds));
+        }
+    }
+
+    /**
      *
      */
     protected function configure()
@@ -73,6 +92,7 @@ class SlashAddCommand extends AbstractSlashCommand
         $command = $this->input->getArgument('cmd');
         /** @var PartialGuild $guild */
         $guild = $this->input->getArgument('guild');
+
         if ($guild?->getId() === '-1') {
             $guild = null;
         }
@@ -114,12 +134,12 @@ class SlashAddCommand extends AbstractSlashCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        parent::interact($input,$output);
+        parent::interact($input, $output);
         $questions = [];
 
         if (!$input->getArgument('cmd')) {
             $commands = array_values($this->commandsCollection->getCommands());
-            if(empty($commands)) {
+            if (empty($commands)) {
                 throw new Exception('There are no registered commands.');
             }
             $question = new ChoiceQuestion(
@@ -128,6 +148,17 @@ class SlashAddCommand extends AbstractSlashCommand
                 array_values($this->commandsCollection->getCommands()),
             );
             $questions['cmd'] = $question;
+        } else {
+            $key = $input->getArgument('cmd');
+            if(is_string($key))
+            {
+                $command = $this->commandsCollection->getCommand($key);
+                if(empty($command))
+                {
+                    throw new CommandRuntimeException(sprintf('The command with tag "%s" does not exist.', $key), true);
+                }
+                $input->setArgument('cmd', $command);
+            }
         }
 
         $helper = $this->getHelper('question');
@@ -139,5 +170,4 @@ class SlashAddCommand extends AbstractSlashCommand
 
         $this->interactForGuildArgument($input, $output, $helper);
     }
-
 }

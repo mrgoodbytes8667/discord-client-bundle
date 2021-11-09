@@ -46,6 +46,7 @@
         "doctrine/persistence": "<2.1.0",
         "mrgoodbytes8667/response-bundle": "<2.1.0",
         "phpunit/phpunit": "<9.5 || 9.5.8",
+        "symfony/console": "<5.4",
         "symfony/framework-bundle": "<5.3.0"
     },
     "autoload": {
@@ -53,5 +54,6 @@
             "Bytes\\DiscordClientBundle\\": "src/",
             "Bytes\\DiscordClientBundle\\Tests\\": "Tests/"
         }
-    }
+    },
+    "minimum-stability": "beta"
 }

@@ -5,9 +5,9 @@ namespace Bytes\DiscordClientBundle\Command;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Exception;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,6 +34,19 @@ class SlashDeleteCommand extends AbstractSlashCommand
     protected static $defaultDescription = 'Remove a slash command from a server or globally';
 
     /**
+     * Adds suggestions to $suggestions for the current completion input (e.g. option or argument).
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        if ($input->mustSuggestArgumentValuesFor('guild')) {
+            $guilds = $this->getGuildsInteractive(true);
+            $suggestions->suggestValues(array_map(function ($value) {
+                return $value->getName();
+            }, $guilds));
+        }
+    }
+
+    /**
      *
      */
     protected function configure()
@@ -47,10 +60,7 @@ class SlashDeleteCommand extends AbstractSlashCommand
 
     /**
      * @return int
-     *
      * @throws TransportExceptionInterface
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     protected function executeCommand(): int
     {

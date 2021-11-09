@@ -4,6 +4,7 @@ namespace Bytes\DiscordClientBundle\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -38,8 +39,27 @@ abstract class TestSlashCommand extends TestCase
      */
     protected function setupCommandTester(string $callback, array $inputs = [], array $config = [], bool $registerSlashCommands = true)
     {
+        $command = $this->setupCommand($callback, $config, $registerSlashCommands);
+        $commandTester = new CommandTester($command);
+        if (!empty($inputs)) {
+            $commandTester->setInputs($inputs);
+        }
+
+        return $commandTester;
+    }
+
+    /**
+     * @param string|null $callback
+     * @param array $config = ['client_id' => '', 'client_secret' => '', 'bot_token' => '', 'user_agent' => '']
+     * @param bool $registerSlashCommands
+     * @return Command
+     */
+    protected function setupCommand(?string $callback, array $config = [], bool $registerSlashCommands = true)
+    {
         $kernel = $this->kernel;
-        $kernel->setCallback($callback);
+        if(!empty($callback)) {
+            $kernel->setCallback($callback);
+        }
         if (!empty($config)) {
             $kernel->mergeConfig($config);
         }
@@ -49,13 +69,7 @@ abstract class TestSlashCommand extends TestCase
 
         $application = new Application($kernel);
 
-        $command = $application->find($this->command);
-        $commandTester = new CommandTester($command);
-        if (!empty($inputs)) {
-            $commandTester->setInputs($inputs);
-        }
-
-        return $commandTester;
+        return $application->find($this->command);
     }
 
     /**
