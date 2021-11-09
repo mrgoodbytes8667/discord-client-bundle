@@ -53,7 +53,7 @@ class SlashAddCommandTest extends TestSlashCommand
     {
         $commandTester = $this->setupCommandTester(MockSuccessfulAddCallback::class, array('1', '1'));
 
-        $commandTester->execute(['sample', 'Sample Server Alpha']);
+        $commandTester->execute(['cmd' => 'sample', 'guild' => 'Sample Server Alpha']);
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
@@ -94,8 +94,8 @@ class SlashAddCommandTest extends TestSlashCommand
         $commandTester = $this->setupCommandTester(MockSuccessfulEditCallback::class, array('1', '1'));
 
         $commandTester->execute([
-            'sample',
-            'Sample Server Alpha',
+            'cmd' => 'sample',
+            'guild' => 'Sample Server Alpha',
             '--commandId' => '846542216677566910'
         ]);
 

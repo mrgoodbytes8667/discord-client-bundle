@@ -127,7 +127,7 @@ abstract class AbstractSlashCommand extends BaseCommand
                     /** @var PartialGuild $value */
                     return $value->getName() === $answer || $value->getId() === $answer;
                 });
-                if(empty($found)) {
+                if(empty($answer)) {
                     throw new CommandRuntimeException(sprintf('The guild "%s" cannot be found. Please enter the exact guild name or the guild Id.', $guild), true);
                 }
             }
