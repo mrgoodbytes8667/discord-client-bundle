@@ -61,7 +61,6 @@ class SlashAddCommand extends AbstractSlashCommand
                 return $value->getName();
             }, $guilds));
         }
-
     }
 
     /**

@@ -29,84 +29,34 @@ class SlashAddCommandTest extends TestSlashCommand
 
     /**
      * @group success
+     * @dataProvider provideArguments
      */
-    public function testSuccessfulAddInteractive()
+    public function testCommandSuccess($callback, $cmd, $guild, $commandId, $args, $verb)
     {
-        $commandTester = $this->setupCommandTester(MockSuccessfulAddCallback::class, array('1', '1'));
+        $commandTester = $this->setupCommandTester($callback, array('1', '1'));
 
-        $commandTester->execute([]);
+        $commandTester->execute($args);
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
 
         // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
-        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'created', 'successfully', '846542216677566910']);
+        $format = implode("%A", ['[OK]', "'" . $cmd . "'", $guild, $verb, 'successfully', $commandId]);
         $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
 
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
     }
 
     /**
-     * @group success
+     * @return Generator
      */
-    public function testSuccessfulAdd()
+    public function provideArguments(): Generator
     {
-        $commandTester = $this->setupCommandTester(MockSuccessfulAddCallback::class, array('1', '1'));
+        yield 'add-sample-alpha-interactive' => ['callback' => MockSuccessfulAddCallback::class, 'cmd' => 'sample', 'guild' => 'Sample Server Alpha', 'commandId' => '846542216677566910', 'args' => [], 'verb' => 'created'];
+        yield 'add-sample-alpha' => ['callback' => MockSuccessfulAddCallback::class, 'cmd' => 'sample', 'guild' => 'Sample Server Alpha', 'commandId' => '846542216677566910', 'args' => ['cmd' => 'sample', 'guild' => 'Sample Server Alpha'], 'verb' => 'created'];
 
-        $commandTester->execute(['cmd' => 'sample', 'guild' => 'Sample Server Alpha']);
-
-        // the output of the command in the console
-        $output = $commandTester->getDisplay();
-
-        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
-        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'created', 'successfully', '846542216677566910']);
-        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
-
-        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
-    }
-
-    /**
-     * @group success
-     */
-    public function testSuccessfulEditInteractive()
-    {
-        $commandTester = $this->setupCommandTester(MockSuccessfulEditCallback::class, array('1', '1'));
-
-        $commandTester->execute([
-            '--commandId' => '846542216677566910'
-        ]);
-
-        // the output of the command in the console
-        $output = $commandTester->getDisplay();
-
-        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
-        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'edited', 'successfully', '846542216677566910']);
-        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
-
-        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
-    }
-
-    /**
-     * @group success
-     */
-    public function testSuccessfulEdit()
-    {
-        $commandTester = $this->setupCommandTester(MockSuccessfulEditCallback::class, array('1', '1'));
-
-        $commandTester->execute([
-            'cmd' => 'sample',
-            'guild' => 'Sample Server Alpha',
-            '--commandId' => '846542216677566910'
-        ]);
-
-        // the output of the command in the console
-        $output = $commandTester->getDisplay();
-
-        // Look for keywords in the output since it gets arbitrarily wrapped by GitHub Actions
-        $format = implode("%A", ['[OK]', "'sample'", 'Sample Server Alpha', 'edited', 'successfully', '846542216677566910']);
-        $this->assertStringMatchesFormat('%A' . $format . '%A', $output);
-
-        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+        yield 'edit-sample-alpha-interactive' => ['callback' => MockSuccessfulAddCallback::class, 'cmd' => 'sample', 'guild' => 'Sample Server Alpha', 'commandId' => '846542216677566910', 'args' => ['--commandId' => '846542216677566910'], 'verb' => 'edited'];
+        yield 'edit-sample-alpha' => ['callback' => MockSuccessfulAddCallback::class, 'cmd' => 'sample', 'guild' => 'Sample Server Alpha', 'commandId' => '846542216677566910', 'args' => ['cmd' => 'sample', 'guild' => 'Sample Server Alpha', '--commandId' => '846542216677566910'], 'verb' => 'edited'];
     }
 
     /**
@@ -187,7 +137,7 @@ class SlashAddCommandTest extends TestSlashCommand
     public function provideCompletionSuggestions(): Generator
     {
         yield 'search' => [[''], ['sample', 'bar', 'foo']];
-        yield 'search s' => [[''], ['sample']];
+        yield 'search s' => [['s'], ['sample']];
         yield 'guild' => [['sample', ''], ['Sample Server Alpha']];
         yield 'guild Sample Ser' => [['sample', 'Sample Ser'], ['Sample Server Alpha']];
     }

@@ -6,7 +6,9 @@ use Bytes\DiscordClientBundle\Tests\Command\MockServerExceptionCallback;
 use Bytes\DiscordClientBundle\Tests\Command\MockTooManyRequestsCallback;
 use Bytes\DiscordClientBundle\Tests\Command\MockUnauthorizedCallback;
 use Bytes\DiscordClientBundle\Tests\Command\TestSlashCommand;
+use Generator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Tester\CommandCompletionTester;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
@@ -129,6 +131,31 @@ class SlashDeleteCommandTest extends TestSlashCommand
         $this->expectExceptionMessage('HTTP 429 returned for');
 
         $commandTester->execute([]);
+    }
+
+    /**
+     * @dataProvider provideCompletionSuggestions
+     */
+    public function testComplete(array $input, array $expectedSuggestions)
+    {
+        $command = $this->setupCommand(MockSuccessfulGetGuildsCallback::class);
+
+        $tester = new CommandCompletionTester($command);
+
+        $suggestions = $tester->complete($input);
+
+        foreach ($expectedSuggestions as $expectedSuggestion) {
+            $this->assertContains($expectedSuggestion, $suggestions);
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function provideCompletionSuggestions(): Generator
+    {
+        yield 'guild' => [[''], ['Sample Server Alpha']];
+        yield 'guild Sample Ser' => [['Sample Ser'], ['Sample Server Alpha']];
     }
 }
 
