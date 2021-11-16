@@ -34,9 +34,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ubuntu-latest-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: coverage-ubuntu-latest-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ubuntu-latest-php${{ matrix.php }}-composer-
+            coverage-ubuntu-latest-php${{ matrix.php }}-composer-
 
       - name: Setup PHP
         if: success()
