@@ -18,8 +18,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class CreateGuildRoleTest extends TestDiscordBotClientCase
 {
-    use EnumAssertions;
-
     /**
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -49,7 +47,7 @@ class CreateGuildRoleTest extends TestDiscordBotClientCase
         /** @var Role $error */
         $error = $response->deserialize(false);
 
-        $this->assertSameEnumValue(JsonErrorCodes::invalidFormBody(), $error->getCode());
+        EnumAssertions::assertSameEnumValue(JsonErrorCodes::invalidFormBody(), $error->getCode());
         $this->assertEquals(50035, $error->getCode());
         $this->assertEquals("Invalid Form Body", $error->getMessage());
     }
