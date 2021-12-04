@@ -1,4 +1,4 @@
-name: Tests - Symfony Next
+name: Tests By Symfony Version
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the main branch
@@ -8,7 +8,12 @@ on:
   repository_dispatch:
   push:
     branches:
-      - "main"
+      - main
+      - 0.*
+      - 1.*
+  schedule:
+    # Weekly on Mondays at 3pm UTC
+    - cron:  '0 15 * * 1'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -37,9 +42,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: run-tests-symfony-next-${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: tests-by-version-${{ matrix.symfony }}-${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            run-tests-symfony-next-${{ matrix.symfony }}-${{ runner.os }}-php${{ matrix.php }}-composer-
+            tests-by-version-${{ matrix.symfony }}-${{ runner.os }}-php${{ matrix.php }}-composer-
 
       - name: Setup PHP
         if: success()
@@ -54,7 +59,7 @@ jobs:
           SYMFONY_REQUIRE: ${{ matrix.symfony }}.*
         run: |
           composer global require --no-progress --no-scripts --no-plugins symfony/flex
-          composer config minimum-stability dev
+          composer config minimum-stability stable
           composer update --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run PHPUnit

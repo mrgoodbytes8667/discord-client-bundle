@@ -8,7 +8,9 @@ on:
   repository_dispatch:
   push:
     branches:
-      - "main"
+      - main
+      - 0.*
+      - 1.*
   schedule:
     # Weekly on Thursdays at 2pm UTC
     - cron:  '0 14 * * 4'
@@ -24,8 +26,7 @@ jobs:
       matrix:
         php: [ 8.0 ]
         dependency-version: [ prefer-stable, prefer-lowest ]
-        os: [ ubuntu-latest ]
-      fail-fast: false
+        os: [ubuntu-latest]
     env:
       SYMFONY_PHPUNIT_VERSION: 9.5
 
@@ -57,9 +58,7 @@ jobs:
 
       - name: Install dependencies
         if: success()
-        run: |
-          composer config minimum-stability stable
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+        run: composer update --${{ matrix.dependency-version }} --prefer-stable --prefer-dist --no-interaction
 
       - name: Run PHPUnit
         if: success()

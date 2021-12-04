@@ -49,7 +49,7 @@ jobs:
 
       - name: Install dependencies
         if: success()
-        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+        run: composer update --${{ matrix.dependency-version }} --prefer-stable --prefer-dist --no-interaction
 
       - name: Run PHPUnit
         if: success()

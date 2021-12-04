@@ -9,7 +9,6 @@ use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Bytes\DiscordResponseBundle\Objects\Role;
 use Spatie\Enum\Phpunit\EnumAssertions;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -21,8 +20,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class GetGuildRolesTest extends TestDiscordBotClientCase
 {
-    use EnumAssertions;
-
     /**
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -63,7 +60,7 @@ class GetGuildRolesTest extends TestDiscordBotClientCase
         $this->assertCount(1, $roles);
         $role = array_shift($roles);
 
-        $this->assertSameEnumValue(JsonErrorCodes::unknownGuild(), $role->getCode());
+        EnumAssertions::assertSameEnumValue(JsonErrorCodes::unknownGuild(), $role->getCode());
         $this->assertEquals(10004, $role->getCode());
         $this->assertEquals("Unknown Guild", $role->getMessage());
     }
