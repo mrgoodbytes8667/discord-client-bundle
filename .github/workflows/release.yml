@@ -1,76 +1,13 @@
 name: release
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
 on:
   push:
     tags:
       - v*
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    timeout-minutes: 15
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        php: [ 8.0 ]
-        dependency-version: [ prefer-stable, prefer-lowest ]
-        os: [ ubuntu-latest ]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php${{ matrix.php }}-release-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php${{ matrix.php }}-release-composer-
-
-      - name: Setup PHP
-        if: success()
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: json, dom, curl, libxml, mbstring
-          coverage: none
-
-      - name: Install dependencies
-        if: success()
-        run: composer update --${{ matrix.dependency-version }} --prefer-stable --prefer-dist --no-interaction
-
-      - name: Run PHPUnit
-        if: success()
-        run: php vendor/bin/phpunit
-
   release:
-    needs: build
-    # The type of runner that the job will run on
-    timeout-minutes: 15
-    runs-on: 'ubuntu-latest'
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - name: Create Release
-        if: success()
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: true
-          prerelease: false
+    uses: mrgoodbytes8667/workflows/.github/workflows/release.yml@main
+    with:
+      phpUnitVersion: 9.5
