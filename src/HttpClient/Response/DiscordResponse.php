@@ -34,7 +34,7 @@ class DiscordResponse extends Response
             $code = JsonErrorCodes::tryFrom($return->getCode());
             if (JsonErrorCodes::isUnknownCodeType($code)) {
                 throw new UnknownObjectException($this->getResponse(), $return->getMessage(), $return->getCode());
-            } elseif ($code->equals(JsonErrorCodes::missingAccess())) {
+            } elseif ($code->equals(JsonErrorCodes::MISSING_ACCESS)) {
                 throw new MissingAccessException($this->getResponse(), $return->getMessage(), $return->getCode());
             }
         }

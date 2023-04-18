@@ -102,28 +102,28 @@ trait CommandProviderTrait
         yield [
             [
                 ChatInputCommand::createChatCommand('ducimus', 'harum et sunt', [
-                    Option::create(ACOT::integer(), 'aut', 'dicta ipsam suscipit'),
-                    Option::create(ACOT::role(), 'fugit', 'quisquam quas dolor')
+                    Option::create(ACOT::INTEGER, 'aut', 'dicta ipsam suscipit'),
+                    Option::create(ACOT::ROLE, 'fugit', 'quisquam quas dolor')
                 ]),
                 ChatInputCommand::createChatCommand('quae', 'iusto sint quos', [
-                    Option::create(ACOT::string(), 'molestias', 'debitis cum error', false, [
+                    Option::create(ACOT::STRING, 'molestias', 'debitis cum error', false, [
                         ApplicationCommandOptionChoice::create('dolore', 'ut'),
                         ApplicationCommandOptionChoice::create('vel', 'quod'),
                         ApplicationCommandOptionChoice::create('voluptatem', 'fugit')
                     ]),
-                    Option::create(ACOT::string(), 'quas', 'iusto culpa totam', false, [
+                    Option::create(ACOT::STRING, 'quas', 'iusto culpa totam', false, [
                         ApplicationCommandOptionChoice::create('voluptates', 'molestiae'),
                         ApplicationCommandOptionChoice::create('quo', 'nisi')
                     ]),
-                    Option::create(ACOT::boolean(), 'iure', 'quia dolor ab')
+                    Option::create(ACOT::BOOLEAN, 'iure', 'quia dolor ab')
                 ]),
                 ChatInputCommand::createChatCommand('debitis', 'sapiente error quis', [
-                    Option::create(ACOT::boolean(), 'consequuntur', 'omnis dolore debitis'),
-                    Option::create(ACOT::boolean(), 'amet', 'cupiditate et beatae'),
+                    Option::create(ACOT::BOOLEAN, 'consequuntur', 'omnis dolore debitis'),
+                    Option::create(ACOT::BOOLEAN, 'amet', 'cupiditate et beatae'),
                 ]),
                 ChatInputCommand::createChatCommand('quibusdam', 'vitae totam similique', [
-                    Option::create(ACOT::user(), 'illum', 'necessitatibus eligendi nemo', true),
-                    Option::create(ACOT::integer(), 'aspernatur', 'voluptatem explicabo nisi', false, [
+                    Option::create(ACOT::USER, 'illum', 'necessitatibus eligendi nemo', true),
+                    Option::create(ACOT::INTEGER, 'aspernatur', 'voluptatem explicabo nisi', false, [
                         ApplicationCommandOptionChoice::create('praesentium', 4),
                         ApplicationCommandOptionChoice::create('voluptate', 9),
                         ApplicationCommandOptionChoice::create('assumenda', 3),
@@ -131,10 +131,10 @@ trait CommandProviderTrait
                     ]),
                 ]),
                 ChatInputCommand::createChatCommand('ab', 'odit nisi ex', [
-                    Option::create(ACOT::role(), 'voluptate', 'perferendis neque maxime', true),
-                    Option::create(ACOT::channel(), 'quam', 'eum esse facere'),
-                    Option::create(ACOT::integer(), 'consectetur', 'assumenda tempore voluptatibus'),
-                    Option::create(ACOT::string(), 'dolorum', 'corrupti eos fuga', false, [
+                    Option::create(ACOT::ROLE, 'voluptate', 'perferendis neque maxime', true),
+                    Option::create(ACOT::CHANNEL, 'quam', 'eum esse facere'),
+                    Option::create(ACOT::INTEGER, 'consectetur', 'assumenda tempore voluptatibus'),
+                    Option::create(ACOT::STRING, 'dolorum', 'corrupti eos fuga', false, [
                         ApplicationCommandOptionChoice::create('ut', 'tempore'),
                         ApplicationCommandOptionChoice::create('esse', 'lorem')
                     ]),

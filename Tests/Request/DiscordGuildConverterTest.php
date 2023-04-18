@@ -186,7 +186,7 @@ class DiscordGuildConverterTest extends TestParamConverterCase
     public function testApplyApiErrorUnknownGuild()
     {
         $request = new Request([], [], ['guild' => 737645596567095093]);
-        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::unknownGuild(), '', Response::HTTP_NOT_FOUND));
+        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::UNKNOWN_GUILD, '', Response::HTTP_NOT_FOUND));
         $converter = new DiscordGuildConverter($client);
 
         $config = $this->createConfiguration(Guild::class, 'guild');

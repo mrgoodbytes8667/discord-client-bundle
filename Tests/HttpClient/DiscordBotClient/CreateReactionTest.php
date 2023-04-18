@@ -49,7 +49,7 @@ class CreateReactionTest extends TestDiscordBotClientCase
 
         $client = $this->setupClient(MockClient::emptyBadRequest());
 
-        $client->createReaction($guild, Emojis::sportsGamesHobbiesSoccerBall()->value, $guild);
+        $client->createReaction($guild, Emojis::SPORTS_GAMES_HOBBIES_SOCCER_BALL->value, $guild);
     }
 
     /**

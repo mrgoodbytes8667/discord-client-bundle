@@ -109,7 +109,7 @@ trait TestDiscordResponseTrait
         /** @var Message $message */
         $message = $this->setupResponse('HttpClient/execute-webhook-success.json', type: Message::class)->deserialize();
 
-        $this->validateWebhookMessage($message, "487682468505944112", MessageType::default(), "Hello, World!",
+        $this->validateWebhookMessage($message, "487682468505944112", MessageType::DEFAULT, "Hello, World!",
             "246703651155663276", true, "453971306226180868", "Spidey Bot", null, "0000", null, 0, 1, 0, 0, false,
             false, false, true, false, 0, "829350728622800916");
     }
@@ -137,7 +137,7 @@ trait TestDiscordResponseTrait
         /** @var Message $message */
         $message = $this->setupResponse('HttpClient/edit-webhook-message-success.json', type: Message::class)->deserialize();
 
-        $this->validateWebhookMessage($message, "487682468505944112", MessageType::default(), "Hello, World!",
+        $this->validateWebhookMessage($message, "487682468505944112", MessageType::DEFAULT, "Hello, World!",
             "246703651155663276", true, "453971306226180868", "Spidey Bot", null, "0000", null, 0, 1, 0, 0, false,
             false, false, true, true, 0, "829350728622800916");
     }

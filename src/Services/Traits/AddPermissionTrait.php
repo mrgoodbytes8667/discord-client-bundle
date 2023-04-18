@@ -23,7 +23,7 @@ trait AddPermissionTrait
      */
     private function addPermission(ArrayCollection $permissions, string $role, ?ApplicationCommandPermissionType $type = null): ArrayCollection
     {
-        $permission = ApplicationCommandPermission::create($role, $type ?? ApplicationCommandPermissionType::role(), true);
+        $permission = ApplicationCommandPermission::create($role, $type ?? ApplicationCommandPermissionType::ROLE, true);
         if (!$permissions->exists(function ($key, $element) use ($permission) {
             return $element->getId() === $permission->getId() && $element->getType() === $permission->getType() && $element->getPermission() === $permission->getPermission();
         })) {

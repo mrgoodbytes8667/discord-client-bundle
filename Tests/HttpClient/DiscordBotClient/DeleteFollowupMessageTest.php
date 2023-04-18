@@ -74,13 +74,13 @@ class DeleteFollowupMessageTest extends TestDiscordBotClientCase
      */
     public function testEditFollowupMessageExpiredInteractionToken()
     {
-        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::invalidWebhookTokenProvided(), 'Invalid Webhook Token', Response::HTTP_UNAUTHORIZED));
+        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::INVALID_WEBHOOK_TOKEN_PROVIDED, 'Invalid Webhook Token', Response::HTTP_UNAUTHORIZED));
 
         $response = $client->deleteFollowupMessage($this->faker->refreshToken(), $this->faker->snowflake());
 
         $this->assertResponseStatusCodeSame($response, Response::HTTP_UNAUTHORIZED);
         $this->assertResponseHasContent($response);
-        $this->assertResponseContentSame($response, Fixture::getJsonErrorCodeData(JsonErrorCodes::invalidWebhookTokenProvided(), 'Invalid Webhook Token'));
+        $this->assertResponseContentSame($response, Fixture::getJsonErrorCodeData(JsonErrorCodes::INVALID_WEBHOOK_TOKEN_PROVIDED, 'Invalid Webhook Token'));
 
         $this->expectException(ClientExceptionInterface::class);
         $this->expectExceptionMessage(sprintf('HTTP %d returned for', Response::HTTP_UNAUTHORIZED));

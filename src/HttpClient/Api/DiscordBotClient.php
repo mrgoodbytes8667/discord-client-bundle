@@ -128,7 +128,7 @@ class DiscordBotClient extends DiscordClient
         if(is_callable($applicationCommand)) {
             $applicationCommand = $applicationCommand();
         }
-        $method = HttpMethods::post();
+        $method = HttpMethods::post;
         $append = [];
         $errors = $this->validator->validate($applicationCommand);
         if (count($errors) > 0) {
@@ -136,7 +136,7 @@ class DiscordBotClient extends DiscordClient
         }
 
         if (!empty($applicationCommand->getId())) {
-            $method = HttpMethods::patch();
+            $method = HttpMethods::patch;
             $append[] = $applicationCommand->getId();
         }
 
@@ -174,7 +174,7 @@ class DiscordBotClient extends DiscordClient
                 throw new ValidatorException((string)$errors);
             }
         }
-        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put(), '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__, isDelete: $isDelete);
+        return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put, '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__, isDelete: $isDelete);
     }
 
     /**
@@ -218,7 +218,7 @@ class DiscordBotClient extends DiscordClient
                     $this->dispatch(new ApplicationCommandDeleteAllEvent());
                 }
                 foreach (Arr::wrap($results) as $result) {
-                    if ($method->equals(HttpMethods::post())) {
+                    if ($method->equals(HttpMethods::post)) {
                         $this->dispatch(ApplicationCommandCreatedEvent::new($result));
                     } else {
                         $this->dispatch(ApplicationCommandUpdatedEvent::new($result));
@@ -256,7 +256,7 @@ class DiscordBotClient extends DiscordClient
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
 
-        return $this->request(url: $urlParts, caller: __METHOD__, method: HttpMethods::delete(),
+        return $this->request(url: $urlParts, caller: __METHOD__, method: HttpMethods::delete,
             onSuccessCallable: function ($self, $results) use ($commandId) {
                 $this->dispatch(ApplicationCommandDeletedEvent::setCommandId($commandId));
             });
@@ -414,7 +414,7 @@ class DiscordBotClient extends DiscordClient
                 'Content-Type' => 'application/json',
             ],
             'body' => $body,
-        ], method: HttpMethods::put());
+        ], method: HttpMethods::put);
     }
 
     /**
@@ -455,7 +455,7 @@ class DiscordBotClient extends DiscordClient
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $body,
-            ], method: HttpMethods::put());
+            ], method: HttpMethods::put);
     }
 
     /**
@@ -684,7 +684,7 @@ class DiscordBotClient extends DiscordClient
      */
     public function createMessage($channelId, $content, bool $tts = false, ?callable $onSuccessCallable = null): ClientResponseInterface
     {
-        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post(), __METHOD__,
+        return $this->sendMessage($channelId, null, $content, $tts, HttpMethods::post, __METHOD__,
             onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
                 /** @var ClientResponseInterface $self */
                 /** @var Message|null $results */
@@ -805,7 +805,7 @@ class DiscordBotClient extends DiscordClient
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
 
-        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch(), __METHOD__,
+        return $this->sendMessage($channelId, $messageId, $content, false, HttpMethods::patch, __METHOD__,
             onSuccessCallable: $onSuccessCallable ?? function ($self, $results) {
                 /** @var ClientResponseInterface $self */
                 /** @var Message|null $results */
@@ -859,7 +859,7 @@ class DiscordBotClient extends DiscordClient
         }
         $response = $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
             caller: __METHOD__, type: Message::class,
-            method: HttpMethods::delete(), onSuccessCallable: function ($self, $results) use ($messageId) {
+            method: HttpMethods::delete, onSuccessCallable: function ($self, $results) use ($messageId) {
                 $this->dispatch(MessageDeletedEvent::setMessageId($messageId));
             });
         if (!$response->isSuccess()) {
@@ -896,7 +896,7 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
-        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId, 'crosspost'], caller: __METHOD__, type: Message::class, method: HttpMethods::post());
+        return $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId, 'crosspost'], caller: __METHOD__, type: Message::class, method: HttpMethods::post);
     }
 
     /**
@@ -923,7 +923,7 @@ class DiscordBotClient extends DiscordClient
             DiscordClientEndpoints::USER_ME,
             DiscordClientEndpoints::ENDPOINT_GUILD,
             $id,
-        ], caller: __METHOD__, method: HttpMethods::delete());
+        ], caller: __METHOD__, method: HttpMethods::delete);
     }
 
     /**
@@ -1033,7 +1033,7 @@ class DiscordBotClient extends DiscordClient
             'roles'
         ], caller: __METHOD__, type: Role::class, options: [
             'json' => $options
-        ], method: HttpMethods::post());
+        ], method: HttpMethods::post);
     }
 
     /**
@@ -1080,7 +1080,7 @@ class DiscordBotClient extends DiscordClient
             'headers' => [
                 'Content-Length' => 0,
             ]
-        ], method: HttpMethods::put());
+        ], method: HttpMethods::put);
     }
 
     /**

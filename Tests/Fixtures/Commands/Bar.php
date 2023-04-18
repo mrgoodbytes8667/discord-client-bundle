@@ -20,7 +20,7 @@ class Bar implements SlashCommandInterface
     public static function createCommand(): ApplicationCommand
     {
         return ChatInputCommand::createChatCommand('bar', 'I am a sample command', [
-            Option::create(ACOT::string(), 'pick', 'Which is the word bar?', false, [
+            Option::create(ACOT::STRING, 'pick', 'Which is the word bar?', false, [
                 ApplicationCommandOptionChoice::create('foo'),
                 ApplicationCommandOptionChoice::create('bar'),
                 ApplicationCommandOptionChoice::create('sample')

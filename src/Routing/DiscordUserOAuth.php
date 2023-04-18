@@ -38,7 +38,7 @@ class DiscordUserOAuth extends AbstractDiscordOAuth
      */
     protected function normalizePrompt(bool|OAuthPromptInterface|string|null $prompt, ...$options)
     {
-        return OAuthPrompts::consent()->prompt();
+        return OAuthPrompts::CONSENT->prompt();
     }
 
     /**

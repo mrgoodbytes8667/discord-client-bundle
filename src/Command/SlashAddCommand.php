@@ -10,6 +10,7 @@ use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Exception;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,21 +24,10 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-/**
- *
- */
+
+#[AsCommand(name: 'bytes_discord_client:slash:add', description: 'Add a slash command to a server or globally')]
 class SlashAddCommand extends AbstractSlashCommand
 {
-    /**
-     * @var string
-     */
-    protected static $defaultName = 'bytes_discord_client:slash:add';
-
-    /**
-     * @var string
-     */
-    protected static $defaultDescription = 'Add a slash command to a server or globally';
-
     /**
      * @param DiscordBotClient $client
      * @param SlashCommandsHandlerCollection $commandsCollection
@@ -70,7 +60,6 @@ class SlashAddCommand extends AbstractSlashCommand
     {
         parent::configure();
         $this
-            ->setDescription(self::$defaultDescription)
             ->addArgument('cmd', InputArgument::REQUIRED, 'Command name')
             ->addArgument('guild', InputArgument::OPTIONAL, 'Guild Name')
             ->addOption('commandId', 'c', InputOption::VALUE_REQUIRED, 'Optional command Id if updating a command');

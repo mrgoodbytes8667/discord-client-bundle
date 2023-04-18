@@ -20,7 +20,7 @@ class DiscordBotClientTest extends TestDiscordBotClientCase
     public function testClientAnnotations()
     {
         $client = $this->setupClient();
-        $this->assertClientAnnotationEquals('DISCORD', TokenSource::app(), $client);
+        $this->assertClientAnnotationEquals('DISCORD', TokenSource::app, $client);
     }
 
     /**

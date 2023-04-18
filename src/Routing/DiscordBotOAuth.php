@@ -34,14 +34,14 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
     public function getDefaultPermissions(): array
     {
         return [
-            Permissions::ADD_REACTIONS(),
-            Permissions::VIEW_CHANNEL(),
-            Permissions::SEND_MESSAGES(),
-            Permissions::MANAGE_MESSAGES(),
-            Permissions::READ_MESSAGE_HISTORY(),
-            Permissions::EMBED_LINKS(),
-            Permissions::USE_EXTERNAL_EMOJIS(),
-            Permissions::MANAGE_ROLES(),
+            Permissions::ADD_REACTIONS,
+            Permissions::VIEW_CHANNEL,
+            Permissions::SEND_MESSAGES,
+            Permissions::MANAGE_MESSAGES,
+            Permissions::READ_MESSAGE_HISTORY,
+            Permissions::EMBED_LINKS,
+            Permissions::USE_EXTERNAL_EMOJIS,
+            Permissions::MANAGE_ROLES,
         ];
     }
 
@@ -65,7 +65,7 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
      */
     protected static function walkHydratePermissions(&$value, $key)
     {
-        $value = new Permissions($value);
+        $value = Permissions::normalizeToEnum($value);
     }
 
     /**
@@ -124,7 +124,7 @@ class DiscordBotOAuth extends AbstractDiscordOAuth
      */
     protected function normalizePrompt(bool|OAuthPromptInterface|string|null $prompt, ...$options)
     {
-        return OAuthPrompts::consent()->prompt();
+        return OAuthPrompts::CONSENT->prompt();
     }
 
     /**

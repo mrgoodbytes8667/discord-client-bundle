@@ -5,7 +5,6 @@ namespace Bytes\DiscordClientBundle\Tests\Fixtures\Providers;
 
 
 use Bytes\Common\Faker\Providers\MiscProvider;
-use Bytes\DiscordClientBundle\Services\OAuth;
 use Bytes\DiscordResponseBundle\Enums\OAuthPrompts;
 use Bytes\DiscordResponseBundle\Enums\OAuthScopes;
 use Bytes\DiscordResponseBundle\Enums\Permissions;
@@ -42,7 +41,7 @@ class AuthorizationCodeGrants extends Base
     public function permissionsAddRemove()
     {
         $permissions = self::permissions(0, true);
-        $permissions = OAuth::hydratePermissions($permissions);
+        $permissions = Permissions::hydratePermissions($permissions);
         array_walk($permissions, array($this, 'walkPermissionsToValue'));
 
         $end = self::numberBetween(0, count($permissions));
@@ -65,7 +64,7 @@ class AuthorizationCodeGrants extends Base
      */
     public function permissions(int $max = 0, bool $asStringArray = false)
     {
-        $permissions = Permissions::toArray();
+        $permissions = Permissions::cases();
         if ($max < 1) {
             $max = self::numberBetween(1, count($permissions));
         }
@@ -73,7 +72,7 @@ class AuthorizationCodeGrants extends Base
         if ($asStringArray) {
             return array_values($temp);
         }
-        return OAuth::hydratePermissions($temp);
+        return Permissions::hydratePermissions($temp);
     }
 
     /**
@@ -82,7 +81,7 @@ class AuthorizationCodeGrants extends Base
     public function scopesAddRemove()
     {
         $scopes = self::scopes();
-        $scopes = OAuth::hydrateScopes($scopes);
+        $scopes = OAuthScopes::hydrateScopes($scopes);
         //array_walk($scopes, array(OAuth::class, 'walkHydrateScopes'));
 
         $end = self::numberBetween(0, count($scopes));
@@ -104,7 +103,7 @@ class AuthorizationCodeGrants extends Base
      */
     public function scopes(int $max = 0)
     {
-        $scopes = OAuthScopes::toArray();
+        $scopes = OAuthScopes::cases();
         if ($max < 1) {
             $max = self::numberBetween(1, count($scopes));
         }
@@ -148,7 +147,7 @@ class AuthorizationCodeGrants extends Base
      */
     public function prompt()
     {
-        return self::randomElement(OAuthPrompts::toArray());
+        return self::randomElement(OAuthPrompts::cases());
     }
 
     /**

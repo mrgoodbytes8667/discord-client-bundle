@@ -229,13 +229,13 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      */
     public function executeWebhook($id, $token, bool $wait = true, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
     {
-        return $this->sendWebhookPayload($id, $token, HttpMethods::post(), __METHOD__, $wait, null, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+        return $this->sendWebhookPayload($id, $token, HttpMethods::post, __METHOD__, $wait, null, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
     }
 
     /**
      * @param IdInterface|string $id Webhook Id or Application Id
      * @param string $token Webhook token or Interaction token
-     * @param HttpMethods $method = [HttpMethods::post(), HttpMethods::patch()][$any]
+     * @param HttpMethods $method = [HttpMethods::post(), HttpMethods::patch][$any]
      * @param bool $wait True will return a Message object, false does not
      * @param IdInterface|string|null $messageId Message Id if editing an existing message
      * @param WebhookContent|string $content the message contents (up to 2000 characters)
@@ -274,7 +274,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
             AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
         ]);
 
-        if ($method === HttpMethods::patch() && !empty($messageId)) {
+        if ($method === HttpMethods::patch && !empty($messageId)) {
             return $this->request($urlParts, caller: $caller, type: Message::class, options: [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -323,7 +323,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
      */
     public function editWebhookMessage($id, $token, $messageId, $content = null, $embeds = [], ?AllowedMentions $allowedMentions = null, ?string $username = null, ?string $avatarUrl = null, ?bool $tts = null): ClientResponseInterface
     {
-        return $this->sendWebhookPayload($id, $token, HttpMethods::patch(), __METHOD__, true, $messageId, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
+        return $this->sendWebhookPayload($id, $token, HttpMethods::patch, __METHOD__, true, $messageId, $content, $embeds, $allowedMentions, $username, $avatarUrl, $tts);
     }
 
     /**
@@ -343,7 +343,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
         $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
 
         return $this->request(url: [DiscordClientEndpoints::ENDPOINT_WEBHOOK, $id, $token, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
-            caller: __METHOD__, method: HttpMethods::delete());
+            caller: __METHOD__, method: HttpMethods::delete);
     }
 
     /**
