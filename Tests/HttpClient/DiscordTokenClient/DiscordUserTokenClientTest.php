@@ -306,7 +306,7 @@ class DiscordUserTokenClientTest extends TestHttpClientCase
     public function testClientAnnotations()
     {
         $client = $this->setupClient();
-        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user(), $client);
+        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user, $client);
     }
 
     /**

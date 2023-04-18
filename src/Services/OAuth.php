@@ -107,9 +107,9 @@ class OAuth
         $this->defaultScopes = [
             'bot' => OAuthScopes::getBotScopes(),
             'login' => [
-                OAuthScopes::IDENTIFY(),
-                OAuthScopes::CONNECTIONS(),
-                OAuthScopes::GUILDS(),
+                OAuthScopes::IDENTIFY,
+                OAuthScopes::CONNECTIONS,
+                OAuthScopes::GUILDS,
             ],
             'slash' => OAuthScopes::getSlashScopes(),
             'user' => OAuthScopes::getUserScopes()
@@ -159,14 +159,14 @@ class OAuth
         return $this->getAuthorizationCodeGrantURL(
             $permissions ?:
             [
-                Permissions::ADD_REACTIONS(),
-                Permissions::VIEW_CHANNEL(),
-                Permissions::SEND_MESSAGES(),
-                Permissions::MANAGE_MESSAGES(),
-                Permissions::READ_MESSAGE_HISTORY(),
-                Permissions::EMBED_LINKS(),
-                Permissions::USE_EXTERNAL_EMOJIS(),
-                Permissions::MANAGE_ROLES(),
+                Permissions::ADD_REACTIONS,
+                Permissions::VIEW_CHANNEL,
+                Permissions::SEND_MESSAGES,
+                Permissions::MANAGE_MESSAGES,
+                Permissions::READ_MESSAGE_HISTORY,
+                Permissions::EMBED_LINKS,
+                Permissions::USE_EXTERNAL_EMOJIS,
+                Permissions::MANAGE_ROLES,
             ],
             $this->getBotOAuthRedirect(),
             $this->defaultScopes['bot'],
@@ -226,14 +226,9 @@ class OAuth
      *
      * @return string
      */
-    public function getAuthorizationCodeGrantURL(array $permissions, string $redirect, array $scopes, ?string $state, string $endpoint, string $responseType = 'code', ?string $guildId = null, ?bool $disableGuildSelect = null, $prompt = null)
+    public function getAuthorizationCodeGrantURL(array $permissions, string $redirect, array $scopes, ?string $state, string $endpoint, string $responseType = 'code', ?string $guildId = null, ?bool $disableGuildSelect = null, $prompt = OAuthPrompts::CONSENT)
     {
-        if (empty($prompt)) {
-            $prompt = OAuthPrompts::consent();
-        }
-        if (is_string($prompt)) {
-            $prompt = new OAuthPrompts($prompt);
-        }
+        $prompt = OAuthPrompts::normalizeToEnum($prompt);
         if (array_key_exists($endpoint, $this->permissions)) {
             $permissions = $this->permissions[$endpoint];
         } else {
@@ -356,7 +351,7 @@ class OAuth
             $this->defaultScopes['login'],
             $state,
             'login',
-            'code', null, null, OAuthPrompts::none());
+            'code', null, null, OAuthPrompts::NONE);
     }
 
     /**
@@ -373,7 +368,7 @@ class OAuth
      */
     protected static function walkHydratePermissions(&$value, $key)
     {
-        $value = new Permissions($value);
+        $value = Permissions::normalizeToEnum($value);
     }
 
     public static function hydratePermissions(array $permissions)
@@ -388,7 +383,7 @@ class OAuth
      */
     protected static function walkHydrateScopes(&$value, $key)
     {
-        $value = (new OAuthScopes($value))->value;
+        $value = OAuthScopes::normalizeToEnum($value);
     }
 
     public static function hydrateScopes(array $scopes)

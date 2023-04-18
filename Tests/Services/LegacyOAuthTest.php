@@ -200,9 +200,9 @@ class LegacyOAuthTest extends TestCase
     {
         $oauth = $this->setupOAuth($config, $user);
         $this->runTestGetScopes($config['login']['scopes'], [
-            OAuthScopes::IDENTIFY(),
-            OAuthScopes::CONNECTIONS(),
-            OAuthScopes::GUILDS(),
+            OAuthScopes::IDENTIFY,
+            OAuthScopes::CONNECTIONS,
+            OAuthScopes::GUILDS,
         ], $oauth->getScopesLogin());
     }
 

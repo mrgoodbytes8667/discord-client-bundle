@@ -47,7 +47,7 @@ class RevokeTokenSubscriberTest extends TestCase
     {
         $this->setupFaker();
         foreach (array_merge(['DISCORD'], $this->faker->words(3)) as $identifier) {
-            foreach ([TokenSource::user(), TokenSource::app(), TokenSource::id()] as $tokenSource) {
+            foreach ([TokenSource::user, TokenSource::app, TokenSource::id] as $tokenSource) {
                 yield ['identifier' => $identifier, 'tokenSource' => $tokenSource];
             }
         }

@@ -32,7 +32,7 @@ class RevokeTokenSubscriber extends AbstractRevokeTokenSubscriber
     public function onRevokeToken(RevokeTokenEvent $event): RevokeTokenEvent
     {
         $token = $event->getToken();
-        if ($token->getIdentifier() == 'DISCORD' && $token->getTokenSource()->equals(TokenSource::user())) {
+        if ($token->getIdentifier() == 'DISCORD' && $token->getTokenSource()->equals(TokenSource::user)) {
             $this->discordUserTokenClient->revokeToken($token);
         }
 

@@ -24,7 +24,7 @@ class DiscordTokenResponseTest extends TestCase
      */
     public function testClientAnnotations()
     {
-        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user(), new DiscordUserTokenResponse($this->createSerializer(), new EventDispatcher()));
+        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user, new DiscordUserTokenResponse($this->createSerializer(), new EventDispatcher()));
     }
 
     /**

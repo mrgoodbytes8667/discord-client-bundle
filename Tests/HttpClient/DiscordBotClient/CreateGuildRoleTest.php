@@ -48,7 +48,7 @@ class CreateGuildRoleTest extends TestDiscordBotClientCase
 
         foreach ($this->provideValidGuilds() as $guild) {
             foreach ([$this->faker->words(3, true), null] as $name) {
-                foreach ([Permissions::SEND_MESSAGES()->value, '2147483648', '2292252672', '0', $this->faker->permissionInteger(), null] as $permission) {
+                foreach ([Permissions::SEND_MESSAGES->value, '2147483648', '2292252672', '0', $this->faker->permissionInteger(), null] as $permission) {
                     foreach ([$this->faker->embedColor(), null] as $color) {
                         foreach ($this->provideBooleansAndNull() as $hoist) {
                             foreach ($this->provideBooleansAndNull() as $mentionable) {

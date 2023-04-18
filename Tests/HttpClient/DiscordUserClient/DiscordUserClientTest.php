@@ -20,7 +20,7 @@ class DiscordUserClientTest extends TestDiscordUserClientCase
     public function testClientAnnotations()
     {
         $client = $this->setupRealUserClient();
-        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user(), $client);
+        $this->assertClientAnnotationEquals('DISCORD', TokenSource::user, $client);
     }
 
     /**

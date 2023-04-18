@@ -19,6 +19,7 @@
         "mrgoodbytes8667/test-common": ">=0.0.23",
         "mrgoodbytes8667/test-common-faker": ">=0.4.2",
         "mrgoodbytes8667/test-discord-faker": ">=0.1 | 0.1.0-BETA2",
+        "phpunit/phpunit": "<10",
         "symfony/security-bundle": "^6.2",
         "symfony/test-pack": "^1.0.8",
         "symfony/var-dumper": "^6.2"

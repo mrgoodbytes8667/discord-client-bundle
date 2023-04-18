@@ -20,7 +20,7 @@ class Sample implements SlashCommandInterface
     public static function createCommand(): ApplicationCommand
     {
         return ChatInputCommand::createChatCommand('sample', 'I am a sample command', [
-            Option::create(ACOT::string(), 'pick', 'Which is the word sample?', false, [
+            Option::create(ACOT::STRING, 'pick', 'Which is the word sample?', false, [
                 ApplicationCommandOptionChoice::create('foo'),
                 ApplicationCommandOptionChoice::create('bar'),
                 ApplicationCommandOptionChoice::create('sample')

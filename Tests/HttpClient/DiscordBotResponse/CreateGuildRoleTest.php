@@ -5,7 +5,6 @@ namespace Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotResponse;
 use Bytes\DiscordClientBundle\Tests\HttpClient\DiscordBotClient\TestDiscordBotClientCase;
 use Bytes\DiscordResponseBundle\Enums\JsonErrorCodes;
 use Bytes\DiscordResponseBundle\Objects\Role;
-use Spatie\Enum\Phpunit\EnumAssertions;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -47,7 +46,7 @@ class CreateGuildRoleTest extends TestDiscordBotClientCase
         /** @var Role $error */
         $error = $response->deserialize(false);
 
-        EnumAssertions::assertSameEnumValue(JsonErrorCodes::invalidFormBody(), $error->getCode());
+        self::assertEquals(JsonErrorCodes::INVALID_FORM_BODY->value, $error->getCode());
         $this->assertEquals(50035, $error->getCode());
         $this->assertEquals("Invalid Form Body", $error->getMessage());
     }

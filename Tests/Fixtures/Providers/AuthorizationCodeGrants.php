@@ -65,7 +65,7 @@ class AuthorizationCodeGrants extends Base
      */
     public function permissions(int $max = 0, bool $asStringArray = false)
     {
-        $permissions = Permissions::toArray();
+        $permissions = Permissions::cases();
         if ($max < 1) {
             $max = self::numberBetween(1, count($permissions));
         }
@@ -104,7 +104,7 @@ class AuthorizationCodeGrants extends Base
      */
     public function scopes(int $max = 0)
     {
-        $scopes = OAuthScopes::toArray();
+        $scopes = OAuthScopes::cases();
         if ($max < 1) {
             $max = self::numberBetween(1, count($scopes));
         }
@@ -148,7 +148,7 @@ class AuthorizationCodeGrants extends Base
      */
     public function prompt()
     {
-        return self::randomElement(OAuthPrompts::toArray());
+        return self::randomElement(OAuthPrompts::cases());
     }
 
     /**

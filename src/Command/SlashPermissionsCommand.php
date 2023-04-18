@@ -114,13 +114,13 @@ class SlashPermissionsCommand extends AbstractSlashCommand
                 $permissionType = ApplicationCommandPermissionType::tryFrom($existingPermission->getType());
                 $roleOrUserId = $existingPermission->getId();
                 $roleOrUserName = $roleOrUserId;
-                if ($permissionType->equals(ApplicationCommandPermissionType::role())) {
+                if ($permissionType->equals(ApplicationCommandPermissionType::ROLE)) {
                     $foundRole = Arr::first($roles, function ($value) use ($roleOrUserId) {
                         return $value->getId() === $roleOrUserId;
                     });
                     $roleOrUserName = $foundRole?->getName() ?? $roleOrUserId;
                 }
-                $table->addRow([$permissionType->label, $roleOrUserName, $existingPermission->getPermission()]);
+                $table->addRow([$permissionType->name, $roleOrUserName, $existingPermission->getPermission()]);
             }
             $table->render();
         }

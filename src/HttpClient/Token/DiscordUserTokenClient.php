@@ -72,7 +72,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
 
         $response = $this->request($this->buildURL('oauth2/revoke'), options: ['body' => [
             'token' => $tokenString
-        ]], method: HttpMethods::post(), onSuccessCallable: function ($self, $results) use ($token) {
+        ]], method: HttpMethods::post, onSuccessCallable: function ($self, $results) use ($token) {
             $this->dispatch(TokenRevokedEvent::new($token));
         });
         if(!$response->isSuccess())
@@ -94,7 +94,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
             return null;
         }
         $redirect = $this->oAuth->getRedirect();
-        return $this->tokenExchange($tokenString, url: $redirect, scopes: OAuthScopes::getUserScopes(), grantType: OAuthGrantTypes::refreshToken(),
+        return $this->tokenExchange($tokenString, url: $redirect, scopes: OAuthScopes::getUserScopes(), grantType: OAuthGrantTypes::refreshToken,
             onDeserializeCallable: function ($self, $results) use ($token) {
                 /** @var ClientResponseInterface $self */
                 /** @var AccessTokenInterface|null $results */
@@ -129,7 +129,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
      */
     public function exchange(string $code, ?string $route = null, string|callable|null $url = null, array $scopes = [], ?callable $onSuccessCallable = null): ?AccessTokenInterface
     {
-        return $this->tokenExchange($code, $route, $url, $scopes, OAuthGrantTypes::authorizationCode(), onDeserializeCallable: function ($self, $results) {
+        return $this->tokenExchange($code, $route, $url, $scopes, OAuthGrantTypes::authorizationCode, onDeserializeCallable: function ($self, $results) {
             /** @var TokenGrantedEvent $event */
             $event = $this->dispatch(TokenGrantedEvent::new($results));
             return $event->getToken();

@@ -69,8 +69,8 @@ class BulkOverwriteCommandTest extends TestDiscordBotClientCase
         yield [
             [
                 ChatInputCommand::createChatCommand('ducimus', $description, [
-                    Option::create(ACOT::integer(), 'aut', 'dicta ipsam suscipit'),
-                    Option::create(ACOT::role(), 'fugit', 'quisquam quas dolor')
+                    Option::create(ACOT::INTEGER, 'aut', 'dicta ipsam suscipit'),
+                    Option::create(ACOT::ROLE, 'fugit', 'quisquam quas dolor')
                 ])
             ]];
     }

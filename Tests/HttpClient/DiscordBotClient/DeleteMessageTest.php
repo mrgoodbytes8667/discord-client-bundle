@@ -79,7 +79,7 @@ class DeleteMessageTest extends TestDiscordBotClientCase
     {
         $this->expectException(UnknownObjectException::class);
 
-        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::unknownMessage(), '', $code));
+        $client = $this->setupClient(MockClient::jsonErrorCode(JsonErrorCodes::UNKNOWN_MESSAGE, '', $code));
 
         $client->deleteMessage('123', '123');
     }

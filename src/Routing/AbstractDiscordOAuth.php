@@ -39,7 +39,7 @@ abstract class AbstractDiscordOAuth extends AbstractOAuth
      */
     protected static function walkHydrateScopes(&$value, $key)
     {
-        $value = (new OAuthScopes($value))->value;
+        $value = OAuthScopes::normalizeToValue($value);
     }
 
     /**
@@ -50,7 +50,7 @@ abstract class AbstractDiscordOAuth extends AbstractOAuth
      */
     public function getAuthorizationUrl(?string $state = null, ...$options): string
     {
-        $options = Push::createPush($options, OAuthPrompts::none(), 'prompt')->toArray();
+        $options = Push::createPush($options, OAuthPrompts::NONE, 'prompt')->toArray();
         return parent::getAuthorizationUrl($state, ...$options);
     }
 
@@ -69,7 +69,7 @@ abstract class AbstractDiscordOAuth extends AbstractOAuth
         } elseif (is_string($prompt) && OAuthPrompts::isValid($prompt)) {
             return OAuthPrompts::from($prompt)->prompt();
         } else {
-            return OAuthPrompts::none()->prompt();
+            return OAuthPrompts::NONE->prompt();
         }
     }
 
