@@ -14,20 +14,14 @@ on:
     - cron:  '0 15 * * 1'
 
 jobs:
-  symfony61:
-    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests-by-version.yml@php8.1-8.2
-    with:
-      phpUnitVersion: 9.5
-      symfony: 6.1
-      
   symfony62:
-    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests-by-version.yml@php8.1-8.2
+    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests-by-version.yml@php8.1
     with:
       phpUnitVersion: 9.5
       symfony: 6.2
       
   symfony63:
-    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests-by-version.yml@php8.1-8.2
+    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests-by-version.yml@php8.1
     with:
       phpUnitVersion: 9.5
       symfony: 6.3

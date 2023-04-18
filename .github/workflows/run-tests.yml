@@ -18,7 +18,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test:
-    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests.yml@php8.1-8.2
+    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests.yml@php8.1
     with:
       phpUnitVersion: 9.5
       failFast: false
