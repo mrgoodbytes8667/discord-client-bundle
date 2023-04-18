@@ -115,6 +115,7 @@ class Kernel extends BaseKernel
                     'http_client' => [
                         'mock_response_factory' => $this->callback,
                     ],
+                    'http_method_override' => false,
                 ]);
             }
 

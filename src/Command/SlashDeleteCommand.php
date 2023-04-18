@@ -6,6 +6,7 @@ use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand;
 use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Exception;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,22 +18,10 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-/**
- * Class SlashDeleteCommand
- * @package Bytes\DiscordClientBundle\Command
- */
+
+#[AsCommand(name: 'bytes_discord_client:slash:delete', description: 'Remove a slash command from a server or globally')]
 class SlashDeleteCommand extends AbstractSlashCommand
 {
-    /**
-     * @var string
-     */
-    protected static $defaultName = 'bytes_discord_client:slash:delete';
-
-    /**
-     * @var string
-     */
-    protected static $defaultDescription = 'Remove a slash command from a server or globally';
-
     /**
      * Adds suggestions to $suggestions for the current completion input (e.g. option or argument).
      */
@@ -53,7 +42,6 @@ class SlashDeleteCommand extends AbstractSlashCommand
     {
         parent::configure();
         $this
-            ->setDescription(self::$defaultDescription)
             ->addArgument('guild', InputArgument::OPTIONAL, 'Guild Name')
             ->addArgument('cmd', InputArgument::OPTIONAL, 'Command name');
     }

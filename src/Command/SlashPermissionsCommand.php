@@ -15,6 +15,7 @@ use Bytes\ResponseBundle\Token\Exceptions\NoTokenException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Illuminate\Support\Arr;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,22 +26,10 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-/**
- *
- */
+#[AsCommand(name: 'bytes_discord_client:slash:permissions', description: 'Update permissions')]
 class SlashPermissionsCommand extends AbstractSlashCommand
 {
     use AddPermissionTrait;
-
-    /**
-     * @var string
-     */
-    protected static $defaultName = 'bytes_discord_client:slash:permissions';
-
-    /**
-     * @var string
-     */
-    protected static $defaultDescription = 'Update ';
 
     /**
      * @param DiscordBotClient $client
@@ -58,7 +47,6 @@ class SlashPermissionsCommand extends AbstractSlashCommand
     {
         parent::configure();
         $this
-            ->setDescription(self::$defaultDescription)
             ->addArgument('guild', InputArgument::OPTIONAL, 'Guild Name')
             ->addArgument('cmd', InputArgument::OPTIONAL, 'Command name')
             ->addArgument('roles', InputArgument::OPTIONAL, 'Role(s)');
