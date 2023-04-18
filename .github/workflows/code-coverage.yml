@@ -11,6 +11,6 @@ on:
 
 jobs:
   coverage:
-    uses: mrgoodbytes8667/workflows/.github/workflows/code-coverage.yml@main
+    uses: mrgoodbytes8667/workflows/.github/workflows/code-coverage.yml@php8.0-8.1
     with:
       phpUnitVersion: 9.5
