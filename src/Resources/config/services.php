@@ -27,7 +27,6 @@ use Bytes\ResponseBundle\HttpClient\Token\AppTokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\TokenClientInterface;
 use Bytes\ResponseBundle\HttpClient\Token\UserTokenClientInterface;
 use Bytes\ResponseBundle\Routing\OAuthInterface;
-use Bytes\TwitchClientBundle\HttpClient\Response\TwitchResponse;
 use function Symfony\Component\String\u;
 
 /**
