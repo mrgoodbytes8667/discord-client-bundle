@@ -60,7 +60,7 @@ class BytesDiscordClientExtension extends Extension implements ExtensionInterfac
         /** @var array $config = ['client_id' => '', 'client_secret' => '', 'bot_token' => '', 'user' => false, 'redirects' => ['bot' => ['method' => '', 'route_name' => '', 'url' => '']], 'user' => ['method' => '', 'route_name' => '', 'url' => '']], 'slash' => ['method' => '', 'route_name' => '', 'url' => '']], 'login' => ['method' => '', 'route_name' => '', 'url' => '']]]*/
         $config = $this->processConfiguration($configuration, $configs);
 
-        $config = ConfigNormalizer::normalizeEndpoints($config, static::$endpoints, static::$addRemoveParents);
+        $config = ConfigNormalizer::normalizeEndpoints($config, static::$endpoints, static::$addRemoveParents, fireRevokeOnRefresh: true);
 
         $container->registerForAutoconfiguration(SlashCommandInterface::class)
             ->addTag('bytes_discord_client.slashcommand');
