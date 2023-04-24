@@ -17,8 +17,6 @@ use Bytes\DiscordClientBundle\HttpClient\Retry\DiscordRetryStrategy;
 use Bytes\DiscordClientBundle\HttpClient\Token\DiscordBotTokenClient;
 use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenClient;
 use Bytes\DiscordClientBundle\HttpClient\Token\DiscordUserTokenResponse;
-use Bytes\DiscordClientBundle\Request\DiscordConverter;
-use Bytes\DiscordClientBundle\Request\DiscordGuildConverter;
 use Bytes\DiscordClientBundle\Routing\DiscordBotOAuth;
 use Bytes\DiscordClientBundle\Routing\DiscordLoginOAuth;
 use Bytes\DiscordClientBundle\Routing\DiscordUserOAuth;
@@ -177,6 +175,7 @@ return static function (ContainerConfigurator $container) {
 
         $services->alias($alias, $class);
     }
+    
     //endregion
 
     //region Controllers
@@ -229,26 +228,6 @@ return static function (ContainerConfigurator $container) {
         ])
         ->call('setEntityManager', [service('doctrine.orm.default_entity_manager')->ignoreOnInvalid()]) // Doctrine\ORM\EntityManagerInterface
         ->tag('console.command', ['command' => 'bytes_discord_client:slash:permissions']);
-    //endregion
-
-    //region Converters
-    $services->set('bytes_discord_client.discord_guild_converter', DiscordGuildConverter::class)
-        ->args([
-            service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
-        ])
-        ->tag('request.param_converter', [
-            'converter' => 'bytes_discord_client_guild',
-            'priority' => false,
-        ]);
-
-    $services->set('bytes_discord_client.discord_converter', DiscordConverter::class)
-        ->args([
-            service('property_info'),
-            service('property_accessor'),
-        ])
-        ->tag('request.param_converter', [
-            'converter' => 'bytes_discord_client'
-        ]);
     //endregion
 
     //region Subscribers
