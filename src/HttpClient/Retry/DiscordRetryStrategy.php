@@ -19,6 +19,7 @@ class DiscordRetryStrategy extends APIRetryStrategy implements RetryStrategyInte
 {
     /**
      *
+     * @var string
      */
     const RATELIMITHEADER = 'x-ratelimit-reset-after';
 

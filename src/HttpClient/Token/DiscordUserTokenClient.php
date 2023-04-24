@@ -79,6 +79,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
         {
             throw new TokenRevokeException($response->getResponse(), sprintf('Could not revoke token: %d', $response->getStatusCode()));
         }
+        
         return $response->onSuccessCallback();
     }
 
@@ -93,6 +94,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
         if (empty($tokenString)) {
             return null;
         }
+        
         $redirect = $this->oAuth->getRedirect();
         return $this->tokenExchange($tokenString, url: $redirect, scopes: OAuthScopes::getUserScopes(), grantType: OAuthGrantTypes::refreshToken,
             onDeserializeCallable: function ($self, $results) use ($token) {
@@ -168,9 +170,11 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
             if ($response->isSuccess()) {
                 return $response->deserialize();
             }
+            
             if (empty($response->getContent(throw: false))) {
                 return null;
             }
+            
             return $response->deserialize(throw: false);
         } catch (NotEncodableValueException | NotNormalizableValueException) {
             return null;
@@ -190,6 +194,7 @@ class DiscordUserTokenClient extends AbstractDiscordTokenClient implements UserT
             $body->removeKey('scope')
                 ->removeKey('redirect_uri');
         }
+        
         return $body;
     }
 

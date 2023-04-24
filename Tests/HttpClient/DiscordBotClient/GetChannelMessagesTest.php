@@ -44,10 +44,10 @@ class GetChannelMessagesTest extends TestDiscordBotClientCase
     {
         $this->setupFaker();
 
-        foreach ($this->provideValidChannelMessagesInternal() as $cm) {
+        foreach ($this->provideValidChannelMessagesInternal() as $generator) {
             foreach ([-1, 0, 1, 10, 50, 90, 99, 100, 101, null] as $limit) {
                 foreach ($this->faker->filter() as $filter) {
-                    yield ['channel' => $cm['channel'], 'filter' => empty($cm['message']) ? null : $filter, 'message' => $cm['message'], 'limit' => $limit];
+                    yield ['channel' => $generator['channel'], 'filter' => empty($generator['message']) ? null : $filter, 'message' => $generator['message'], 'limit' => $limit];
                 }
             }
         }

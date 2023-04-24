@@ -32,6 +32,7 @@ class AuthorizationCodeGrants extends Base
         if (is_null($find)) {
             $generator->addProvider(new MiscProvider($generator));
         }
+        
         parent::__construct($generator);
     }
 
@@ -68,10 +69,12 @@ class AuthorizationCodeGrants extends Base
         if ($max < 1) {
             $max = self::numberBetween(1, count($permissions));
         }
+        
         $temp = self::randomElements($permissions, $max);
         if ($asStringArray) {
             return array_values($temp);
         }
+        
         return Permissions::hydratePermissions($temp);
     }
 
@@ -107,6 +110,7 @@ class AuthorizationCodeGrants extends Base
         if ($max < 1) {
             $max = self::numberBetween(1, count($scopes));
         }
+        
         return self::randomElements($scopes, $max);
     }
 

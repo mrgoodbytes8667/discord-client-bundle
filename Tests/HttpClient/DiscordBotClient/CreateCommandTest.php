@@ -69,11 +69,11 @@ class CreateCommandTest extends TestDiscordBotClientCase
      */
     public function provideCreateCommand()
     {
-        foreach($this->provideValidGuilds() as $guild) {
-            yield ['command' => Sample::createCommand(), 'guild' => $guild[0]];
+        foreach($this->provideValidGuilds() as $generator) {
+            yield ['command' => Sample::createCommand(), 'guild' => $generator[0]];
             yield ['command' => function () {
                 return Sample::createCommand();
-            }, 'guild' => $guild[0]];
+            }, 'guild' => $generator[0]];
         }
     }
 
@@ -82,13 +82,13 @@ class CreateCommandTest extends TestDiscordBotClientCase
      */
     public function provideEditCommand()
     {
-        foreach($this->provideValidGuilds() as $guild) {
-            yield ['command' => Sample::createCommand(), 'guild' => $guild[0]];
+        foreach($this->provideValidGuilds() as $generator) {
+            yield ['command' => Sample::createCommand(), 'guild' => $generator[0]];
             yield ['command' => function () {
                 $c = Sample::createCommand();
                 $c->setId('123');
                 return $c;
-            }, 'guild' => $guild[0]];
+            }, 'guild' => $generator[0]];
         }
     }
 

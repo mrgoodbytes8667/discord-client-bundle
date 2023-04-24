@@ -32,7 +32,7 @@ class SlashAddCommand extends AbstractSlashCommand
      * @param DiscordBotClient $client
      * @param SlashCommandsHandlerCollection $commandsCollection
      */
-    public function __construct(DiscordBotClient $client, private SlashCommandsHandlerCollection $commandsCollection)
+    public function __construct(DiscordBotClient $client, private readonly SlashCommandsHandlerCollection $commandsCollection)
     {
         parent::__construct($client);
     }
@@ -45,6 +45,7 @@ class SlashAddCommand extends AbstractSlashCommand
         if ($input->mustSuggestArgumentValuesFor('cmd')) {
             $suggestions->suggestValues(array_keys($this->commandsCollection->getList()));
         }
+        
         if ($input->mustSuggestArgumentValuesFor('guild')) {
             $guilds = $this->getGuildsInteractive(true);
             $suggestions->suggestValues(array_map(function ($value) {
@@ -131,6 +132,7 @@ class SlashAddCommand extends AbstractSlashCommand
             if (empty($commands)) {
                 throw new Exception('There are no registered commands.');
             }
+            
             $question = new ChoiceQuestion(
                 'Pick a command',
                 // choices can also be PHP objects that implement __toString() method
@@ -146,6 +148,7 @@ class SlashAddCommand extends AbstractSlashCommand
                 {
                     throw new CommandRuntimeException(sprintf('The command with tag "%s" does not exist.', $key), true);
                 }
+                
                 $input->setArgument('cmd', $command);
             }
         }

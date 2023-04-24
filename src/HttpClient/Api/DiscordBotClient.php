@@ -64,6 +64,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class DiscordBotClient extends DiscordClient
 {
+    /**
+     * @var string
+     */
     const NORMALIZER_GUILD_ID_REQUIRED_NOT_NULL = 'The "guildId" argument must be a string or must implement GuildIdInterface/IdInterface.';
 
     /**
@@ -128,6 +131,7 @@ class DiscordBotClient extends DiscordClient
         if(is_callable($applicationCommand)) {
             $applicationCommand = $applicationCommand();
         }
+        
         $method = HttpMethods::post;
         $append = [];
         $errors = $this->validator->validate($applicationCommand);
@@ -174,6 +178,7 @@ class DiscordBotClient extends DiscordClient
                 throw new ValidatorException((string)$errors);
             }
         }
+        
         return $this->createEditOverwriteCommands($applicationCommands, $guild, HttpMethods::put, '\Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]', caller: __METHOD__, isDelete: $isDelete);
     }
 
@@ -199,6 +204,7 @@ class DiscordBotClient extends DiscordClient
             $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
             $urlParts[] = $guild;
         }
+        
         $urlParts[] = 'commands';
         if (!empty($urlAppend)) {
             $urlParts = array_merge($urlParts, Arr::wrap($urlAppend));
@@ -217,6 +223,7 @@ class DiscordBotClient extends DiscordClient
                 if ($isDelete) {
                     $this->dispatch(new ApplicationCommandDeleteAllEvent());
                 }
+                
                 foreach (Arr::wrap($results) as $result) {
                     if ($method->equals(HttpMethods::post)) {
                         $this->dispatch(ApplicationCommandCreatedEvent::new($result));
@@ -253,6 +260,7 @@ class DiscordBotClient extends DiscordClient
             $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
             $urlParts[] = $guild;
         }
+        
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
 
@@ -299,6 +307,7 @@ class DiscordBotClient extends DiscordClient
             $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
             $urlParts[] = $guild;
         }
+        
         $urlParts[] = 'commands';
 
         return $this->request($urlParts, caller: __METHOD__, type: 'Bytes\DiscordResponseBundle\Objects\Slash\ApplicationCommand[]');
@@ -330,6 +339,7 @@ class DiscordBotClient extends DiscordClient
             $guild = IdNormalizer::normalizeGuildIdArgument($guild, 'The "guildId" argument must be a string, must implement GuildIdInterface/IdInterface, or be null.');
             $urlParts[] = $guild;
         }
+        
         $urlParts[] = 'commands';
         $urlParts[] = $commandId;
 
@@ -472,6 +482,7 @@ class DiscordBotClient extends DiscordClient
         if (!empty($commandId)) {
             $urlParts = $urlParts->push($commandId);
         }
+        
         $urlParts = $urlParts->push('permissions');
 
         return $urlParts->toArray();
@@ -585,6 +596,7 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
+        
         return $this->request([DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId], caller: __METHOD__, type: Message::class);
     }
 
@@ -648,6 +660,7 @@ class DiscordBotClient extends DiscordClient
                     'around', 'before', 'after' => $query->push($messageId, $filter),
                 };
             }
+            
         return $query;
     }    
 
@@ -857,6 +870,7 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
+        
         $response = $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId],
             caller: __METHOD__, type: Message::class,
             method: HttpMethods::delete, onSuccessCallable: function ($self, $results) use ($messageId) {
@@ -867,6 +881,7 @@ class DiscordBotClient extends DiscordClient
             // If we still haven't failed due to malformed data...
             throw new ClientException($response->getResponse());
         }
+        
         return $response->onSuccessCallback();
     }
 
@@ -896,6 +911,7 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
+        
         return $this->request(url: [DiscordClientEndpoints::ENDPOINT_CHANNEL, $channelId, DiscordClientEndpoints::ENDPOINT_MESSAGE, $messageId, 'crosspost'], caller: __METHOD__, type: Message::class, method: HttpMethods::post);
     }
 
@@ -1011,22 +1027,28 @@ class DiscordBotClient extends DiscordClient
         if (count($errors) > 0) {
             throw new ValidatorException((string)$errors);
         }
+        
         $options = [];
         if (!empty($name)) {
             $options['name'] = $name;
         }
+        
         if (!is_null($permissions)) {
             $options['permissions'] = $permissions;
         }
+        
         if (!is_null($color)) {
             $options['color'] = $color;
         }
+        
         if (!is_null($hoist)) {
             $options['hoist'] = $hoist;
         }
+        
         if (!is_null($mentionable)) {
             $options['mentionable'] = $mentionable;
         }
+        
         return $this->request([
             DiscordClientEndpoints::ENDPOINT_GUILD,
             $guildId,
@@ -1068,6 +1090,7 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
+        
         return $this->request(url: [
             DiscordClientEndpoints::ENDPOINT_CHANNEL,
             $channelId,
@@ -1112,15 +1135,18 @@ class DiscordBotClient extends DiscordClient
             $channelId = IdNormalizer::normalizeChannelIdArgument($channelId, 'The "channelId" argument is required and cannot be blank.');
             $messageId = IdNormalizer::normalizeIdArgument($messageId, 'The "messageId" argument is required and cannot be blank.');
         }
+        
         $query = [
             'limit' => self::normalizeLimit($limit, 25)
         ];
         if (!empty($before)) {
             $query['before'] = $before;
         }
+        
         if (!empty($after)) {
             $query['after'] = $after;
         }
+        
         return $this->request([
             DiscordClientEndpoints::ENDPOINT_CHANNEL,
             $channelId,
@@ -1145,12 +1171,15 @@ class DiscordBotClient extends DiscordClient
         if (is_null($limit)) {
             $limit = $default;
         }
+        
         if (!is_null($min) && $limit < $min) {
             $limit = $min;
         }
+        
         if (!is_null($max) && $limit > $max) {
             $limit = $max;
         }
+        
         return $limit;
     }
 

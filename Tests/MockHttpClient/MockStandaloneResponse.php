@@ -28,6 +28,7 @@ class MockStandaloneResponse extends MockResponse
                 return Fixture::getFixturesData($fixtureFile);
             };
         }
+        
         parent::__construct($content, $statusCode, $headers);
     }
 }

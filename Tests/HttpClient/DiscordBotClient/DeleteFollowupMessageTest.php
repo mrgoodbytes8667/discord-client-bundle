@@ -52,8 +52,8 @@ class DeleteFollowupMessageTest extends TestDiscordBotClientCase
 
         $client = $this->setupClient(MockClient::emptyError($code));
 
-        foreach ($this->provideDeleteFollowupMessage() as $item) {
-            $client->deleteFollowupMessage($item['token'], $item['messageId']);
+        foreach ($this->provideDeleteFollowupMessage() as $generator) {
+            $client->deleteFollowupMessage($generator['token'], $generator['messageId']);
         }
     }
 

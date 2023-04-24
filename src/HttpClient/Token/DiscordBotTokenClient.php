@@ -45,7 +45,7 @@ class DiscordBotTokenClient extends AbstractDiscordTokenClient implements AppTok
      * @param array $defaultOptionsByRegexp
      * @param string|null $defaultRegexp
      */
-    public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, string $clientId, string $clientSecret, private string $botToken, ?string $userAgent, bool $revokeOnRefresh, bool $fireRevokeOnRefresh, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
+    public function __construct(HttpClientInterface $httpClient, EventDispatcherInterface $dispatcher, string $clientId, string $clientSecret, private readonly string $botToken, ?string $userAgent, bool $revokeOnRefresh, bool $fireRevokeOnRefresh, array $defaultOptionsByRegexp = [], string $defaultRegexp = null)
     {
         parent::__construct($httpClient, $dispatcher, $clientId, $clientSecret, $userAgent, $revokeOnRefresh, $fireRevokeOnRefresh, $defaultOptionsByRegexp, $defaultRegexp);
     }
@@ -129,9 +129,11 @@ class DiscordBotTokenClient extends AbstractDiscordTokenClient implements AppTok
             if ($response->isSuccess()) {
                 return $response->deserialize();
             }
+            
             if (empty($response->getContent(throw: false))) {
                 return null;
             }
+            
             return $response->deserialize(throw: false);
         } catch (NotEncodableValueException | NotNormalizableValueException) {
             return null;

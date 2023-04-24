@@ -41,9 +41,11 @@ class SlashCommandsHandlerCollection
         if(!class_exists($commandClass)) {
             throw new \Exception(sprintf("Cannot find class with name '%s'", $commandClass));
         }
+        
         if(!method_exists($commandClass, 'createCommand')) {
             throw new \Exception(sprintf("Class '%s' does not have a createCommand() method.", $commandClass));
         }
+        
         $commandClass = $commandClass::createCommand();
     }
 
@@ -74,10 +76,12 @@ class SlashCommandsHandlerCollection
         if (array_key_exists($class, $this->list)) {
             return $this->list[$class];
         }
+        
         $return = array_search($class, $this->list);
         if ($return !== false) {
             return $this->list[$return];
         }
+        
         throw new InvalidArgumentException(sprintf("The supplied key '%s' is not present.", $class));
     }
 
@@ -89,6 +93,7 @@ class SlashCommandsHandlerCollection
         if (!empty($this->list) && empty($this->commands)) {
             $this->setCommands();
         }
+        
         return $this->commands ?? [];
     }
 
@@ -101,6 +106,7 @@ class SlashCommandsHandlerCollection
         if (empty($commands) && !empty($this->list)) {
             $commands = $this->list;
         }
+        
         array_walk($commands, array('self', 'hydrateCommand'));
         $this->commands = $commands;
         return $this;
@@ -116,6 +122,7 @@ class SlashCommandsHandlerCollection
         if (array_key_exists($key, $commands)) {
             return $commands[$key];
         }
+        
         return null;
     }
 }

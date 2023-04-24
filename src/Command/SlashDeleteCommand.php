@@ -100,6 +100,7 @@ class SlashDeleteCommand extends AbstractSlashCommand
             if (empty($commands)) {
                 throw new Exception("There are no " . (!is_null($guild) ? "" : "global ") . "commands" . (is_null($guild) ? "" : " for " . $guild->getName()));
             }
+            
             $question = new ChoiceQuestion(
                 'Pick a command',
                 // choices can also be PHP objects that implement __toString() method
