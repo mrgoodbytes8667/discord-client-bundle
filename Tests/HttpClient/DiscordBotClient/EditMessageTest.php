@@ -26,6 +26,7 @@ class EditMessageTest extends TestDiscordBotClientCase
         if(is_null($message)) {
             $this->expectException(InvalidArgumentException::class);
         }
+        
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/get-channel-messages-success.json'),
         ]));

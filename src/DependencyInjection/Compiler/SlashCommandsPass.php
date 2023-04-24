@@ -42,9 +42,11 @@ class SlashCommandsPass implements CompilerPassInterface
                 if (!$r = $container->getReflectionClass($class)) {
                     throw new InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $id));
                 }
+                
                 if (!$r->isSubclassOf(SlashCommandInterface::class)) {
                     throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s" must implement "%s".', $id, 'bytes_discord_client.slashcommand', SlashCommandInterface::class));
                 }
+                
                 $commandName = $class::getDefaultIndexName();
                 $parsedCommandName = $class::createCommand()->getName();
                 if($commandName !== $parsedCommandName)

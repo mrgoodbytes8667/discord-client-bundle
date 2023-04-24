@@ -23,9 +23,11 @@ trait DiscordClientTrait
         if ($url->startsWith(DiscordClientEndpoints::ENDPOINT_DISCORD_API)) {
             return $path;
         }
+        
         if (!empty($version)) {
             $url = $url->ensureStart($version . '/');
         }
+        
         return $url->ensureStart(DiscordClientEndpoints::ENDPOINT_DISCORD_API)->toString();
     }
 }

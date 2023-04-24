@@ -60,11 +60,14 @@ abstract class TestSlashCommand extends TestCase
         if(!empty($callback)) {
             $kernel->setCallback($callback);
         }
+        
         if (!empty($config)) {
             $kernel->mergeConfig($config);
         }
+        
         $kernel->setRegisterSlashCommands($registerSlashCommands);
         $kernel->boot();
+        
         $container = $kernel->getContainer();
 
         $application = new Application($kernel);
@@ -88,6 +91,7 @@ abstract class TestSlashCommand extends TestCase
         if (is_null($this->fs)) {
             $this->fs = new Filesystem();
         }
+        
         $this->fs->remove($this->kernel->getCacheDir());
         $this->kernel = null;
     }

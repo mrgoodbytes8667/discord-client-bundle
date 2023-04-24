@@ -36,6 +36,7 @@ class GetChannelMessagesResponse extends DiscordResponse
         if (!$this->getFollowPagination() || empty($this->getClient()) || empty($this->getChannelId())) {
             return $origResults;
         }
+        
         $results = $origResults; // To get past the count check for the first iteration
         while (count($origResults) < $this->getLimit() && count($results) > 0) {
             $results = new ArrayCollection($origResults);
@@ -46,6 +47,7 @@ class GetChannelMessagesResponse extends DiscordResponse
 
             $origResults = array_merge($origResults, $results);
         }
+        
         return $origResults;
     }
 
@@ -57,9 +59,11 @@ class GetChannelMessagesResponse extends DiscordResponse
         if (empty($this->getExtraParams())) {
             return false;
         }
+        
         if (!array_key_exists('followPagination', $this->getExtraParams())) {
             return false;
         }
+        
         return $this->getExtraParams()['followPagination'];
     }
 }

@@ -116,6 +116,7 @@ class DiscordUserTokenClientTest extends TestHttpClientCase
             ],
         ]);
         $oAuth->setValidator($this->validator);
+        
         $client = $this->setupClient(new MockHttpClient([
             MockJsonResponse::makeFixture('HttpClient/token-exchange-with-guild-success.json')
         ]))

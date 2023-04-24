@@ -90,7 +90,7 @@ class Kernel extends BaseKernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(function (ContainerBuilder $container) {
-            $container->register('security.helper', Security::class);
+            $container->register('security.helper', \Symfony\Bundle\SecurityBundle\Security::class);
             $container->register('router.default', UrlGeneratorInterface::class);
             $container->register('security.csrf.token_manager', CsrfTokenManagerInterface::class);
 

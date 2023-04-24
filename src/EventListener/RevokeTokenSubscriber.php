@@ -20,7 +20,7 @@ class RevokeTokenSubscriber extends AbstractRevokeTokenSubscriber
      * RevokeTokenSubscriber constructor.
      * @param DiscordUserTokenClient $discordUserTokenClient
      */
-    public function __construct(private DiscordUserTokenClient $discordUserTokenClient)
+    public function __construct(private readonly DiscordUserTokenClient $discordUserTokenClient)
     {
     }
 

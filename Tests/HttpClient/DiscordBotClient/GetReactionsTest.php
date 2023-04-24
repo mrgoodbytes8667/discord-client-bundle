@@ -49,11 +49,11 @@ class GetReactionsTest extends TestDiscordBotClientCase
     {
         $this->setupFaker();
 
-        foreach ($this->provideValidCreateReaction() as $message) {
+        foreach ($this->provideValidCreateReaction() as $generator) {
             foreach ([$this->faker->userId(), null] as $before) {
                 foreach ([$this->faker->userId(), null] as $after) {
                     foreach ([-1, 0, 1, 10, 50, 90, 99, 100, 101, null] as $limit) {
-                        yield ['message' => $message['message'], 'channel' => $message['channel'], 'emoji' => $message['emoji'], 'before' => $before, 'after' => $after, 'limit' => $limit];
+                        yield ['message' => $generator['message'], 'channel' => $generator['channel'], 'emoji' => $generator['emoji'], 'before' => $before, 'after' => $after, 'limit' => $limit];
                     }
                 }
             }

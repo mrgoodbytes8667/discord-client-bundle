@@ -127,10 +127,12 @@ trait DiscordClientSetupTrait
         {
             $client->setDispatcher($dispatcher ?? new EventDispatcher());
         }
+        
         if(method_exists($client, 'setUrlGenerator'))
         {
             $client->setUrlGenerator($this->urlGenerator);
         }
+        
         $client->setResponse($responseClass::make($this->serializer, $dispatcher ?? new EventDispatcher()));
         return $client;
     }

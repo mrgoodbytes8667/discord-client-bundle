@@ -35,7 +35,7 @@ class SlashPermissionsCommand extends AbstractSlashCommand
      * @param DiscordBotClient $client
      * @param SlashCommandsHandlerCollection $commandsCollection
      */
-    public function __construct(DiscordBotClient $client, private SlashCommandsHandlerCollection $commandsCollection)
+    public function __construct(DiscordBotClient $client, private readonly SlashCommandsHandlerCollection $commandsCollection)
     {
         parent::__construct($client);
     }
@@ -98,9 +98,9 @@ class SlashPermissionsCommand extends AbstractSlashCommand
             $table->setHeaders(['Type', 'Snowflake', 'Permission']);
             $table->setHeaderTitle($title);
 
-            foreach ($existingPermissions->getPermissions() as $existingPermission) {
-                $permissionType = ApplicationCommandPermissionType::tryFrom($existingPermission->getType());
-                $roleOrUserId = $existingPermission->getId();
+            foreach ($existingPermissions->getPermissions() as $applicationCommandPermission) {
+                $permissionType = ApplicationCommandPermissionType::tryFrom($applicationCommandPermission->getType());
+                $roleOrUserId = $applicationCommandPermission->getId();
                 $roleOrUserName = $roleOrUserId;
                 if ($permissionType->equals(ApplicationCommandPermissionType::ROLE)) {
                     $foundRole = Arr::first($roles, function ($value) use ($roleOrUserId) {
@@ -108,8 +108,10 @@ class SlashPermissionsCommand extends AbstractSlashCommand
                     });
                     $roleOrUserName = $foundRole?->getName() ?? $roleOrUserId;
                 }
-                $table->addRow([$permissionType->name, $roleOrUserName, $existingPermission->getPermission()]);
+                
+                $table->addRow([$permissionType->name, $roleOrUserName, $applicationCommandPermission->getPermission()]);
             }
+            
             $table->render();
         }
     }
@@ -172,11 +174,13 @@ class SlashPermissionsCommand extends AbstractSlashCommand
             } catch (ClientExceptionInterface) {
                 $existingPermissions = new GuildApplicationCommandPermission();
             }
+            
             $this->outputPermissionsTable($existingPermissions, $roles, 'Existing Permissions');
 
             if (empty($roles)) {
                 throw new Exception("There are no roles for " . $guild->getName());
             }
+            
             $question = new ChoiceQuestion(
                 "Pick a role <info>(ie: 1)</info> or roles <info>(ie: 1, 3)</info> to apply command permissions to",
                 // choices can also be PHP objects that implement __toString() method

@@ -44,15 +44,15 @@ class GetGuildMemberTest extends TestDiscordBotClientCase
      */
     public function provideValidGetGuildMembers()
     {
-        foreach ($this->provideValidGuilds() as $guild) {
+        foreach ($this->provideValidGuilds() as $generator) {
             $mock = $this
                 ->getMockBuilder(IdInterface::class)
                 ->getMock();
             $mock->method('getId')
                 ->willReturn('230858112993375816');
 
-            yield ['guild' => $guild[0], 'user' => $mock];
-            yield ['guild' => $guild[0], 'user' => '230858112993375816'];
+            yield ['guild' => $generator[0], 'user' => $mock];
+            yield ['guild' => $generator[0], 'user' => '230858112993375816'];
         }
     }
 
@@ -75,9 +75,9 @@ class GetGuildMemberTest extends TestDiscordBotClientCase
      */
     public function provideInvalidGetGuildMembers()
     {
-        foreach ($this->provideInvalidGetGuildArguments() as $guild) {
+        foreach ($this->provideInvalidGetGuildArguments() as $generator) {
             foreach ($this->provideInvalidGetGuildArguments() as $user) {
-                yield ['guild' => $guild['guild'], 'user' => $user['guild']];
+                yield ['guild' => $generator['guild'], 'user' => $user['guild']];
             }
         }
     }

@@ -44,6 +44,7 @@ class DiscordClient extends AbstractApiClient implements SerializerAwareInterfac
 
     /**
      *
+     * @var int
      */
     const PREVENTATIVE_RATE_LIMIT_SECONDS = 2;
 

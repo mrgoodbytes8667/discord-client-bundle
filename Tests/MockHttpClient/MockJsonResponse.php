@@ -62,6 +62,7 @@ class MockJsonResponse extends MockResponse
         {
             $jsonCode = $jsonCode->value;
         }
+        
         $body = Fixture::getJsonErrorCodeData($jsonCode, $message, false);
         return MockJsonResponse::make($body, $code);
     }

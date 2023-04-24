@@ -50,6 +50,7 @@ abstract class AbstractSlashCommand extends BaseCommand
         if (empty($this->guilds)) {
             $this->guilds = $this->client->getGuilds()->deserialize();
         }
+        
         return $this->guilds;
     }
 
@@ -103,6 +104,7 @@ abstract class AbstractSlashCommand extends BaseCommand
             if (is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
+            
             $guilds = $this->getGuildsInteractive($includePlaceholderGuild);
             $question = new ChoiceQuestion(
                 $questionText,
@@ -160,12 +162,14 @@ abstract class AbstractSlashCommand extends BaseCommand
             if (is_null($helper)) {
                 $helper = $this->getHelper('question');
             }
+            
             $commands = $this->client->getCommands($guild)->deserialize();
 
             if (empty($commands)) {
                 $this->io->warning("There are no " . (!is_null($guild) ? "" : "global ") . "commands" . (is_null($guild) ? "" : " for " . $guild->getName()));
                 return $input->getArgument('cmd') ?: null;
             }
+            
             $question = new ChoiceQuestion(
                 $questionText,
                 // choices can also be PHP objects that implement __toString() method
@@ -226,6 +230,7 @@ abstract class AbstractSlashCommand extends BaseCommand
             $this->entityManager->flush();
             return true;
         }
+        
         return false;
     }
 
@@ -246,10 +251,12 @@ abstract class AbstractSlashCommand extends BaseCommand
             $empty->setId('-1');
             $guilds = [$empty];
         }
+        
         $retrievedGuilds = $this->getGuilds();
         if (!empty($retrievedGuilds)) {
             $guilds = array_merge($guilds, $retrievedGuilds);
         }
+        
         return $guilds;
     }
 }

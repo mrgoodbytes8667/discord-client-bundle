@@ -52,6 +52,7 @@ class DiscordResponse extends Response
         if ($throw && is_subclass_of($type, ErrorInterface::class)) {
             return false;
         }
+        
         return parent::deserializeGetThrow($throw, $type);
     }
 }
