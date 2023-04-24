@@ -6,6 +6,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Bytes\DiscordClientBundle\Command\SlashAddCommand;
 use Bytes\DiscordClientBundle\Command\SlashDeleteCommand;
 use Bytes\DiscordClientBundle\Command\SlashPermissionsCommand;
+use Bytes\DiscordClientBundle\Controller\ArgumentResolver\DiscordGuildValueResolver;
 use Bytes\DiscordClientBundle\Controller\CommandController;
 use Bytes\DiscordClientBundle\EventListener\RevokeTokenSubscriber;
 use Bytes\DiscordClientBundle\Handler\SlashCommandsHandlerCollection;
@@ -175,7 +176,6 @@ return static function (ContainerConfigurator $container) {
 
         $services->alias($alias, $class);
     }
-    
     //endregion
 
     //region Controllers
@@ -228,6 +228,16 @@ return static function (ContainerConfigurator $container) {
         ])
         ->call('setEntityManager', [service('doctrine.orm.default_entity_manager')->ignoreOnInvalid()]) // Doctrine\ORM\EntityManagerInterface
         ->tag('console.command', ['command' => 'bytes_discord_client:slash:permissions']);
+    //endregion
+
+    //region Resolvers
+    $services->set('bytes_discord_client.discord_guild_value_resolver', DiscordGuildValueResolver::class)
+        ->args([
+            service('bytes_discord_client.httpclient.discord.bot'), // Bytes\DiscordClientBundle\HttpClient\Api\DiscordBotClient
+        ])
+        ->tag('controller.argument_value_resolver', [
+            'priority' => 150,
+        ]);
     //endregion
 
     //region Subscribers
