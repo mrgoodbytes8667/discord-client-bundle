@@ -26,6 +26,7 @@ use function Symfony\Component\String\u;
  * @package Bytes\DiscordClientBundle\Request
  *
  * @link https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
+ * @deprecated ParamConverter has been deprecated, there is no direct replacement.
  */
 class DiscordConverter implements ParamConverterInterface
 {

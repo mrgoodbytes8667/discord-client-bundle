@@ -44,6 +44,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  * // Use the DiscordGuildConverter and deserialize into PartialGuild and include counts
  * @ParamConverter("guild", converter="bytes_discord_client_guild", options={"class" = "\Bytes\DiscordResponseBundle\Objects\PartialGuild", "with_counts" = true})
  * </code>
+ * @deprecated ParamConverter has been deprecated, there is no direct replacement.
  */
 class DiscordGuildConverter implements ParamConverterInterface
 {
