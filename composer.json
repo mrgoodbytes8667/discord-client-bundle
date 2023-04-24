@@ -17,7 +17,7 @@
     "require-dev": {
         "doctrine/common": "^3.0",
         "fakerphp/faker": "^1.13",
-        "mrgoodbytes8667/test-common": ">=0.0.23",
+        "mrgoodbytes8667/test-common": ">=0.2",
         "mrgoodbytes8667/test-common-faker": ">=0.4.2",
         "mrgoodbytes8667/test-discord-faker": ">=0.1 | 0.1.0-BETA2",
         "phpunit/phpunit": "<10",
