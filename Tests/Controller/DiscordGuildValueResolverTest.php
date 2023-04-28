@@ -132,7 +132,7 @@ class DiscordGuildValueResolverTest extends TestCase
     }
 
     /**
-     * This shouldn't be possible based on supports but it should return false if it does occur
+     * This shouldn't be possible based on supports but it should return an empty array if it does occur
      */
     public function testApplyBadParamName()
     {
@@ -150,7 +150,7 @@ class DiscordGuildValueResolverTest extends TestCase
     }
 
     /**
-     * This shouldn't be possible based on supports but it should return false if it does occur
+     * This shouldn't be possible based on supports but it should return an empty array if it does occur
      */
     public function testApplyBadClass()
     {
