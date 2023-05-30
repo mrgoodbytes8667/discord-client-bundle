@@ -25,4 +25,3 @@ jobs:
     with:
       phpUnitVersion: 9.5
       symfony: 6.3
-      minStability: 'dev'
